@@ -72,14 +72,22 @@ h1 {
     box-shadow: 0 0 0 2px rgba(8, 8, 8, 0.3), 0 8px 15px rgba(0, 0, 0, 0.8);
     width: 100%;
     padding: 1rem;
-    /* Augmenter le padding pour donner plus de hauteur */
     border: 1px solid #8a8989;
     border-radius: 15px;
     font-size: 1rem;
     height: 60px;
-    /* Définir une hauteur spécifique pour les champs */
     box-sizing: border-box;
-    /* Pour inclure les bordures et le padding dans la taille totale */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    /* Ajout de la transition */
+}
+
+.form-control:focus {
+    border-color: #004AAD;
+    /* Changement de couleur de bordure au focus */
+    box-shadow: 0 0 0 4px rgba(0, 74, 173, 0.5);
+    /* Ombre accentuée */
+    outline: none;
+    /* Retirer le contour par défaut */
 }
 
 label {
@@ -122,7 +130,7 @@ label {
 }
 
 .login-button {
-    background-color: #004AAD;
+    background-color: #0754A1;
     color: white;
     padding: 0.75rem 2rem;
     border: none;
@@ -136,7 +144,7 @@ label {
 }
 
 .login-button:hover {
-    background-color: #003a87;
+    background-color: #0455c0;
 }
 
 .forgot-password {
@@ -152,13 +160,17 @@ label {
 .alternate-login {
     text-align: center;
     margin-top: 5px;
+    font-size: 1rem;
+    /* Augmentez la taille du texte selon vos préférences */
+    font-weight: bold;
+    /* Met le texte en gras */
 }
 
 
 /* Bloc contenant le formulaire avec ombrage en bas */
 
 .form-block {
-    box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(7, 84, 161, 0.4);
     /* Ombre en bas */
     padding: 6rem;
     border-radius: 10px;
@@ -187,8 +199,8 @@ label {
 }
 
 .home-icon {
-    width: 50px;
-    height: 50px;
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
     transition: transform 0.3s ease;
@@ -197,6 +209,12 @@ label {
 .home-icon:hover {
     transform: scale(1.1);
     /* Agrandir légèrement au survol */
+}
+
+.error-message {
+    color: red;
+    font-size: 1rem;
+    margin-top: 0.25rem;
 }
 
 @media (max-width: 768px) {

@@ -70,6 +70,9 @@ export class InscriptionComponent implements OnInit {
   // Helpers pour vérifier les états des contrôles
   isFieldInvalid(fieldName: string): boolean {
     const control = this.inscriptionForm.get(fieldName);
-    return !!control && control.invalid && (control.dirty || control.touched);
+    return !!control && 
+           control.invalid && 
+           (control.dirty || control.touched) && 
+           control.value !== '';
   }
 }

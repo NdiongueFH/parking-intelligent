@@ -11,13 +11,13 @@
                 <div class="form-group">
                     <label for="nom">Nom<span class="required">*</span></label>
                     <input type="text" id="nom" formControlName="nom" placeholder="Entrer votre nom" [ngClass]="{'is-invalid': isFieldInvalid('nom')}">
-                    <div *ngIf="isFieldInvalid('nom')" class="error-message">Le nom est obligatoire</div>
+                    <div *ngIf="isFieldInvalid('nom') && inscriptionForm.get('nom')?.value" class="error-message">Le nom est obligatoire</div>
                 </div>
 
                 <div class="form-group">
                     <label for="prenom">Prenom<span class="required">*</span></label>
                     <input type="text" id="prenom" formControlName="prenom" placeholder="Entrer votre prenom" [ngClass]="{'is-invalid': isFieldInvalid('prenom')}">
-                    <div *ngIf="isFieldInvalid('prenom')" class="error-message">Le prénom est obligatoire</div>
+                    <div *ngIf="isFieldInvalid('prenom') && inscriptionForm.get('prenom')?.value" class="error-message">Le prénom est obligatoire</div>
                 </div>
             </div>
 
@@ -25,13 +25,13 @@
                 <div class="form-group">
                     <label for="email">Email<span class="required">*</span></label>
                     <input type="email" id="email" formControlName="email" placeholder="Entrer votre email" [ngClass]="{'is-invalid': isFieldInvalid('email')}">
-                    <div *ngIf="isFieldInvalid('email')" class="error-message">Veuillez entrer un email valide</div>
+                    <div *ngIf="isFieldInvalid('email') && inscriptionForm.get('email')?.value" class="error-message">Veuillez entrer un email valide</div>
                 </div>
 
                 <div class="form-group">
                     <label for="telephone">Telephone<span class="required">*</span></label>
                     <input type="tel" id="telephone" formControlName="telephone" placeholder="Entrer votre numero de telephone" [ngClass]="{'is-invalid': isFieldInvalid('telephone')}">
-                    <div *ngIf="isFieldInvalid('telephone')" class="error-message">Veuillez entrer un numéro valide (9 chiffres)</div>
+                    <div *ngIf="isFieldInvalid('telephone') && inscriptionForm.get('telephone')?.value" class="error-message">Veuillez entrer un numéro valide (9 chiffres)</div>
                 </div>
             </div>
 
@@ -39,13 +39,13 @@
                 <div class="form-group">
                     <label for="mot_de_passe">Mot de passe<span class="required">*</span></label>
                     <input type="password" id="mot_de_passe" formControlName="mot_de_passe" placeholder="Entrer votre mot de passe" [ngClass]="{'is-invalid': isFieldInvalid('mot_de_passe')}">
-                    <div *ngIf="isFieldInvalid('mot_de_passe')" class="error-message">Le mot de passe doit contenir au moins 6 caractères</div>
+                    <div *ngIf="isFieldInvalid('mot_de_passe') && inscriptionForm.get('mot_de_passe')?.value" class="error-message">Le mot de passe doit contenir au moins 6 caractères</div>
                 </div>
 
                 <div class="form-group">
                     <label for="adresse">Adresse de residence<span class="required">*</span></label>
                     <input type="text" id="adresse" formControlName="adresse" placeholder="Entrer votre adresse" [ngClass]="{'is-invalid': isFieldInvalid('adresse')}">
-                    <div *ngIf="isFieldInvalid('adresse')" class="error-message">L'adresse est obligatoire</div>
+                    <div *ngIf="isFieldInvalid('adresse') && inscriptionForm.get('adresse')?.value" class="error-message">L'adresse est obligatoire</div>
                 </div>
             </div>
 
