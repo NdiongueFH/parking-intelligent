@@ -1,0 +1,52 @@
+<div class="container">
+    <div class="login-container">
+        <div class="logo-section">
+
+            <div class="logo-circle">
+                <img src="imagelogoParking.png" alt="Logo" class="logo-circle">
+            </div>
+        </div>
+        <div class="form-section">
+
+
+            <!-- Bloc pour le formulaire avec ombrage en bas -->
+            <div class="form-block">
+                <h1>Connexion</h1>
+                <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+                    <div class="form-group">
+                        <label for="email">Email<span class="required">*</span></label>
+                        <input type="email" id="email" formControlName="email" placeholder="Entrer votre email" class="form-control">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Mot de passe<span class="required">*</span></label>
+                        <div class="password-input-container">
+                            <input [type]="showPassword ? 'text' : 'password'" id="password" formControlName="password" placeholder="Entrer votre mot de passe" class="form-control">
+                            <span class="password-toggle" (click)="togglePasswordVisibility()">
+                                <i class="eye-icon">👁️</i>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="login-button-container">
+                        <button type="submit" class="login-button">Se connecter</button>
+                    </div>
+
+                    <div class="forgot-password">
+                        <a href="#">Mot de passe oublié</a>
+                    </div>
+
+
+                </form>
+            </div>
+
+            <div class="alternate-login">
+                <p>Vous pouvez aussi vous connecter par carte !</p>
+            </div>
+        </div>
+    </div>
+
+    <a href="/" class="back-to-home">
+        <img src="retour.png" alt="Retour à l'accueil" class="home-icon">
+    </a>
+</div>
