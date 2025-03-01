@@ -1,0 +1,492 @@
+/* Variables */
+
+:root {
+    --primary-color: #004AAD;
+    --secondary-color: #00A0E4;
+    --white: #ffffff;
+    --gray-light: #f5f5f5;
+    --gray: #e0e0e0;
+    --gray-dark: #666666;
+    --success-color: #4cd964;
+}
+
+
+/* Global styles */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: var(--gray-light);
+}
+
+
+/* Dashboard container */
+
+.dashboard-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.outside-image-container {
+    position: absolute;
+    top: 50%;
+    right: 800px;
+    transform: translateY(-50%);
+    /* Centre l'image verticalement */
+    z-index: -1;
+    /* S'assure que l'image ne cache pas le contenu principal */
+}
+
+
+/* L'image à l'extérieur */
+
+.outside-image {
+    width: 690px;
+    height: 750px;
+    margin-top: 100px;
+    /* Ajustez la taille de l'image comme nécessaire */
+    border-radius: 10px;
+    /* Ajoutez une bordure arrondie si souhaité */
+}
+
+
+/* Main content */
+
+.main-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+    padding: 1rem;
+    margin-left: auto;
+    /* Aligne à droite */
+    width: 80%;
+    /* Ajustez la largeur du bloc */
+    max-width: 500px;
+    /* Limite la largeur maximale si nécessaire */
+    background-color: var(--white);
+    /* Couleur de fond pour le bloc */
+    border-radius: 8px;
+    /* Coins arrondis */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    /* Ombre pour le bloc */
+}
+
+
+/* Header */
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #0754A1;
+    /* Couleur de fond bleue */
+    /* Couleur de fond bleue */
+    padding: 0.75rem 1.5rem;
+    color: var(--white);
+    /* Changez pour du texte blanc */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.search-container {
+    display: flex;
+    align-items: center;
+    background-color: var(--secondary-color);
+    /* Changez pour un fond bleu clair */
+    border-radius: 25px;
+    padding: 0.5rem;
+    width: 30%;
+}
+
+.search-input {
+    border: none;
+    flex-grow: 1;
+    padding: 0.5rem;
+    outline: none;
+    font-size: 1rem;
+    border-radius: 25px;
+    /* Ajoutez une bordure arrondie au champ de recherche */
+}
+
+.logo-container {
+    width: 60px;
+    height: 60px;
+    background-color: var(--white);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.logo {
+    width: 80%;
+    height: auto;
+    box-shadow: 0 8px 8px rgba(0, 0, 0, 0.2);
+    /* Ombre légère */
+    border-radius: 50%;
+    /* Arrondir complètement pour un effet rond */
+}
+
+.logout-divider {
+    border: none;
+    /* Supprime la bordure par défaut */
+    border-top: 1px solid rgb(2, 170, 221);
+    /* Trait de couleur */
+    margin: 0;
+    /* Supprime la marge par défaut */
+    margin-bottom: 0.5rem;
+    /* Espace sous le trait */
+    width: 150px;
+    /* Longueur fixe du trait */
+    /* Vous pouvez aussi utiliser une valeur en pourcentage si souhaité, par ex. 80% */
+}
+
+
+/* Sidebar */
+
+.sidebar {
+    width: 200px;
+    /* Augmente la largeur de la barre latérale */
+    background-color: var(--white);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.nav-menu {
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem 0;
+    /* Augmente l'espacement interne */
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    padding: 1.25rem;
+    /* Augmente l'espacement interne */
+    color: var(--gray-dark);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    font-size: 1.1rem;
+    /* Augmente la taille de la police */
+    line-height: 1.6;
+    /* Augmente l'espacement entre les lignes */
+}
+
+.nav-icon {
+    width: 30px;
+    /* Augmente la taille des icônes */
+    height: auto;
+    margin-right: 1rem;
+    /* Augmente l'espacement entre l'icône et le texte */
+    vertical-align: middle;
+}
+
+.logout-container {
+    padding: 1.5rem;
+    /* Augmente l'espacement interne */
+    border-top: 1px solid var(--gray);
+}
+
+.logout-button {
+    display: flex;
+    align-items: center;
+    color: var(--gray-dark);
+    text-decoration: none;
+    padding: 1rem;
+    /* Augmente l'espacement interne */
+    cursor: pointer;
+    font-size: 1.1rem;
+    /* Augmente la taille de la police */
+}
+
+.logout-icon {
+    width: 20px;
+    /* Augmente la taille de l'icône */
+    height: auto;
+    margin-right: 1rem;
+    /* Augmente l'espacement entre l'icône et le texte */
+    vertical-align: middle;
+}
+
+.search-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    color: var(--gray-dark);
+}
+
+.header-icons {
+    display: flex;
+    gap: 1rem;
+}
+
+.notification-button,
+.settings-button {
+    background: var(--white);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+}
+
+.notification-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: red;
+    color: var(--white);
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+/* Content container */
+
+.content-container {
+    display: flex;
+    flex-grow: 1;
+    overflow: hidden;
+}
+
+
+/* Sidebar */
+
+#map {
+    height: 100%;
+    width: 100%;
+    min-height: 400px;
+}
+
+.nav-item i {
+    margin-right: 0.75rem;
+    width: 20px;
+    text-align: center;
+}
+
+.nav-item:hover,
+.nav-item.active {
+    color: var(--primary-color);
+    background-color: rgba(0, 74, 173, 0.1);
+    border-left: 4px solid var(--primary-color);
+}
+
+.nav-item.active {
+    font-weight: bold;
+}
+
+.logout-button i {
+    margin-right: 0.75rem;
+}
+
+.logout-button:hover {
+    color: crimson;
+}
+
+
+/* Main content */
+
+
+/* Map */
+
+.map-container {
+    height: 60%;
+    min-height: 400px;
+    background-color: var(--white);
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.map {
+    flex-grow: 1;
+    width: 100%;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+}
+
+.map-coordinates {
+    background-color: var(--gray-light);
+    padding: 1rem;
+    border-radius: 4px;
+    margin-top: 1rem;
+}
+
+.add-parking-button {
+    background-color: var(--success-color);
+    color: var(--white);
+    border: none;
+    border-radius: 4px;
+    padding: 0.75rem 1rem;
+    margin-top: 0.75rem;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.add-parking-button:hover {
+    background-color: #3cc653;
+}
+
+
+/* Parking list */
+
+
+/* Parking list */
+
+.parkings-list {
+    flex-grow: 1;
+    background-color: var(--white);
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+    overflow: auto;
+}
+
+.parking-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.parking-card {
+    border: 2px solid var(--primary-color);
+    /* Ajoute une bordure grise */
+    border-radius: 8px;
+    padding: 1rem;
+    transition: all 0.3s ease;
+}
+
+.parking-card:hover {
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transform: translateY(-5px);
+}
+
+.reserve-button {
+    background-color: #3cc653;
+    /* Change la couleur du bouton en vert */
+    color: var(--white);
+    border: none;
+    border-radius: 4px;
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.reserve-button:hover {
+    background-color: #3cc653;
+    /* Change la couleur du bouton au survol */
+}
+
+.image-container {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.dashboard-image {
+    max-width: 100%;
+    height: auto;
+}
+
+.map-container {
+    width: 100%;
+    height: 800px;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.map {
+    height: 200%;
+    width: 100%;
+}
+
+
+/* Style pour le bouton de réservation dans les popups */
+
+.popup-reserve-btn {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    margin-top: 5px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.popup-reserve-btn:hover {
+    background-color: #45a049;
+}
+
+
+/* Media queries */
+
+@media (max-width: 992px) {
+    .search-container {
+        width: 50%;
+    }
+}
+
+@media (max-width: 768px) {
+    .content-container {
+        flex-direction: column;
+    }
+    .sidebar {
+        width: 100%;
+        flex-direction: row;
+        height: auto;
+    }
+    .nav-menu {
+        flex-direction: row;
+        padding: 0;
+        justify-content: space-between;
+        width: 100%;
+    }
+    .nav-item {
+        flex-direction: column;
+        padding: 0.5rem;
+    }
+    .logout-container {
+        display: none;
+    }
+}
+
+@media (max-width: 576px) {
+    .header {
+        flex-direction: column;
+        gap: 0.75rem;
+        padding: 0.75rem;
+    }
+    .search-container {
+        width: 100%;
+    }
+    .parking-cards {
+        grid-template-columns: 1fr;
+    }
+}

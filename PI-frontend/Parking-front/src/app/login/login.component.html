@@ -1,50 +1,52 @@
 <div class="container">
     <div class="login-container">
         <div class="logo-section">
-
             <div class="logo-circle">
                 <img src="imagelogoParking.png" alt="Logo" class="logo-circle">
             </div>
         </div>
         <div class="form-section">
-
-
-            <!-- Bloc pour le formulaire avec ombrage en bas -->
             <div class="form-block">
                 <h1>Connexion</h1>
                 <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
                     <div class="form-group">
                         <label for="email">Email<span class="required">*</span></label>
-                        <input type="email" id="email" formControlName="email" placeholder="Entrer votre email" class="form-control">
-                        <div class="error-message" *ngIf="loginForm.get('email')?.touched && loginForm.get('email')?.invalid && loginForm.get('email')?.value">
+                        <input type="email" id="email" formControlName="email" placeholder="Entrer votre email" class="form-control" [ngClass]="{'is-invalid': isFieldInvalid('email')}" (input)="validateField('email')">
+                        <div *ngIf="isFieldInvalid('email')" class="error-message">
                             <small *ngIf="loginForm.get('email')?.errors?.['required']">L'email est requis.</small>
                             <small *ngIf="loginForm.get('email')?.errors?.['email']">L'email doit contenir un 'arobaz'.</small>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label for="password">Mot de passe<span class="required">*</span></label>
+                        <label for="mot_de_passe">Mot de passe<span class="required">*</span></label>
                         <div class="password-input-container">
-                            <input [type]="showPassword ? 'text' : 'password'" id="password" formControlName="password" placeholder="Entrer votre mot de passe" class="form-control">
+                            <input [type]="showPassword ? 'text' : 'password'" id="mot_de_passe" formControlName="mot_de_passe" placeholder="Entrer votre mot de passe" class="form-control" [ngClass]="{'is-invalid': isFieldInvalid('mot_de_passe')}" (input)="validateField('mot_de_passe')">
                             <span class="password-toggle" (click)="togglePasswordVisibility()">
                                 <i class="eye-icon">👁️</i>
                             </span>
                         </div>
-                        <div class="error-message" *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.invalid && loginForm.get('password')?.value">
-                            <small *ngIf="loginForm.get('password')?.errors?.['required']">Le mot de passe est requis.</small>
-                            <small *ngIf="loginForm.get('password')?.errors?.['minlength']">Le mot de passe doit contenir au moins 8 caractères.</small>
+                        <div *ngIf="isFieldInvalid('mot_de_passe')" class="error-message">
+                            <small *ngIf="loginForm.get('mot_de_passe')?.errors?.['required']">Le mot de passe est requis.</small>
+                            <small *ngIf="loginForm.get('mot_de_passe')?.errors?.['minlength']">Le mot de passe doit contenir au moins 8 caractères.</small>
                         </div>
                     </div>
 
+                    <!-- Message d'erreur global -->
+                    <div *ngIf="error" class="global-error-message">
+                        {{ error }}
+                    </div>
+
                     <div class="login-button-container">
-                        <button type="submit" class="login-button">Se connecter</button>
+                        <button type="submit" class="login-button" [disabled]="loading">
+                            <span *ngIf="loading" class="spinner"></span>
+                            Se connecter
+                        </button>
                     </div>
 
                     <div class="forgot-password">
                         <a href="#">Mot de passe oublié</a>
                     </div>
-
-
                 </form>
             </div>
 

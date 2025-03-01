@@ -25,19 +25,24 @@ export class InscriptionComponent implements OnInit {
 
   ngOnInit(): void {
     this.inscriptionForm = this.formBuilder.group({
-      nom: ['', [Validators.required]],
-      prenom: ['', [Validators.required]],
+      nom: ['', [Validators.required, this.noWhitespaceValidator]],
+      prenom: ['', [Validators.required, this.noWhitespaceValidator]],
       email: ['', [Validators.required, Validators.email]],
       telephone: ['', [Validators.required, Validators.pattern(/^\d{9}$/)]],
-      mot_de_passe: ['', [Validators.required, Validators.minLength(6)]],
-      adresse: ['', [Validators.required]],
+      mot_de_passe: ['', [Validators.required, Validators.minLength(8)]],
+      adresse: ['', [Validators.required, this.noWhitespaceValidator]],
       role: ['utilisateur'] // Valeur par défaut
     });
   }
 
+  noWhitespaceValidator(control: any) {
+    const isWhitespace = (control.value || '').trim().length === 0;
+    const isValid = !isWhitespace;
+    return isValid ? null : { whitespace: true };
+  }
+
   onSubmit(): void {
     if (this.inscriptionForm.invalid) {
-      // Marquer tous les champs comme touchés pour afficher les erreurs
       Object.keys(this.inscriptionForm.controls).forEach(key => {
         const control = this.inscriptionForm.get(key);
         control?.markAsTouched();
@@ -48,31 +53,31 @@ export class InscriptionComponent implements OnInit {
     this.loading = true;
     this.error = '';
 
-    // Envoi de la requête au backend
-    this.http.post<any>('/api/users/signup', this.inscriptionForm.value)
+    this.http.post('http://localhost:3000/api/v1/auth/signup', this.inscriptionForm.value)
       .subscribe({
-        next: (response) => {
+        next: (response: any) => {
           this.loading = false;
           this.success = true;
-          
-          // Redirection après 2 secondes
           setTimeout(() => {
-            this.router.navigate(['/connexion']);
-          }, 2000);
+            this.router.navigate(['/login']);
+          }, 3000);
         },
-        error: (error) => {
+        error: (err) => {
           this.loading = false;
-          this.error = error.error.message || 'Une erreur est survenue lors de l\'inscription';
+          this.error = err.error.message || 'Une erreur est survenue lors de l\'inscription';
         }
       });
   }
 
-  // Helpers pour vérifier les états des contrôles
   isFieldInvalid(fieldName: string): boolean {
     const control = this.inscriptionForm.get(fieldName);
-    return !!control && 
-           control.invalid && 
-           (control.dirty || control.touched) && 
-           control.value !== '';
+    return !!control &&
+           (control.invalid && (control.dirty || control.touched)) &&
+           (control.value !== '' && control.value.trim() !== '');
+  }
+
+  // Vérifier si le formulaire est valide
+  isFormValid(): boolean {
+    return this.inscriptionForm.valid;
   }
 }

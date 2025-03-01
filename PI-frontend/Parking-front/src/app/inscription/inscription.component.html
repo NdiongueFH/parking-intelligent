@@ -39,7 +39,7 @@
                 <div class="form-group">
                     <label for="mot_de_passe">Mot de passe<span class="required">*</span></label>
                     <input type="password" id="mot_de_passe" formControlName="mot_de_passe" placeholder="Entrer votre mot de passe" [ngClass]="{'is-invalid': isFieldInvalid('mot_de_passe')}">
-                    <div *ngIf="isFieldInvalid('mot_de_passe') && inscriptionForm.get('mot_de_passe')?.value" class="error-message">Le mot de passe doit contenir au moins 6 caractères</div>
+                    <div *ngIf="isFieldInvalid('mot_de_passe') && inscriptionForm.get('mot_de_passe')?.value" class="error-message">Le mot de passe doit contenir au moins 8 caractères</div>
                 </div>
 
                 <div class="form-group">
@@ -57,7 +57,7 @@
             </div>
 
             <div class="button-container">
-                <button type="submit" [disabled]="loading">
+                <button type="submit" [disabled]="loading || !isFormValid()">
                     <span *ngIf="loading" class="spinner"></span>
                     S'inscrire
                 </button>

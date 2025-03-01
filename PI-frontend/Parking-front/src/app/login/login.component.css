@@ -217,6 +217,13 @@ label {
     margin-top: 0.25rem;
 }
 
+.global-error-message {
+    color: red;
+    text-align: center;
+    margin-top: 10px;
+    font-size: 0.9em;
+}
+
 @media (max-width: 768px) {
     .login-container {
         flex-direction: column;

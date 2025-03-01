@@ -1,0 +1,108 @@
+<!-- utilisateurs.component.html -->
+<div class="dashboard-container">
+    <!-- Header -->
+    <header class="header">
+        <div class="logo-container">
+            <img src="imagelogoParking.png" alt="Parking Logo" class="logo">
+        </div>
+        <div class="search-container">
+            <input type="text" placeholder="Rechercher un utilisateur" class="search-input">
+            <!-- <button class="search-button">
+          <i class="fa fa-search"></i>
+           </button> -->
+        </div>
+        <div class="header-icons">
+            <!-- Notification Button -->
+            <!-- <button class="notification-button">
+                <img src="path-to-bell-image.png" alt="Notifications" style="width: 20px; height: 20px; margin-right: 5px;">
+                <span class="notification-badge">3</span>
+            </button> -->
+
+            <!-- Settings Button -->
+            <button class="settings-button">
+                <img src="parametres.png" alt="Settings" style="width: 20px; height: 20px;">
+            </button>
+        </div>
+
+    </header>
+
+    <!-- Main Content -->
+    <div class="content-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <nav class="nav-menu">
+                <a class="nav-item active" [routerLink]="['/dashboard-admin']">
+                    <img src="home.png" alt="Accueil" class="nav-icon">
+                    <span>Accueil</span>
+                </a>
+                <a class="nav-item" [routerLink]="['/historiques-reservations']">
+                    <img src="file.png" alt="Historiques" class="nav-icon">
+                    <span>Historiques</span>
+                </a>
+                <a class="nav-item" [routerLink]="['/gestions-utilisateurs']">
+                    <img src="group.png" alt="Utilisateurs" class="nav-icon">
+                    <span>Utilisateurs</span>
+                </a>
+                <a class="nav-item" [routerLink]="['/parkings']">
+                    <img src="total.png" alt="Parkings" class="nav-icon">
+                    <span>Parkings</span>
+                </a>
+            </nav>
+            <div class="logout-container">
+                <hr class="logout-divider">
+                <a class="logout-button">
+                    <img src="deconnexion.png" alt="Déconnexion" class="logout-icon">
+                    <span>Déconnexion</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Utilisateurs Section -->
+        <div class="users-content">
+            <div class="users-list-container">
+                <div class="users-header">
+                    <h2>Liste des utilisateurs</h2>
+                    <button class="add-user-btn" (click)="openAddUserModal()">Ajouter un utilisateur</button>
+                </div>
+
+                <div class="users-table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nom</th>
+                                <th>Prénom</th>
+                                <th>Téléphone</th>
+                                <th>Email</th>
+                                <th>Rôle</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let utilisateur of utilisateurs">
+                                <td>{{ utilisateur.nom }}</td>
+                                <td>{{ utilisateur.prenom }}</td>
+                                <td>{{ utilisateur.telephone }}</td>
+                                <td>{{ utilisateur.email }}</td>
+                                <td [ngClass]="{'role-utilisateur': utilisateur.role === 'Utilisateur', 'role-admin': utilisateur.role === 'Admin'}">
+                                    {{ utilisateur.role }}
+                                </td>
+                                <td class="actions">
+                                    <img src="modifier.png" alt="Edit" (click)="editUser(utilisateur)" style="cursor: pointer; width: 20px; height: 20px; margin-right: 8px;">
+                                    <img src="supprimer.png" alt="Delete" (click)="deleteUser(utilisateur.id)" style="cursor: pointer; width: 20px; height: 20px;">
+                                </td>
+
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="pagination">
+                        <button (click)="previousPage()" [disabled]="currentPage === 1">Précédent</button>
+                        <div>
+                            <button *ngFor="let page of pageNumbers" (click)="goToPage(page)" [class.active]="currentPage === page">{{ page }}</button>
+                            <span>..</span>
+                            <button (click)="goToPage(pageNumbers[pageNumbers.length - 1])">{{ pageNumbers[pageNumbers.length - 1] }}</button>
+                        </div>
+                        <button (click)="nextPage()" [disabled]="currentPage === totalPages">Suivant</button>
+                    </div>
+                </div>
+            </div>
+        </div>

@@ -1,0 +1,262 @@
+/* parking-reservation.component.css */
+
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+:host {
+    display: block;
+    font-family: 'Roboto', sans-serif;
+}
+
+.reservation-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 50px;
+    border-radius: 10px;
+    border: 1px solid #e0e0e0;
+    background-color: #fff;
+}
+
+.reservation-header {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.reservation-header h2 {
+    margin: 0;
+    font-weight: 500;
+    font-size: 1.5rem;
+}
+
+.parking-info-card {
+    background-color: #e1f5fe;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 0 0 2px rgba(209, 208, 208, 0.3), 0 8px 15px rgba(170, 169, 169, 0.8);
+}
+
+.parking-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.parking-info h3 {
+    margin: 0 0 10px 0;
+    font-size: 1.2rem;
+    font-weight: 500;
+}
+
+.address,
+.price {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+    font-size: 0.9rem;
+}
+
+.material-icons {
+    font-size: 20px;
+    margin-right: 8px;
+}
+
+.availability {
+    display: flex;
+    align-items: center;
+}
+
+.available-spots {
+    background-color: #4caf50;
+    color: white;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+}
+
+.form-section {
+    margin-bottom: 20px;
+}
+
+.form-section h3 {
+    margin: 0 0 15px 0;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.form-row {
+    display: flex;
+    gap: 20px;
+    /* Ajoutez de l'espace entre les champs */
+    margin-bottom: 15px;
+    /* Espace en dessous de la ligne */
+}
+
+.form-group {
+    flex: 1;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 0.9rem;
+}
+
+input,
+select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1rem;
+    outline: none;
+}
+
+input:focus,
+select:focus {
+    border-color: #2196f3;
+}
+
+.select-wrapper {
+    position: relative;
+}
+
+.select-wrapper select {
+    appearance: none;
+    padding-right: 30px;
+}
+
+.select-wrapper .material-icons {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+.date-input-wrapper {
+    position: relative;
+}
+
+.date-input-wrapper .material-icons {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+.payment-options {
+    gap: 0;
+}
+
+.payment-option {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px 15px;
+}
+
+.radio-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+input[type="radio"] {
+    display: none;
+}
+
+.radio-custom {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid #ddd;
+    position: relative;
+    margin-right: 10px;
+}
+
+.radio-custom.selected::after {
+    content: "";
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #4caf50;
+}
+
+.alert-warning {
+    background-color: #fff8e1;
+    border-left: 4px solid #ffc107;
+    padding: 10px 15px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+.alert-warning .material-icons {
+    color: #ffc107;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.btn-back {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid #ddd;
+    border-radius: 50%;
+    background: white;
+    cursor: pointer;
+}
+
+.btn-confirm {
+    background-color: #0d47a1;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 12px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn-confirm:hover {
+    background-color: #0a3b86;
+}
+
+.form-section {
+    margin-bottom: 30px;
+    /* Augmenter l'espace entre les sections */
+}
+
+.payment-options {
+    display: flex;
+    gap: 20px;
+    /* Ajoute de l'espace entre les options de paiement */
+}
+
+.payment-option {
+    flex: 1;
+    /* Permet aux options de paiement de prendre de l'espace équitablement */
+}
+
+.radio-custom.selected {
+    border-color: #4caf50;
+    /* Change la couleur de la bordure en vert lorsque sélectionné */
+}
+
+.radio-custom.selected::after {
+    background-color: #4caf50;
+    /* Change la couleur du cercle intérieur en vert */
+}

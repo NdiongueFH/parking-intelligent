@@ -134,7 +134,7 @@ input {
             background-color: #0d3b81;
         }
         &:disabled {
-            background-color: #6e8bc0;
+            background-color: #cacbcc;
             cursor: not-allowed;
         }
     }
@@ -215,7 +215,6 @@ button {
     color: white;
     border: none;
     border-radius: 8px;
-    /* Augmentation du border-radius pour le bouton */
     padding: 12px 24px;
     font-size: 16px;
     font-weight: 600;
@@ -226,7 +225,6 @@ button {
     justify-content: center;
     align-items: center;
     box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
-    /* Ombre plus foncée sous le bouton */
     &:hover {
         background-color: #0d3b81;
     }

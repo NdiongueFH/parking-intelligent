@@ -1,0 +1,128 @@
+<div class="dashboard-container">
+    <!-- Header -->
+    <header class="header">
+        <div class="logo-container">
+            <img src="imagelogoParking.png" alt="Parking Logo" class="logo">
+        </div>
+        <div class="search-container">
+            <input type="text" placeholder="Rechercher un parking" class="search-input">
+            <button class="search-button">
+                <i class="fa fa-search"></i>
+            </button>
+        </div>
+        <div class="header-icons">
+            <button class="notification-button">
+                <i class="fa fa-bell"></i>
+                <span class="notification-badge">3</span>
+            </button>
+            <button class="settings-button">
+                <i class="fa fa-cog"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="content-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <nav class="nav-menu">
+                <a class="nav-item active" [routerLink]="['/dashboard-admin']">
+                    <img src="home.png" alt="Accueil" class="nav-icon">
+                    <span>Accueil</span>
+                </a>
+                <a class="nav-item" [routerLink]="['/historiques-reservations']">
+                    <img src="file.png" alt="Historiques" class="nav-icon">
+                    <span>Historiques</span>
+                </a>
+                <a class="nav-item" [routerLink]="['/gestions-utilisateurs']">
+                    <img src="group.png" alt="Utilisateurs" class="nav-icon">
+                    <span>Utilisateurs</span>
+                </a>
+                <a class="nav-item">
+                    <img src="total.png" alt="Parkings" class="nav-icon">
+                    <span>Parkings</span>
+                </a>
+            </nav>
+            <div class="logout-container">
+                <hr class="logout-divider">
+                <a class="logout-button">
+                    <img src="deconnexion.png" alt="Déconnexion" class="logout-icon">
+                    <span>Déconnexion</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Content Section -->
+        <div class="main-content">
+            <div class="stats">
+                <div class="stat">
+                    <h3>2</h3>
+                    <p>Total reservations</p>
+                </div>
+                <div class="stat green">
+                    <h3>1</h3>
+                    <p>En cours</p>
+                </div>
+                <div class="stat">
+                    <h3>0</h3>
+                    <p>Terminees</p>
+                </div>
+                <div class="stat red">
+                    <h3>1</h3>
+                    <p>Annulees</p>
+                </div>
+            </div>
+            <div class="filters">
+                <select>
+                    <option>Tous les statuts</option>
+                </select>
+                <select>
+                    <option>Tous les parkings</option>
+                </select>
+                <div style="position: relative;">
+                    <input type="text" placeholder="12/02/25">
+                    <i class="fas fa-calendar-alt"></i>
+                </div>
+            </div>
+            <div class="reservations-container">
+                <div class="reservation">
+                    <div class="details">
+                        <div class="info">
+                            <h3>Parking de l'Hôtel Pullman</h3>
+                            <p>Avenue Saint Lazar</p>
+                            <p><i class="fas fa-calendar-alt"></i> 21 Fév 2025 <i class="fas fa-clock"></i> 09:00 - 11:00</p>
+                            <p class="font-bold">200 FCFA</p>
+                        </div>
+                        <div class="status">En cours</div>
+                        <div class="actions">
+                            <button><i class="fas fa-edit"></i></button>
+                            <button class="red"><i class="fas fa-times"></i></button>
+                        </div>
+                    </div>
+                    <button class="invoice">Voir facture</button>
+                </div>
+                <div class="reservation">
+                    <div class="details">
+                        <div class="info">
+                            <h3>Parking de l'Hôtel Pullman</h3>
+                            <p>Avenue Saint Lazar</p>
+                            <p><i class="fas fa-calendar-alt"></i> 23 Fév 2025 <i class="fas fa-clock"></i> 14:15 - 15:15</p>
+                            <p class="font-bold">100 FCFA</p>
+                        </div>
+                        <div class="status red">Annule</div>
+                    </div>
+                    <button class="invoice">Voir facture</button>
+                </div>
+            </div>
+            <div class="pagination">
+                <button>Precedent</button>
+                <div class="pages">
+                    <button>1</button>
+                    <span>..</span>
+                    <button>2</button>
+                </div>
+                <button>Suivant</button>
+            </div>
+        </div>
+    </div>
+</div>
