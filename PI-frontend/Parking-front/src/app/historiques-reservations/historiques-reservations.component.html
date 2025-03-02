@@ -5,18 +5,17 @@
             <img src="imagelogoParking.png" alt="Parking Logo" class="logo">
         </div>
         <div class="search-container">
-            <input type="text" placeholder="Rechercher un parking" class="search-input">
-            <button class="search-button">
-                <i class="fa fa-search"></i>
-            </button>
+            <h1 class="search-text">Consultez vos réservations passées et à venir</h1>
+
         </div>
+
         <div class="header-icons">
             <button class="notification-button">
-                <i class="fa fa-bell"></i>
+                <img src="not.png" alt="Notifications" class="header-icon" />
                 <span class="notification-badge">3</span>
             </button>
             <button class="settings-button">
-                <i class="fa fa-cog"></i>
+                <img src="par.png" alt="Settings" class="header-icon" />
             </button>
         </div>
     </header>
@@ -38,7 +37,7 @@
                     <img src="group.png" alt="Utilisateurs" class="nav-icon">
                     <span>Utilisateurs</span>
                 </a>
-                <a class="nav-item">
+                <a class="nav-item" [routerLink]="['/liste-parking']">
                     <img src="total.png" alt="Parkings" class="nav-icon">
                     <span>Parkings</span>
                 </a>

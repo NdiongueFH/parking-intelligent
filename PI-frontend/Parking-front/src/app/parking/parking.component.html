@@ -1,0 +1,136 @@
+<div class="dashboard-container">
+    <!-- Header -->
+    <header class="header">
+        <div class="logo-container">
+            <img src="imagelogoParking.png" alt="Parking Logo" class="logo">
+        </div>
+
+        <div class="search-container">
+            <input type="text" placeholder="Rechercher un parking" class="search-input">
+            <button class="search-button">
+                <img src="search.png" alt="Search" class="search-icon" />
+            </button>
+        </div>
+
+        <div class="header-icons">
+            <button class="notification-button">
+                <img src="not.png" alt="Notifications" class="header-icon" />
+                <span class="notification-badge">3</span>
+            </button>
+            <button class="settings-button">
+                <img src="par.png" alt="Settings" class="header-icon" />
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="content-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <nav class="nav-menu">
+                <a class="nav-item active" [routerLink]="['/dashboard-admin']">
+                    <img src="home.png" alt="Accueil" class="nav-icon">
+                    <span>Accueil</span>
+                </a>
+                <a class="nav-item" [routerLink]="['/historiques-reservations']">
+                    <img src="file.png" alt="Historiques" class="nav-icon">
+                    <span>Historiques</span>
+                </a>
+                <a class="nav-item" [routerLink]="['/gestions-utilisateurs']">
+                    <img src="group.png" alt="Utilisateurs" class="nav-icon">
+                    <span>Utilisateurs</span>
+                </a>
+                <a class="nav-item" [routerLink]="['/liste-parking']">
+                    <img src="total.png" alt="Parkings" class="nav-icon">
+                    <span>Parkings</span>
+                </a>
+            </nav>
+            <div class="logout-container">
+                <hr class="logout-divider">
+                <a class="logout-button">
+                    <img src="deconnexion.png" alt="Déconnexion" class="logout-icon">
+                    <span>Déconnexion</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Dashboard Content -->
+        <div class="main-content">
+            <h1>Parking de la Place du souvenir</h1>
+
+            <!-- Parking Stats -->
+            <div class="parking-stats">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <img src="total.png" alt="Total places">
+                    </div>
+                    <div class="stat-number">8</div>
+                    <div class="stat-label">Total places</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <img src="voiture.png" alt="Places occupées">
+                    </div>
+                    <div class="stat-number">2</div>
+                    <div class="stat-label">Places occupées</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <img src="verifie.png" alt="Places libres">
+                    </div>
+                    <div class="stat-number">4</div>
+                    <div class="stat-label">Places libres</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <img src="reserve.png" alt="Places réservées">
+                    </div>
+                    <div class="stat-number">2</div>
+                    <div class="stat-label">Places réservées</div>
+                </div>
+            </div>
+
+            <!-- Parking Map -->
+            <div class="parking-map">
+                <div class="map-row">
+                    <div class="map-label">A1</div>
+                    <div class="parking-spot free">Libre</div>
+                    <div class="parking-spot free">Libre</div>
+                    <div class="map-label">A2</div>
+                </div>
+
+                <div class="map-row">
+                    <div class="map-label">B1</div>
+                    <div class="parking-spot reserved">Reservee</div>
+                    <div class="parking-spot free">Libre</div>
+                    <div class="map-label">B2</div>
+                </div>
+
+                <div class="map-row">
+                    <div class="map-label">C1</div>
+                    <div class="parking-spot occupied">
+                        <img src="auto.png" alt="Car">
+                    </div>
+                    <div class="parking-spot reserved">Reservee</div>
+                    <div class="map-label">C2</div>
+                </div>
+
+                <div class="map-row">
+                    <div class="map-label">D1</div>
+                    <div class="parking-spot free">Libre</div>
+                    <div class="parking-spot occupied">
+                        <img src="moto.png" alt="Motorcycle">
+                    </div>
+                    <div class="map-label">D2</div>
+                </div>
+            </div>
+
+            <div class="reservation-prompt">
+                Cliquez sur une place libre pour reserver !
+            </div>
+        </div>
+    </div>
+</div>

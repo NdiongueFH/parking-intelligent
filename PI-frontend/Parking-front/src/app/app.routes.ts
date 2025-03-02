@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { HomeComponent } from './page-acceuil/page-acceuil.component';
 
+
 export const routes: Routes = [
   { path: '', component: HomeComponent },
   { 
@@ -27,6 +28,16 @@ export const routes: Routes = [
   { 
     path: 'form-reservation', 
     loadComponent: () => import('./form-reservation/form-reservation.component').then(m => m.ParkingReservationComponent) 
+  },
+
+  { 
+    path: 'parking', 
+    loadComponent: () => import('./parking/parking.component').then(m => m.ParkingComponent) 
+  },
+
+  { 
+    path: 'liste-parking', 
+    loadComponent: () => import('./liste-parking/liste-parking.component').then(m => m.ListeParkingComponent) 
   },
   { path: '**', redirectTo: '' }
 ];

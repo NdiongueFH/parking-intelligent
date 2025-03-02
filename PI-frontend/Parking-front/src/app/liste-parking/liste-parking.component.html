@@ -1,0 +1,87 @@
+<div class="dashboard-container">
+    <!-- Header -->
+    <header class="header">
+        <div class="logo-container">
+            <img src="assets/imagelogoParking.png" alt="Parking Logo" class="logo">
+        </div>
+
+        <div class="search-container">
+            <input type="text" placeholder="Rechercher un parking" class="search-input" [(ngModel)]="searchTerm">
+            <button class="search-button">
+                <img src="assets/search.png" alt="Search" class="search-icon" />
+            </button>
+        </div>
+
+        <div class="header-icons">
+            <button class="notification-button">
+                <img src="assets/not.png" alt="Notifications" class="header-icon" />
+                <span class="notification-badge">3</span>
+            </button>
+            <button class="settings-button">
+                <img src="assets/par.png" alt="Settings" class="header-icon" />
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="content-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <nav class="nav-menu">
+                <a class="nav-item" [routerLink]="['/dashboard-admin']">
+                    <img src="assets/home.png" alt="Accueil" class="nav-icon">
+                    <span>Accueil</span>
+                </a>
+                <a class="nav-item" [routerLink]="['/historiques-reservations']">
+                    <img src="assets/file.png" alt="Historiques" class="nav-icon">
+                    <span>Historiques</span>
+                </a>
+                <a class="nav-item" [routerLink]="['/gestions-utilisateurs']">
+                    <img src="assets/group.png" alt="Utilisateurs" class="nav-icon">
+                    <span>Utilisateurs</span>
+                </a>
+                <a class="nav-item active">
+                    <img src="assets/total.png" alt="Parkings" class="nav-icon">
+                    <span>Parkings</span>
+                </a>
+            </nav>
+            <div class="logout-container">
+                <hr class="logout-divider">
+                <a class="logout-button">
+                    <img src="assets/deconnexion.png" alt="Déconnexion" class="logout-icon">
+                    <span>Déconnexion</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <div class="section-header">
+                <h2>Gestion des parkings</h2>
+                <button class="add-parking-btn" [routerLink]="['/ajouter-parking']">Ajouter un parking</button>
+            </div>
+
+            <div class="parkings-container">
+                <div *ngFor="let parking of paginatedParkings" class="parking-item">
+                    <div class="parking-header">
+                        <h3>{{ parking.nom_du_parking }}</h3>
+                        <button class="expand-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination">
+                <button (click)="prevPage()" [disabled]="currentPage === 1">Precedent</button>
+                <button *ngFor="let page of [].constructor(totalPages); let i = index" [class.active]="currentPage === i + 1" (click)="goToPage(i + 1)">
+                    {{ i + 1 }}
+                </button>
+                <button (click)="nextPage()" [disabled]="currentPage === totalPages">Suivant</button>
+            </div>
+        </div>
+    </div>
+</div>

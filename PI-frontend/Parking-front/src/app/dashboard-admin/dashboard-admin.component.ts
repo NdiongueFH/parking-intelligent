@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import * as L from 'leaflet';
-import { latLng, tileLayer, marker, Icon, icon } from 'leaflet';
+import { latLng, tileLayer, marker, icon, Map } from 'leaflet';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -14,96 +14,96 @@ import { latLng, tileLayer, marker, Icon, icon } from 'leaflet';
 })
 export class AdminDashboardComponent implements OnInit {
   nearbyParkings = [
-    { name: 'Parking de l\'Aéroport LSS', distanceKm: '1,5', lat: 14.739, lng: -17.490 },
+    { name: 'Parking de l\'Aéroport LSS', distanceKm: '1.5', lat: 14.739, lng: -17.490 },
     { name: 'Parking de l\'Hôtel Terrou-Bi', distanceKm: '2', lat: 14.715, lng: -17.477 },
     { name: 'Parking de la Place du Souvenir', distanceKm: '3', lat: 14.695, lng: -17.448 },
-    { name: 'Parking de l\'Hôtel Pullman', distanceKm: '3,5', lat: 14.705, lng: -17.460 }
+    { name: 'Parking de l\'Hôtel Pullman', distanceKm: '3.5', lat: 14.705, lng: -17.460 }
   ];
 
-  mapOptions: any;
+  mapOptions: any = null;
   markers: L.Layer[] = [];
   userPosition: L.LatLng | null = null;
+  map: Map | null = null;
+  isLoading: boolean = true;
 
   ngOnInit(): void {
-    this.initMap();
+    this.getUserLocation();
   }
 
-  initMap(): void {
-    navigator.geolocation.getCurrentPosition(
+  getUserLocation(): void {
+    const options = { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 };
+    this.isLoading = true;
+
+    navigator.geolocation.watchPosition(
       (position) => {
         const userLat = position.coords.latitude;
         const userLng = position.coords.longitude;
         this.userPosition = latLng(userLat, userLng);
-
-        // Configuration de la carte
-        this.mapOptions = {
-          layers: [
-            tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-              attribution: '© OpenStreetMap contributors'
-            })
-          ],
-          zoom: 13,
-          center: this.userPosition
-        };
-
-        // Ajouter les marqueurs
-        this.addMarkers();
+        this.updateUserMarker();
+        this.updateParkingDistances();
+        if (!this.map) this.initMap();
+        else this.map.setView(this.userPosition, this.map.getZoom(), { animate: true });
+        this.isLoading = false;
       },
       (error) => {
         console.error('Erreur de géolocalisation:', error);
-        // Coordonnées par défaut (Dakar)
-        this.userPosition = latLng(14.7167, -17.4677);
-        
-        this.mapOptions = {
-          layers: [
-            tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-              attribution: '© OpenStreetMap contributors'
-            })
-          ],
-          zoom: 13,
-          center: this.userPosition
-        };
-
-        this.addMarkers();
-      }
+        alert('Veuillez activer la géolocalisation.');
+        this.isLoading = false;
+      },
+      options
     );
   }
 
-  addMarkers(): void {
-    // Icône personnalisée pour l'utilisateur
-    const userIcon = icon({
-      iconUrl: 'assets/user-location.png', // Remplacez par le chemin de votre icône
-      iconSize: [32, 32],
-      iconAnchor: [16, 32],
-      popupAnchor: [0, -32]
-    });
+  initMap(): void {
+    if (!this.userPosition) return;
+    this.mapOptions = {
+      layers: [tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap contributors' })],
+      zoom: 15,
+      center: this.userPosition,
+      zoomControl: true
+    };
+    this.addMarkers();
+  }
 
-    // Icône personnalisée pour les parkings
-    const parkingIcon = icon({
-      iconUrl: 'assets/parking-icon.png', // Remplacez par le chemin de votre icône
-      iconSize: [32, 32],
-      iconAnchor: [16, 32],
-      popupAnchor: [0, -32]
-    });
+  onMapReady(map: Map): void {
+    this.map = map;
+    console.log('Carte prête');
+  }
 
-    // Ajouter le marqueur de position de l'utilisateur
-    if (this.userPosition) {
-      const userMarker = marker(
-        [this.userPosition.lat, this.userPosition.lng], 
-        { icon: userIcon }
-      ).bindPopup('Votre position actuelle');
-      
-      this.markers.push(userMarker);
-    }
+  updateUserMarker(): void {
+    if (!this.userPosition) return;
+    this.markers = this.markers.filter(m => !(m instanceof L.Marker && m.getPopup()?.getContent() === 'Votre position actuelle'));
+    const userIcon = icon({ iconUrl: 'posi.png', iconSize: [60, 60], iconAnchor: [30, 30], popupAnchor: [0, -32] });
+    this.markers.push(marker([this.userPosition.lat, this.userPosition.lng], { icon: userIcon }).bindPopup('Votre position actuelle'));
+  }
 
-    // Ajouter les marqueurs de parking
+  calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+    const R = 6371;
+    const dLat = this.deg2rad(lat2 - lat1);
+    const dLon = this.deg2rad(lon2 - lon1);
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(this.deg2rad(lat1)) * Math.cos(this.deg2rad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    return parseFloat((R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))).toFixed(1));
+  }
+
+  deg2rad(deg: number): number {
+    return deg * (Math.PI / 180);
+  }
+
+  updateParkingDistances(): void {
+    if (!this.userPosition) return;
     this.nearbyParkings.forEach(parking => {
-      const parkingMarker = marker(
-        [parking.lat, parking.lng], 
-        { icon: parkingIcon }
-      ).bindPopup(`<b>${parking.name}</b><br>Distance: ${parking.distanceKm} km<br><button class="popup-reserve-btn">Réserver</button>`);
-      
-      this.markers.push(parkingMarker);
+      parking.distanceKm = this.calculateDistance(this.userPosition!.lat, this.userPosition!.lng, parking.lat, parking.lng).toString();
+    });
+    this.nearbyParkings.sort((a, b) => parseFloat(a.distanceKm) - parseFloat(b.distanceKm));
+  }
+
+  addMarkers(): void {
+    const userIcon = icon({ iconUrl: 'posi.jpeg', iconSize: [60, 60], iconAnchor: [30, 30], popupAnchor: [0, -32] });
+    const parkingIcon = icon({ iconUrl: 'imagelogoParking.png', iconSize: [32, 32], iconAnchor: [16, 16], popupAnchor: [0, -16] });
+    if (this.userPosition) this.markers.push(marker([this.userPosition.lat, this.userPosition.lng], { icon: userIcon }).bindPopup('Votre position actuelle'));
+    this.updateParkingDistances();
+    this.nearbyParkings.forEach(parking => {
+      this.markers.push(marker([parking.lat, parking.lng], { icon: parkingIcon }).bindPopup(`<b>${parking.name}</b><br>Distance: ${parking.distanceKm} km<br><button class='popup-reserve-btn'>Réserver</button>`));
     });
   }
 }

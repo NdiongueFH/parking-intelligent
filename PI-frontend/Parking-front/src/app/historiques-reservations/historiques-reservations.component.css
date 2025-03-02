@@ -10,6 +10,53 @@
     --success-color: #4cd964;
 }
 
+.search-input {
+    border: none;
+    flex-grow: 1;
+    padding: 0.5rem 2.5rem;
+    /* Ajoutez de l'espace à droite pour l'image */
+    outline: none;
+    font-size: 1rem;
+    border-radius: 10px;
+    height: 50px;
+}
+
+.search-button {
+    border: none;
+    background: none;
+    cursor: pointer;
+    position: absolute;
+    /* Positionne le bouton à l'intérieur du conteneur */
+    right: 10px;
+    /* Ajustez la position à droite */
+    top: 50%;
+    /* Centre le bouton verticalement */
+    transform: translateY(-50%);
+    /* Ajuste le centrage vertical */
+    padding: 0;
+    /* Supprime le padding */
+}
+
+.search-icon {
+    width: 20px;
+    /* Ajustez la taille de l'icône */
+    height: auto;
+    /* Maintient le ratio de l'image */
+}
+
+.search-text {
+    font-size: 2rem;
+    /* Augmentez la taille du texte selon vos besoins */
+    font-weight: bold;
+    /* Met le texte en gras */
+    color: white;
+    /* Change la couleur du texte en blanc */
+    margin: 0;
+    /* Supprime la marge par défaut de h1 */
+    text-align: center;
+    /* Centre le texte, si souhaité */
+}
+
 
 /* Global styles */
 
@@ -47,22 +94,97 @@ body {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.search-container {
-    display: flex;
-    align-items: center;
-    background-color: var(--secondary-color);
-    border-radius: 25px;
+.search-button {
+    background: none;
+    border: none;
+    cursor: pointer;
     padding: 0.5rem;
-    width: 30%;
+    color: var(--gray-dark);
 }
 
-.search-input {
+.header-icons {
+    display: flex;
+    align-items: center;
+    /* Centre verticalement les icônes */
+}
+
+.notification-button,
+.settings-button {
     border: none;
-    flex-grow: 1;
-    padding: 0.5rem;
-    outline: none;
-    font-size: 1rem;
-    border-radius: 25px;
+    /* Supprime la bordure par défaut */
+    background: white;
+    /* Fond blanc */
+    border-radius: 50%;
+    /* Crée un cercle */
+    width: 40px;
+    /* Largeur du cercle */
+    height: 40px;
+    /* Hauteur du cercle */
+    display: flex;
+    /* Utilise flexbox pour centrer le contenu */
+    align-items: center;
+    /* Centre verticalement le contenu */
+    justify-content: center;
+    /* Centre horizontalement le contenu */
+    margin: 0 5px;
+    /* Espacement entre les boutons */
+    cursor: pointer;
+    /* Change le curseur pour indiquer que c'est cliquable */
+    position: relative;
+    /* Nécessaire pour le positionnement du badge */
+}
+
+.header-icon {
+    width: 40px;
+    /* Ajustez la taille selon vos besoins */
+    height: auto;
+    /* Maintient le ratio de l'image */
+    border-radius: 50%;
+}
+
+.notification-badge {
+    position: absolute;
+    /* Positionne le badge par rapport au bouton */
+    top: 0;
+    right: 0;
+    background-color: red;
+    /* Couleur de fond du badge */
+    color: white;
+    /* Couleur du texte */
+    border-radius: 50%;
+    padding: 0.2rem 0.4rem;
+    /* Espacement du badge */
+    font-size: 0.8rem;
+    /* Taille du texte */
+}
+
+.notification-button,
+.settings-button {
+    background: var(--white);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+}
+
+.notification-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: red;
+    color: var(--white);
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .logo-container {
