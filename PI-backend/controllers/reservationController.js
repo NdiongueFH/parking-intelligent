@@ -9,11 +9,11 @@ const TarifStationnement = require('../models/tarifStationnementModel');
 exports.addReservation = async(req, res) => {
     try {
         // 1. Vérifier que la date et l'heure d'arrivée sont supérieures ou égales à la date et l'heure actuelles
-        const heureArrivée = new Date(req.body.heureArrivée);
+        const heureArrivee = new Date(req.body.heureArrivee);
         const maintenant = new Date();
 
         // Comparer la date et l'heure d'arrivée avec la date et l'heure actuelles
-        if (heureArrivée < maintenant) {
+        if (heureArrivee < maintenant) {
             return res.status(400).json({
                 status: 'fail',
                 message: 'La date et l\'heure d\'arrivée doivent être égales ou après l\'heure actuelle.',
@@ -56,10 +56,10 @@ exports.addReservation = async(req, res) => {
         }
 
         // 5. Calculer la durée de la réservation (heureArrivée - heureDépart)
-        const heureDépart = new Date(req.body.heureDépart);
+        const heureDepart = new Date(req.body.heureDepart);
 
         // Vérifier que l'heure d'arrivée est bien inférieure à l'heure de départ
-        if (heureArrivée >= heureDépart) {
+        if (heureArrivee >= heureDepart) {
             return res.status(400).json({
                 status: 'fail',
                 message: 'L\'heure d\'arrivée doit être strictement inférieure à l\'heure de départ',
@@ -67,7 +67,7 @@ exports.addReservation = async(req, res) => {
         }
 
         // Calcul de la durée en millisecondes
-        const dureeEnMillisecondes = heureDépart - heureArrivée;
+        const dureeEnMillisecondes = heureDepart - heureArrivee;
 
         // Convertir la durée en minutes
         const dureeEnMinutes = Math.floor(dureeEnMillisecondes / (1000 * 60)); // 1 minute = 60000 millisecondes
@@ -97,8 +97,8 @@ exports.addReservation = async(req, res) => {
             tarifId: tarif._id, // Utilisation de l'ID du tarif trouvé
             typeVehicule: req.body.typeVehicule,
             placeId: req.body.placeId,
-            heureArrivée: req.body.heureArrivée,
-            heureDépart: req.body.heureDépart,
+            heureArrivee: req.body.heureArrivee,
+            heureDepart: req.body.heureDepart,
             heureRestante: req.body.heureRestante,
             duree: dureeEnMinutes, // Durée en minutes (en tant que nombre entier)
             statut: req.body.paiement === 'en ligne' ? 'confirmée' : 'en attente',
@@ -161,18 +161,18 @@ exports.updateReservation = async(req, res) => {
         const updateData = {...req.body };
 
         if (updateData.heureArrivée || updateData.heureDépart) {
-            const heureArrivée = new Date(updateData.heureArrivée || existingReservation.heureArrivée);
-            const heureDépart = new Date(updateData.heureDépart || existingReservation.heureDépart);
+            const heureArrivee = new Date(updateData.heureArrivee || existingReservation.heureArrivee);
+            const heureDepart = new Date(updateData.heureDepart || existingReservation.heureDepart);
 
             // Vérifier que les dates sont valides
-            if (isNaN(heureArrivée.getTime()) || isNaN(heureDépart.getTime())) {
+            if (isNaN(heureArrivée.getTime()) || isNaN(heureDepart.getTime())) {
                 return res.status(400).json({
                     status: 'fail',
                     message: 'Les heures d\'arrivée ou de départ sont invalides',
                 });
             }
 
-            const dureeEnMillisecondes = heureDépart - heureArrivée;
+            const dureeEnMillisecondes = heureDepart - heureArrivee;
             const dureeEnMinutes = Math.floor(dureeEnMillisecondes / (1000 * 60));
 
             updateData.duree = dureeEnMinutes;
@@ -280,6 +280,35 @@ exports.getReservationsByUser = async(req, res) => {
             return res.status(404).json({
                 status: 'fail',
                 message: 'Aucune réservation trouvée pour cet utilisateur'
+            });
+        }
+
+        res.status(200).json({
+            status: 'success',
+            data: {
+                reservations
+            }
+        });
+    } catch (err) {
+        res.status(400).json({
+            status: 'fail',
+            message: err.message
+        });
+    }
+};
+
+// Lister toutes les réservations
+exports.getAllReservations = async(req, res) => {
+    try {
+        const reservations = await Reservation.find()
+            .populate('parkingId', 'nom_du_parking adresse')
+            .populate('userId', 'nom prenom telephone')
+            .populate('placeId', 'nomPlace statut'); // Ajoutez ce populate
+
+        if (!reservations || reservations.length === 0) {
+            return res.status(404).json({
+                status: 'fail',
+                message: 'Aucune réservation trouvée'
             });
         }
 

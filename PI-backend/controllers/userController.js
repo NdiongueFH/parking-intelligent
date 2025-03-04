@@ -30,9 +30,13 @@ const createSendToken = (user, statusCode, res) => {
 
 
 // Inscription d'un nouvel utilisateur
-// Inscription d'un nouvel utilisateur
 exports.signup = async(req, res) => {
     try {
+        // Définir le rôle par défaut à 'utilisateur' si aucun rôle n'est fourni
+        if (!req.body.role) {
+            req.body.role = 'utilisateur';
+        }
+
         // S'assurer qu'un utilisateur normal n'a pas de carte RFID
         if (req.body.role === 'utilisateur' && req.body.carteRfid) {
             delete req.body.carteRfid;
@@ -47,7 +51,7 @@ exports.signup = async(req, res) => {
             mot_de_passe: req.body.mot_de_passe,
             adresse: req.body.adresse,
             role: req.body.role,
-            carteRfid: req.body.carteRfid
+            carteRfid: req.body.carteRfid // La carte RFID est laissée de côté si le rôle est 'utilisateur'
         });
 
         // Répondre avec les informations de l'utilisateur sans envoyer de token
@@ -59,12 +63,25 @@ exports.signup = async(req, res) => {
             }
         });
     } catch (err) {
+        let errorMessage = 'Une erreur est survenue lors de l\'inscription';
+
+        // Vérification des erreurs de duplication
+        if (err.code === 11000) {
+            if (err.keyPattern && err.keyPattern.email) {
+                errorMessage = 'Cet email est déjà utilisé. Veuillez en choisir un autre.';
+            } else if (err.keyPattern && err.keyPattern.telephone) {
+                errorMessage = 'Ce numéro de téléphone est déjà associé à un compte.';
+            }
+        }
+
+        // Répondre avec un message d'erreur personnalisé
         res.status(400).json({
             status: 'fail',
-            message: err.message
+            message: errorMessage
         });
     }
 };
+
 
 
 
@@ -141,7 +158,6 @@ exports.loginRfid = async(req, res) => {
 };
 
 // Middleware pour protéger les routes
-// Middleware d'authentification
 exports.protect = async(req, res, next) => {
     try {
         // 1) Vérifier si le token existe

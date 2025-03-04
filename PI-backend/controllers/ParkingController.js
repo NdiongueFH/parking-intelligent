@@ -2,18 +2,35 @@ const Parking = require('../models/parking');
 const PlaceParking = require('../models/placeParking'); // Importer le modèle PlaceParking
 const userController = require('../controllers/userController'); // Importer le contrôleur des utilisateurs
 
-// Récupérer tous les parkings
+
+// Récupérer tous les parkings avec les places réservées et libres
 exports.getAllParkings = async(req, res) => {
     try {
         const parkings = await Parking.find();
 
-        // Supprimer le champ _id (ou parkingId) avant d'envoyer la réponse
-        const parkingsWithoutIds = parkings.map(parking => {
-            const { _id, ...parkingData } = parking.toObject(); // Enlever _id
-            return parkingData;
-        });
+        // Préparer un tableau des parkings avec les places réservées et libres
+        const parkingsWithPlacesInfo = await Promise.all(parkings.map(async(parking) => {
+            const placesLibres = await PlaceParking.countDocuments({
+                parkingId: parking._id,
+                statut: 'libre'
+            });
 
-        res.status(200).json(parkingsWithoutIds);
+            const placesReservees = await PlaceParking.countDocuments({
+                parkingId: parking._id,
+                statut: 'reservee'
+            });
+
+            // Supprimer le champ _id avant d'envoyer la réponse
+            const { _id, ...parkingData } = parking.toObject(); // Enlever _id
+
+            // Ajouter les informations des places libres et réservées
+            parkingData.placesLibres = placesLibres;
+            parkingData.placesReservees = placesReservees;
+
+            return parkingData;
+        }));
+
+        res.status(200).json(parkingsWithPlacesInfo);
     } catch (err) {
         res.status(500).json({ message: err.message });
     }

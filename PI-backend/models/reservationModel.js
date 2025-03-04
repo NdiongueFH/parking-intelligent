@@ -49,11 +49,11 @@ const reservationSchema = new mongoose.Schema({
         ref: 'PlaceParking',
         required: true
     },
-    heureArrivée: {
+    heureArrivee: {
         type: Date,
         required: true
     },
-    heureDépart: {
+    heureDepart: {
         type: Date,
         required: true
     },

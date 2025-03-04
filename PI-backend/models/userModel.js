@@ -16,9 +16,9 @@ const userSchema = new mongoose.Schema({
         unique: true,
         validate: {
             validator: function(v) {
-                return /^\d{9,15}$/.test(v.toString());
+                return /^\d{9}$/.test(v.toString()); // Validation pour 9 chiffres
             },
-            message: props => `${props.value} n'est pas un numéro de téléphone valide!`
+            message: 'Veuillez entrer un numéro valide (9 chiffres)' // Message d'erreur personnalisé
         }
     },
     email: {
@@ -36,7 +36,7 @@ const userSchema = new mongoose.Schema({
     mot_de_passe: {
         type: String,
         required: [true, 'Le mot de passe est obligatoire'],
-        minlength: [6, 'Le mot de passe doit contenir au moins 6 caractères']
+        minlength: [8, 'Le mot de passe doit contenir au moins 8 caractères']
     },
     adresse: { // Changement ici de "num_immatri" à "adresse"
         type: String,
