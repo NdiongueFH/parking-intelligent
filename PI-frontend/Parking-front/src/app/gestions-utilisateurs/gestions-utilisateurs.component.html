@@ -39,7 +39,7 @@
             </nav>
             <div class="logout-container">
                 <hr class="logout-divider">
-                <a class="logout-button">
+                <a class="logout-button" (click)="logout()">
                     <img src="deconnexion.png" alt="Déconnexion" class="logout-icon">
                     <span>Déconnexion</span>
                 </a>
@@ -91,7 +91,7 @@
                                     {{ utilisateur.role }}
                                 </td>
                                 <td class="actions">
-                                    <img src="modif.png" alt="Edit" (click)="editUser(utilisateur)" style="cursor: pointer; width: 20px; height: 20px; margin-right: 8px;">
+                                    <img src="modif.png" alt="Edit" (click)="openEditUserModal(utilisateur)" style="cursor: pointer; width: 20px; height: 20px; margin-right: 8px;">
                                     <img src="sup.png" alt="Delete" (click)="deleteUser(utilisateur._id)" style="cursor: pointer; width: 20px; height: 20px;">
                                 </td>
                             </tr>
@@ -192,6 +192,70 @@
                     <img src="retour.png" alt="Retour à l'accueil" class="home-icon">
                 </button>
 
+            </form>
+        </div>
+    </div>
+
+
+    <!-- Modal de modification d'utilisateur -->
+    <div *ngIf="showEditUserModal" class="modal-overlay">
+        <div class="inscription-card">
+            <div class="logo1-container">
+                <img src="imagelogoParking.png" alt="Logo" class="logo1">
+            </div>
+            <h1>Modifier un utilisateur</h1>
+            <form [formGroup]="inscriptionForm" (ngSubmit)="onEditSubmit()">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="nom">Nom<span class="required">*</span></label>
+                        <input type="text" id="nom" formControlName="nom" placeholder="Entrer votre nom" [ngClass]="{'is-invalid': isFieldInvalid('nom')}">
+                        <div *ngIf="isFieldInvalid('nom')" class="error-message">Le nom est obligatoire</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="prenom">Prenom<span class="required">*</span></label>
+                        <input type="text" id="prenom" formControlName="prenom" placeholder="Entrer votre prenom" [ngClass]="{'is-invalid': isFieldInvalid('prenom')}">
+                        <div *ngIf="isFieldInvalid('prenom')" class="error-message">Le prénom est obligatoire</div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="email">Email<span class="required">*</span></label>
+                        <input type="email" id="email" formControlName="email" placeholder="Entrer votre email" [ngClass]="{'is-invalid': isFieldInvalid('email')}">
+                        <div *ngIf="isFieldInvalid('email')" class="error-message">Veuillez entrer un email valide</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="telephone">Telephone<span class="required">*</span></label>
+                        <input type="tel" id="telephone" formControlName="telephone" placeholder="Entrer votre numero de telephone" [ngClass]="{'is-invalid': isFieldInvalid('telephone')}">
+                        <div *ngIf="isFieldInvalid('telephone')" class="error-message">Veuillez entrer un numéro valide (9 chiffres)</div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="role">Rôle<span class="required">*</span></label>
+                        <select id="role" formControlName="role" [ngClass]="{'is-invalid': isFieldInvalid('role')}" (change)="onRoleChange()">
+                        <option value="" disabled>Sélectionner un rôle</option>
+                        <option value="utilisateur">Utilisateur</option>
+                        <option value="administrateur">Administrateur</option>
+                    </select>
+                        <div *ngIf="isFieldInvalid('role')" class="error-message">Le rôle est obligatoire</div>
+                    </div>
+                    <div class="form-group" *ngIf="inscriptionForm.get('role')?.value !== 'utilisateur'">
+                        <label for="carteRfid">Carte RFID<span class="required">*</span></label>
+                        <input type="text" id="carteRfid" formControlName="carteRfid" placeholder="Scanner pour assigner la carte RFID" [ngClass]="{'is-invalid': isFieldInvalid('carteRfid')}">
+                        <div *ngIf="isFieldInvalid('carteRfid')" class="error-message">La carte RFID est obligatoire</div>
+                    </div>
+                </div>
+                <div *ngIf="error" class="alert-error">{{ error }}</div>
+                <div *ngIf="success" class="alert-success">Modification réussie!</div>
+                <div class="button-container">
+                    <button type="submit" [disabled]="loading || !isFormValid()">
+                    <span *ngIf="loading" class="spinner"></span>
+                    Modifier
+                </button>
+                </div>
+                <button class="back-to-home" (click)="closeEditUserModal()">
+                <img src="retour.png" alt="Retour à l'accueil" class="home-icon">
+            </button>
             </form>
         </div>
     </div>

@@ -23,22 +23,16 @@
         <!-- Sidebar -->
         <div class="sidebar">
             <nav class="nav-menu">
-                <a class="nav-item" [routerLink]="['/dashboard-admin']">
+                <a class="nav-item" [routerLink]="['/dashboard-utilisateur']">
                     <img src="home.png" alt="Accueil" class="nav-icon">
                     <span>Accueil</span>
                 </a>
-                <a class="nav-item active" [routerLink]="['/historiques-reservations']">
+                <a class="nav-item active">
                     <img src="file.png" alt="Historiques" class="nav-icon">
                     <span>Historiques</span>
                 </a>
-                <a class="nav-item" [routerLink]="['/gestions-utilisateurs']">
-                    <img src="group.png" alt="Utilisateurs" class="nav-icon">
-                    <span>Utilisateurs</span>
-                </a>
-                <a class="nav-item" [routerLink]="['/liste-parking']">
-                    <img src="total.png" alt="Parkings" class="nav-icon">
-                    <span>Parkings</span>
-                </a>
+
+
             </nav>
             <div class="logout-container">
                 <hr class="logout-divider">
@@ -77,10 +71,7 @@
                     <option value="Tous les parkings">Tous les parkings</option>
                     <option *ngFor="let parking of parkingOptions" [value]="parking">{{ parking }}</option>
                 </select>
-                <select [(ngModel)]="selectedStatsParking" (change)="openStatsModal()">
-                    <option value="">Voir statistiques</option>
-                    <option *ngFor="let parking of parkingOptions" [value]="parking">{{ parking }}</option>
-                </select>
+
             </div>
             <div class="reservations-container">
                 <h2>Historique des Réservations</h2>
@@ -107,10 +98,10 @@
                                 <button (click)="openEditModal(reservation)">
                                     <img src="modif.png" alt="Modifier">
                                 </button>
-                                <button (click)="cancelReservation(reservation)">
-                                    <img src="sup.png" alt="Annuler">
-                                </button>
                             </div>
+                            <button (click)="cancelReservation(reservation)">
+                                <img src="sup.png" alt="Annuler">
+                            </button>
                         </div>
 
                         <button class="invoice" (click)="openInvoiceModal(reservation)">Voir la facture</button>
@@ -133,25 +124,7 @@
         </div>
     </div>
 
-    <!-- Modal pour les statistiques -->
-    <div class="stats-modal" *ngIf="showStatsModal" (click)="closeIfOutside($event)">
-        <div class="stats-modal-content" (click)="$event.stopPropagation()">
-            <!-- Empêche la propagation du clic -->
-            <div class="stats-modal-header">
-                <h2>Statistiques du parking: {{ selectedStatsParking }}</h2>
-            </div>
-            <div class="stats-modal-body">
-                <div class="stats-chart">
-                    <h3>Taux d'occupation par semaine</h3>
-                    <canvas #occupancyChart></canvas>
-                </div>
-                <div class="stats-chart">
-                    <h3>Heures de forte affluence</h3>
-                    <canvas #peakHoursChart></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
+
 
     <!-- Modal pour la facture -->
     <div class="invoice-modal" *ngIf="showInvoiceModal" (click)="closeIfOutside($event)">
@@ -167,7 +140,8 @@
                         <p>Date d'émission</p>
                         <p class="bold">{{ selectedReservation?.createdAt | date:'shortDate' }}</p>
                     </div>
-
+                    <button class="close-button" (click)="closeInvoiceModal()">×</button>
+                    <!-- Bouton de fermeture -->
                 </div>
 
                 <div class="reservation-info">
@@ -237,38 +211,5 @@
         </div>
     </div>
 
-
-    <!-- Modal pour la modification -->
-    <div class="modal" *ngIf="isModalActive">
-        <div class="modal-content">
-            <span class="close" (click)="closeEditModal()">&times;</span>
-            <h2>Modifier la Réservation</h2>
-            <form (ngSubmit)="updateReservation()">
-                <label>Heure d'arrivée:</label>
-                <input type="datetime-local" [(ngModel)]="editReservation.heureArrivee" name="heureArrivee" required />
-
-                <label>Heure de départ:</label>
-                <input type="datetime-local" [(ngModel)]="editReservation.heureDepart" name="heureDepart" required />
-
-                <label>Type de véhicule:</label>
-                <input type="text" [(ngModel)]="editReservation.typeVehicule" name="typeVehicule" required />
-
-                <button type="submit">Sauvegarder</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Modal pour l'annulation -->
-    <div class="modal" *ngIf="isCancelModalActive">
-        <div class="modal-content">
-            <span class="close" (click)="closeCancelModal()">&times;</span>
-            <h2>Annuler la Réservation</h2>
-            <p>Êtes-vous sûr de vouloir annuler cette réservation ?</p>
-            <div class="button-container">
-                <button class="btn-oui" (click)="cancelReservation(editReservation)">OUI</button>
-                <button class="btn-non" (click)="closeCancelModal()">NON</button>
-            </div>
-        </div>
-    </div>
 
 </div>

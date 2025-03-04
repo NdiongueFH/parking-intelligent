@@ -1,0 +1,425 @@
+/* Variables */
+
+:root {
+    --primary-color: #004AAD;
+    --secondary-color: #00A0E4;
+    --white: #ffffff;
+    --gray-light: #f5f5f5;
+    --gray: #e0e0e0;
+    --gray-dark: #666666;
+    --success-color: #4cd964;
+}
+
+
+/* Global styles */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: var(--gray-light);
+}
+
+
+/* Header */
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #0754A1;
+    padding: 0.75rem 1.5rem;
+    color: var(--white);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.search-container {
+    display: flex;
+    align-items: center;
+    background-color: var(--secondary-color);
+    border-radius: 25px;
+    padding: 0.5rem;
+    width: 25%;
+    position: relative;
+}
+
+.search-input {
+    border: none;
+    flex-grow: 1;
+    padding: 0.5rem 2.5rem;
+    outline: none;
+    font-size: 1rem;
+    border-radius: 10px;
+    height: 50px;
+}
+
+.search-button {
+    border: none;
+    background: none;
+    cursor: pointer;
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 0;
+}
+
+.search-icon {
+    width: 20px;
+    height: auto;
+}
+
+.logo-container {
+    width: 60px;
+    height: 60px;
+    background-color: var(--white);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.logo {
+    width: 80%;
+    height: auto;
+    box-shadow: 0 8px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 50%;
+}
+
+.logout-divider {
+    border: none;
+    border-top: 1px solid rgb(2, 170, 221);
+    margin: 0;
+    margin-bottom: 0.5rem;
+    width: 150px;
+}
+
+
+/* Sidebar */
+
+.sidebar {
+    width: 200px;
+    background-color: var(--white);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    height: 780px;
+}
+
+.nav-menu {
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem 0;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    padding: 1.25rem;
+    color: var(--gray-dark);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+.nav-icon {
+    width: 30px;
+    height: auto;
+    margin-right: 1rem;
+    vertical-align: middle;
+}
+
+.logout-container {
+    padding: 1.5rem;
+    border-top: 1px solid var(--gray);
+}
+
+.logout-button {
+    display: flex;
+    align-items: center;
+    color: var(--gray-dark);
+    text-decoration: none;
+    padding: 1rem;
+    cursor: pointer;
+    font-size: 1.1rem;
+}
+
+.logout-icon {
+    width: 20px;
+    height: auto;
+    margin-right: 1rem;
+    vertical-align: middle;
+}
+
+.header-icons {
+    display: flex;
+    align-items: center;
+}
+
+.notification-button,
+.settings-button {
+    border: none;
+    background: white;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 5px;
+    cursor: pointer;
+    position: relative;
+}
+
+.header-icon {
+    width: 40px;
+    height: auto;
+    border-radius: 50%;
+}
+
+.notification-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: red;
+    color: var(--white);
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.content-container {
+    display: flex;
+    flex-grow: 1;
+    overflow: hidden;
+}
+
+.nav-item i {
+    margin-right: 0.75rem;
+    width: 20px;
+    text-align: center;
+}
+
+.nav-item:hover,
+.nav-item.active {
+    color: var(--primary-color);
+    background-color: rgba(0, 74, 173, 0.1);
+    border-left: 4px solid var(--primary-color);
+}
+
+.nav-item.active {
+    font-weight: bold;
+}
+
+.logout-button i {
+    margin-right: 0.75rem;
+}
+
+.logout-button:hover {
+    color: crimson;
+}
+
+
+/* Main content styles */
+
+.main-content {
+    flex: 1;
+    padding: 2rem;
+    overflow-y: auto;
+}
+
+.main-content h1 {
+    color: var(--primary-color);
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+
+/* Parking Stats */
+
+.parking-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 0 0 2px rgba(209, 208, 208, 0.3), 0 8px 15px rgba(170, 169, 169, 0.8);
+    border: 1px solid #d1d5db;
+    height: 210px;
+    border-radius: 8px;
+}
+
+.stat-card {
+    background-color: var(--white);
+    border-radius: 8px;
+    padding: 1rem;
+    text-align: center;
+    box-shadow: 0 0 0 2px rgba(209, 208, 208, 0.3), 0 8px 15px rgba(170, 169, 169, 0.8);
+    border: 1px solid #d1d5db;
+    margin-top: 14px;
+    margin-bottom: 14px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.stat-icon {
+    margin-bottom: 0.75rem;
+}
+
+.stat-icon img {
+    width: 40px;
+    height: auto;
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    color: var(--gray-dark);
+}
+
+
+/* Parking Map */
+
+.parking-map {
+    background-color: var(--white);
+    border-radius: 8px;
+    padding: 2rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 0 0 2px rgba(209, 208, 208, 0.3), 0 8px 15px rgba(170, 169, 169, 0.8);
+    border: 1px solid #d1d5db;
+}
+
+.map-row {
+    display: grid;
+    grid-template-columns: 50px 1fr 1fr 50px;
+    margin-bottom: 1rem;
+    align-items: center;
+}
+
+.map-label {
+    text-align: center;
+    font-weight: bold;
+    color: var(--gray-dark);
+}
+
+.parking-spot {
+    height: 60px;
+    margin: 0 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+.parking-spot.free {
+    background-color: #4cd964;
+    color: rgb(3, 3, 3);
+    cursor: pointer;
+}
+
+.parking-spot.occupied {
+    background-color: #ff3b30;
+    color: rgb(5, 5, 5);
+}
+
+.parking-spot.reserved {
+    background-color: #ff9500;
+    color: rgb(5, 5, 5);
+}
+
+.parking-spot img {
+    max-width: 70%;
+    max-height: 70%;
+}
+
+.reservation-prompt {
+    text-align: center;
+    margin-top: 1rem;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+
+/* Animation */
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+
+/* Media queries */
+
+@media (max-width: 992px) {
+    .search-container {
+        width: 50%;
+    }
+    .parking-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .content-container {
+        flex-direction: column;
+    }
+    .sidebar {
+        width: 100%;
+        flex-direction: row;
+        height: auto;
+    }
+    .nav-menu {
+        flex-direction: row;
+        padding: 0;
+        justify-content: space-between;
+        width: 100%;
+    }
+    .nav-item {
+        flex-direction: column;
+        padding: 0.5rem;
+    }
+    .logout-container {
+        display: none;
+    }
+    .map-row {
+        grid-template-columns: 30px 1fr 1fr 30px;
+    }
+}
+
+@media (max-width: 576px) {
+    .header {
+        flex-direction: column;
+        gap: 0.75rem;
+        padding: 0.75rem;
+    }
+    .search-container {
+        width: 100%;
+    }
+    .parking-stats {
+        grid-template-columns: 1fr;
+    }
+    .map-row {
+        grid-template-columns: 25px 1fr 1fr 25px;
+    }
+}

@@ -1,9 +1,11 @@
 import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http'; 
 import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms'; // Importer ReactiveFormsModule
+
 import { Chart, registerables } from 'chart.js';
 
 // Enregistrer tous les modules de Chart.js
@@ -21,13 +23,19 @@ interface ApiParking {
   adresse: string;
 }
 
+interface ApiPlace {
+  _id: string;
+  nomPlace: string; // Nom de la place
+  statut: string;
+}
+
 interface ApiReservation {
   _id: string;
   userId: ApiUser; // Assurez-vous que cette propriété est bien définie
   parkingId: ApiParking; // Assurez-vous que cette propriété est bien définie
   tarifId: string; // Ajoutez cette propriété si nécessaire
   typeVehicule: string;
-  placeId: string;
+  placeId: ApiPlace; // Changez ceci pour le type ApiPlace
   heureRestante: string; // ou Date si vous traitez cela comme une date
   duree: string;
   statut: string;
@@ -44,7 +52,7 @@ interface ApiReservation {
 @Component({
   selector: 'app-historiques-reservations',
   standalone: true,
-  imports: [CommonModule, RouterModule, HttpClientModule, FormsModule],
+  imports: [CommonModule, RouterModule, HttpClientModule, FormsModule,ReactiveFormsModule],
   templateUrl: './historiques-reservations.component.html',
   styleUrls: ['./historiques-reservations.component.css']
 })
@@ -78,10 +86,54 @@ export class HistoriquesReservationsComponent implements OnInit, AfterViewInit {
   showInvoiceModal: boolean = false;
   selectedReservation: ApiReservation | null = null;
 
-  constructor(private http: HttpClient) {}
+  isModalActive: boolean = false; // Initialiser à false pour que le modal soit fermé par défaut
+  isCancelModalActive: boolean = false; // Pour le modal d'annulation
+  editReservation: ApiReservation = {
+    _id: '',
+    userId: { nom: '', prenom: '', telephone: '' },
+    parkingId: { nom_du_parking: '', adresse: '' },
+    tarifId: '',
+    typeVehicule: '',
+    placeId: { _id: '', nomPlace: '', statut: '' },
+    heureRestante: '',
+    duree: '',
+    statut: '',
+    etat: '',
+    montant: 0,
+    paiement: '',
+    codeNumerique: 0,
+    numeroRecu: '',
+    createdAt: '',
+    updatedAt: '',
+    heureArrivee: '',
+    heureDepart: ''
+};
+
+
+
+
+  constructor(private router: Router, private http: HttpClient) {}
 
   ngOnInit(): void {
     this.loadReservations();
+  }
+
+  logout(): void {
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+  
+    this.http.post('http://localhost:3000/api/v1/auth/logout', {}, { headers }).subscribe(
+      () => {
+        // Supprimer le token du localStorage
+        localStorage.removeItem('token');
+        // Rediriger vers la page de connexion ou une autre page appropriée
+        this.router.navigate(['/login']);
+      },
+      (error) => {
+        console.error('Erreur lors de la déconnexion', error);
+        // Gérer l'erreur, par exemple en affichant un message à l'utilisateur
+      }
+    );
   }
 
   ngAfterViewInit(): void {
@@ -109,7 +161,67 @@ export class HistoriquesReservationsComponent implements OnInit, AfterViewInit {
                 console.error('Erreur lors de la récupération des réservations', error);
             }
         );
-  }
+}
+
+// Méthode pour modifier une réservation
+updateReservation(): void {
+  if (!this.editReservation) return;
+
+  const updatedData = {
+      heureArrivee: this.editReservation.heureArrivee,
+      heureDepart: this.editReservation.heureDepart,
+      typeVehicule: this.editReservation.typeVehicule,
+      placeId: this.editReservation.placeId,
+      paiement: this.editReservation.paiement
+  };
+
+  this.http.put(`http://localhost:3000/api/v1/reservations/${this.editReservation._id}`, updatedData)
+      .subscribe(
+          (response) => {
+              console.log('Réservation mise à jour:', response);
+              this.closeEditModal(); // Fermer le modal après mise à jour
+              this.loadReservations(); // Rechargez les réservations
+          },
+          (error) => {
+              console.error('Erreur lors de la mise à jour:', error);
+          }
+      );
+}
+
+openEditModal(reservation: ApiReservation): void {
+  this.editReservation = { ...reservation }; // Créez une copie pour l'édition
+  this.isModalActive = true; // Ouvrir le modal
+}
+
+closeEditModal(): void {
+  this.isModalActive = false; // Fermer le modal
+}
+
+cancelReservation(reservation: ApiReservation): void {
+  this.http.patch(`http://localhost:3000/api/v1/reservations/${reservation._id}/cancel`, {})
+      .subscribe(
+          (response) => {
+              console.log('Réservation annulée:', response);
+              this.loadReservations(); // Rechargez les réservations après annulation
+          },
+          (error) => {
+              console.error('Erreur lors de l\'annulation:', error);
+          }
+      );
+}
+
+openCancelModal(reservation: ApiReservation): void {
+  this.editReservation = reservation; // Passer la réservation à annuler
+  this.isCancelModalActive = true; // Ouvrir le modal d'annulation
+}
+
+closeCancelModal(): void {
+  this.isCancelModalActive = false; // Fermer le modal d'annulation
+}
+
+
+
+
 
   applyFilters(): void {
     let filteredReservations = this.reservations;
@@ -212,6 +324,7 @@ export class HistoriquesReservationsComponent implements OnInit, AfterViewInit {
       this.peakHoursChart = null;
     }
   }
+
 
   generateOccupancyChart(): void {
     if (!this.occupancyChartRef) return;
@@ -360,6 +473,25 @@ export class HistoriquesReservationsComponent implements OnInit, AfterViewInit {
 }
 
 closeInvoiceModal(): void {
+  console.log('Fermeture du modal');
   this.showInvoiceModal = false; // Changez la variable pour masquer le modal
 }
+
+closeIfOutside(event: MouseEvent): void {
+  const target = event.target as HTMLElement;
+  const modalContent = document.querySelector('.invoice-modal-content');
+
+  // Vérifier si le clic a eu lieu en dehors du contenu du modal
+  if (modalContent && !modalContent.contains(target)) {
+      this.closeInvoiceModal();
+  }
+}
+
+closeModalIfOutside(event: MouseEvent): void {
+  const target = event.target as HTMLElement;
+  if (target.classList.contains('modal')) {
+      this.closeEditModal(); // Fermer le modal si le clic est à l'extérieur du contenu
+  }
+}
+
 }

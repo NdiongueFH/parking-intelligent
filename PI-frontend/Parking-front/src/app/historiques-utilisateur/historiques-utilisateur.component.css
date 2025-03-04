@@ -674,6 +674,25 @@ body {
     /* Couleur du titre */
 }
 
+.close-button {
+    background: none;
+    /* Pas de fond */
+    border: none;
+    /* Pas de bordure */
+    font-size: 1.5rem;
+    /* Taille du texte */
+    cursor: pointer;
+    /* Curseur pointer */
+    color: var(--primary-color);
+    /* Couleur du bouton de fermeture */
+    position: absolute;
+    /* Position absolue pour le bouton de fermeture */
+    top: 10px;
+    /* Espacement du haut */
+    right: 10px;
+    /* Espacement de droite */
+}
+
 .stats-modal-body {
     margin-top: 20px;
     /* Espace entre l'en-tête et le corps du modal */
@@ -934,6 +953,28 @@ h1 {
     text-align: center;
 }
 
+.close-button {
+    background: none;
+    border: none;
+    font-size: 24px;
+    /* Taille de la croix */
+    color: #333;
+    /* Couleur de la croix */
+    cursor: pointer;
+    /* Curseur pour indiquer qu'il est cliquable */
+    position: absolute;
+    /* Positionnement absolu */
+    right: 20px;
+    /* Distance du bord droit */
+    top: 20px;
+    /* Distance du bord supérieur */
+}
+
+.close-button:hover {
+    color: #f44336;
+    /* Change la couleur au survol */
+}
+
 .logo-image {
     height: 40px;
     /* Ajustez la taille de l'image selon vos besoins */
@@ -969,14 +1010,6 @@ h1 {
     animation: fadeIn 0.3s;
     text-align: center;
     /* Centrer le texte */
-}
-
-.no-reservations-message {
-    color: #ff0000;
-    /* Rouge pour attirer l'attention */
-    font-weight: bold;
-    text-align: center;
-    margin: 20px 0;
 }
 
 @keyframes fadeIn {
@@ -1031,6 +1064,14 @@ button {
 
 button:hover {
     background-color: #45a049;
+}
+
+.no-reservations-message {
+    color: #ff0000;
+    /* Rouge pour attirer l'attention */
+    font-weight: bold;
+    text-align: center;
+    margin: 20px 0;
 }
 
 

@@ -32,17 +32,9 @@
                     <img src="home.png" alt="Accueil" class="nav-icon">
                     <span>Accueil</span>
                 </a>
-                <a class="nav-item" [routerLink]="['/historiques-reservations']">
+                <a class="nav-item" [routerLink]="['/historiques-utilisateur']">
                     <img src="file.png" alt="Historiques" class="nav-icon">
                     <span>Historiques</span>
-                </a>
-                <a class="nav-item" [routerLink]="['/gestions-utilisateurs']">
-                    <img src="group.png" alt="Utilisateurs" class="nav-icon">
-                    <span>Utilisateurs</span>
-                </a>
-                <a class="nav-item" [routerLink]="['/liste-parking']">
-                    <img src="total.png" alt="Parkings" class="nav-icon">
-                    <span>Parkings</span>
                 </a>
             </nav>
             <div class="logout-container">
@@ -76,7 +68,7 @@
                         <div class="parking-info">
                             <span>{{ parking.distanceKm }} km</span>
                         </div>
-                        <button class="reserve-button" [routerLink]="['/parking']">Réserver maintenant</button>
+                        <button class="reserve-button" [routerLink]="['/parking-utilisateur']">Réserver maintenant</button>
                     </div>
                 </div>
             </div>

@@ -59,7 +59,7 @@
                     <img src="imagelogoParking.png" alt="Logo" class="logo">
                 </div>
 
-                <h1>Modifier un utilisateur</h1>
+                <h1>Modifier ses informations</h1>
 
                 <form [formGroup]="modificationForm" (ngSubmit)="onSubmit()">
                     <div class="form-row">
@@ -100,8 +100,7 @@
                         <div class="form-group">
                             <label for="carteRfid">Carte RFID<span class="required">*</span></label>
                             <input type="text" id="carteRfid" formControlName="carteRfid" placeholder="Scanner pour assigner la carte RFID" [ngClass]="{'is-invalid': isFieldInvalid('carteRfid')}" [disabled]="isCarteRfidDisabled()">
-                            <div *ngIf="isFieldInvalid('carteRfid') && modificationForm.get('carteRfid')?.value"
-                                class="error-message">La carte RFID est obligatoire</div>
+                            <div *ngIf="isFieldInvalid('carteRfid') && modificationForm.get('carteRfid')?.value" class="error-message">La carte RFID est obligatoire</div>
                         </div>
                     </div>
 

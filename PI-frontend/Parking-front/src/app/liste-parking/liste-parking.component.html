@@ -47,7 +47,7 @@
             </nav>
             <div class="logout-container">
                 <hr class="logout-divider">
-                <a class="logout-button">
+                <a class="logout-button" (click)="logout()">
                     <img src="deconnexion.png" alt="Déconnexion" class="logout-icon">
                     <span>Déconnexion</span>
                 </a>
@@ -235,4 +235,17 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal pour sélectionner la carte -->
+    <div class="map-modal" *ngIf="showMapModal" (click)="closeMapModal()">
+        <div class="map-modal-content" (click)="$event.stopPropagation()">
+            <h2>Sélectionnez un emplacement sur la carte</h2>
+            <div class="map" leaflet [leafletOptions]="mapOptions" (leafletMapReady)="onMapReady($event)"></div>
+            <div class="modal-actions">
+                <button class="btn-save" (click)="saveSelectedLocation()">Sauvegarder l'emplacement</button>
+                <button class="btn-cancel" (click)="closeMapModal()">Annuler</button>
+            </div>
+        </div>
+    </div>
+
 </div>

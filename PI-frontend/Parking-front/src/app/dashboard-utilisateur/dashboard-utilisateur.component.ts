@@ -12,13 +12,13 @@ import { HttpClientModule } from '@angular/common/http';
 
 
 @Component({
-  selector: 'app-admin-dashboard',
+  selector: 'app-dashboard-utilisateur',
   standalone: true,
   imports: [CommonModule, RouterModule, LeafletModule,HttpClientModule],
-  templateUrl: './dashboard-admin.component.html',
-  styleUrls: ['./dashboard-admin.component.css']
+  templateUrl: './dashboard-utilisateur.component.html',
+  styleUrls: ['./dashboard-utilisateur.component.css']
 })
-export class AdminDashboardComponent implements OnInit {
+export class UtilisateurDashboardComponent implements OnInit {
   nearbyParkings = [
     { name: 'Parking de l\'Aéroport LSS', distanceKm: '1.5', lat: 14.739, lng: -17.490 },
     { name: 'Parking de l\'Hôtel Terrou-Bi', distanceKm: '2', lat: 14.715, lng: -17.477 },

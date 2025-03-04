@@ -22,15 +22,17 @@ export class GestionsUtilisateursComponent implements OnInit {
   selectedRole: string = '';
   searchTerm: string = '';
   showAddUserModal = false;
+  showEditUserModal = false; // Pour afficher le modal d'édition
   inscriptionForm: FormGroup;
   error: string | null = null;
   success: boolean = false;
   loading: boolean = false;
   showDeleteModal = false; // Pour afficher le modal de suppression
   userToDelete: number | null = null; // ID de l'utilisateur à supprimer
+  userToEdit: any = null; // Utilisateur à modifier
   successMessage: string | null = null; // Message de succès pour la suppression
 
-  constructor(private http: HttpClient, private formBuilder: FormBuilder, private router: Router) { // Injectez Router ici
+  constructor(private http: HttpClient, private formBuilder: FormBuilder, private router: Router) {
     this.inscriptionForm = this.formBuilder.group({
       nom: ['', [Validators.required, this.noWhitespaceValidator]],
       prenom: ['', [Validators.required, this.noWhitespaceValidator]],
@@ -46,6 +48,23 @@ export class GestionsUtilisateursComponent implements OnInit {
   ngOnInit(): void {
     this.loadUsers();
     this.onRoleChange(); // Initialiser la validation de la carte RFID
+  }
+
+  logout(): void {
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+  
+    this.http.post('http://localhost:3000/api/v1/auth/logout', {}, { headers }).subscribe(
+      () => {
+        // Supprimer le token du localStorage
+        localStorage.removeItem('token');
+        // Rediriger vers la page de connexion ou une autre page appropriée
+        this.router.navigate(['/login']);
+      },
+      (error) => {
+        console.error('Erreur lors de la déconnexion', error);
+      }
+    );
   }
 
   loadUsers() {
@@ -148,6 +167,21 @@ export class GestionsUtilisateursComponent implements OnInit {
     this.success = false;
   }
 
+  openEditUserModal(user: any) {
+    this.userToEdit = user; // Stocker l'utilisateur à modifier
+    this.inscriptionForm.patchValue(user); // Remplir le formulaire avec les données de l'utilisateur
+    this.showEditUserModal = true; // Afficher le modal d'édition
+  }
+  
+
+  closeEditUserModal() {
+    this.showEditUserModal = false;
+    this.inscriptionForm.reset(); // Réinitialiser le formulaire
+    this.userToEdit = null; // Réinitialiser l'utilisateur à modifier
+    this.error = null; // Réinitialiser l'erreur
+    this.success = false; // Réinitialiser le succès
+  }
+
   onRoleChange() {
     const role = this.inscriptionForm.get('role')?.value;
     if (role === 'administrateur') {
@@ -161,36 +195,80 @@ export class GestionsUtilisateursComponent implements OnInit {
 
   onSubmit() {
     if (this.inscriptionForm.valid) {
-      this.loading = true; // Indiquer que le chargement commence
-      const userData = this.inscriptionForm.value;
+        this.loading = true; // Indiquer que le chargement commence
+        const userData = this.inscriptionForm.value;
 
+        // Supprimer carteRfid si le rôle est utilisateur
+        if (userData.role === 'utilisateur') {
+            delete userData.carteRfid;
+        }
+
+        // Envoi de la requête POST à l'API d'inscription
+        this.http.post<any>('http://localhost:3000/api/v1/auth/signup', userData)
+            .subscribe(
+                (response) => {
+                    this.successMessage = 'Utilisateur ajouté avec succès'; // Message de succès
+                    this.error = null; // Réinitialiser l'erreur
+                    this.closeAddUserModal(); // Fermer le modal
+                    this.loadUsers(); // Recharger la liste des utilisateurs
+                },
+                (error) => {
+                    this.error = error.error.message || 'Une erreur est survenue lors de l\'inscription.';
+                    this.successMessage = null; // Réinitialiser le message de succès
+                },
+                () => {
+                    this.loading = false; // Indiquer que le chargement est terminé
+                }
+            );
+    } else {
+        this.error = "Veuillez remplir tous les champs obligatoires.";
+        this.successMessage = null; // Réinitialiser le message de succès
+    }
+}
+
+  onEditSubmit() {
+    if (this.inscriptionForm.valid) {
+      this.loading = true;
+      const userData = { ...this.inscriptionForm.value };
+  
       // Supprimer carteRfid si le rôle est utilisateur
       if (userData.role === 'utilisateur') {
         delete userData.carteRfid;
       }
+  
+      // Supprimer le mot de passe pour éviter les erreurs
+      delete userData.mot_de_passe;
+  
+      console.log('Données envoyées:', userData); // Ajoutez ce log pour vérifier les données
+  
+      const token = localStorage.getItem('token');
+      const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+  
+      this.http.patch<any>(`http://localhost:3000/api/v1/users/update/${this.userToEdit._id}`, userData, { headers }).subscribe(
+        (response) => {
+          this.successMessage = 'Utilisateur modifié avec succès';
+          this.loadUsers();
+          this.closeEditUserModal();
 
-      // Envoi de la requête POST à l'API d'inscription
-      this.http.post<any>('http://localhost:3000/api/v1/auth/signup', userData)
-          .subscribe(
-              (response) => {
-                  this.success = true; // Inscription réussie
-                  this.error = null; // Réinitialiser l'erreur
-                  this.closeAddUserModal(); // Fermer le modal
-                  this.loadUsers(); // Recharger la liste des utilisateurs
-              },
-              (error) => {
-                  this.error = error.error.message || 'Une erreur est survenue lors de l\'inscription.';
-                  this.success = false; // Assurez-vous que success est toujours un boolean
-              },
-              () => {
-                  this.loading = false; // Indiquer que le chargement est terminé
-              }
-          );
+          // Masquer le message après 3 secondes
+          setTimeout(() => {
+            this.successMessage = null;
+        }, 4000);
+        },
+        (error) => {
+          console.error('Erreur lors de la modification de l’utilisateur', error);
+          this.error = error.error.message || 'Une erreur est survenue lors de la modification.';
+        },
+        () => {
+          this.loading = false;
+        }
+      );
     } else {
       this.error = "Veuillez remplir tous les champs obligatoires.";
-      this.success = false; // Assurez-vous que success est toujours un boolean
     }
   }
+  
+  
 
   isFieldInvalid(field: string): boolean {
     const control = this.inscriptionForm.get(field);
@@ -205,11 +283,9 @@ export class GestionsUtilisateursComponent implements OnInit {
     const isWhitespace = (control.value || '').trim().length === 0;
     return isWhitespace ? { 'whitespace': true } : null;
   }
-  editUser(user: any) {
-    this.router.navigate(['/modifier-utilisateur', user._id]);
-}
+
   deleteUser(userId: number) {
-    console.log('Utilisateur à supprimer ID:', userId); // Ajoutez ce log
+    console.log('Utilisateur à supprimer ID:', userId);
     this.userToDelete = userId; // Stocker l'utilisateur à supprimer
     this.showDeleteModal = true; // Afficher le modal de confirmation
   }
@@ -245,4 +321,6 @@ export class GestionsUtilisateursComponent implements OnInit {
     this.showDeleteModal = false; // Fermer le modal sans supprimer
     this.userToDelete = null; // Réinitialiser l'ID de l'utilisateur
   }
+
+  
 }

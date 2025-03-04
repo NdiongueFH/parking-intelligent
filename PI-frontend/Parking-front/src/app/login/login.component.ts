@@ -48,22 +48,28 @@ export class LoginComponent {
     if (this.loginForm.valid) {
       this.loading = true;
       this.error = '';
-
-      // Envoyer les données du formulaire au backend
+  
       this.http.post('http://localhost:3000/api/v1/auth/login', this.loginForm.value)
         .subscribe({
           next: (response: any) => {
             this.loading = false;
-            // Stocker le token dans le localStorage
+  
+            // Stocker le token et le rôle
             localStorage.setItem('token', response.token);
-            // Rediriger vers le tableau de bord administrateur
-            this.router.navigate(['/dashboard-admin']);
+            localStorage.setItem('userRole', response.data.user.role); // Récupérer le rôle
+  
+            // Redirection selon le rôle
+            if (response.data.user.role === 'utilisateur') {
+              this.router.navigate(['/dashboard-utilisateur']);
+            } else if (response.data.user.role === 'administrateur') {
+              this.router.navigate(['/dashboard-admin']);
+            } else {
+              this.error = 'Rôle inconnu. Veuillez contacter l\'administrateur.';
+            }
           },
           error: (err) => {
             this.loading = false;
             this.error = err.error.message || 'Email ou mot de passe incorrect. Veuillez réessayer.';
-
-            // Effacer le message d'erreur après 3 secondes
             setTimeout(() => {
               this.error = '';
             }, 3000);

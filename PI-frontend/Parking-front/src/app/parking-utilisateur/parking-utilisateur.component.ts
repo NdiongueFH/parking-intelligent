@@ -6,13 +6,13 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ParkingReservationComponent } from '../form-reservation/form-reservation.component';
 
 @Component({
-  selector: 'app-parking',
+  selector: 'app-parking-utilisateur',
   standalone: true,
   imports: [CommonModule, RouterModule, ParkingReservationComponent,HttpClientModule],
-  templateUrl: './parking.component.html',
-  styleUrls: ['./parking.component.css']
+  templateUrl: './parking-utilisateur.component.html',
+  styleUrls: ['./parking-utilisateur.component.css']
 })
-export class ParkingComponent implements OnInit {
+export class ParkingUtilisateurComponent implements OnInit {
   parkingName: string = 'Parking de la Place du souvenir';
   
   // Parking statistics

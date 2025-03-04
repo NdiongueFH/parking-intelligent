@@ -17,8 +17,16 @@ export const routes: Routes = [
     loadComponent: () => import('./dashboard-admin/dashboard-admin.component').then(m => m.AdminDashboardComponent) 
   },
   { 
+    path: 'dashboard-utilisateur', 
+    loadComponent: () => import('./dashboard-utilisateur/dashboard-utilisateur.component').then(m => m.UtilisateurDashboardComponent) 
+  },
+  { 
     path: 'historiques-reservations', 
     loadComponent: () => import('./historiques-reservations/historiques-reservations.component').then(m => m.HistoriquesReservationsComponent) 
+  },
+  { 
+    path: 'historiques-utilisateur', 
+    loadComponent: () => import('./historiques-utilisateur/historiques-utilisateur.component').then(m => m.HistoriquesUtilisateurComponent) 
   },
   { 
     path: 'gestions-utilisateurs', 
@@ -44,6 +52,12 @@ export const routes: Routes = [
     path: 'parking', 
     loadComponent: () => import('./parking/parking.component').then(m => m.ParkingComponent) 
   },
+
+  { 
+    path: 'parking-utilisateur', 
+    loadComponent: () => import('./parking-utilisateur/parking-utilisateur.component').then(m => m.ParkingUtilisateurComponent) 
+  },
+
 
   { 
     path: 'liste-parking', 
