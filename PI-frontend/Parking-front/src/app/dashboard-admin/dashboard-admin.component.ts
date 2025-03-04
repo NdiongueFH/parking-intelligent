@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import * as L from 'leaflet';
 import { latLng, tileLayer, marker, icon, Map } from 'leaflet';
@@ -25,6 +25,8 @@ export class AdminDashboardComponent implements OnInit {
   userPosition: L.LatLng | null = null;
   map: Map | null = null;
   isLoading: boolean = true;
+
+  constructor(private router: Router) {}
 
   ngOnInit(): void {
     this.getUserLocation();
@@ -103,7 +105,20 @@ export class AdminDashboardComponent implements OnInit {
     if (this.userPosition) this.markers.push(marker([this.userPosition.lat, this.userPosition.lng], { icon: userIcon }).bindPopup('Votre position actuelle'));
     this.updateParkingDistances();
     this.nearbyParkings.forEach(parking => {
-      this.markers.push(marker([parking.lat, parking.lng], { icon: parkingIcon }).bindPopup(`<b>${parking.name}</b><br>Distance: ${parking.distanceKm} km<br><button class='popup-reserve-btn'>Réserver</button>`));
+      const parkingMarker = marker([parking.lat, parking.lng], { icon: parkingIcon }).bindPopup(`
+        <b>${parking.name}</b><br>
+        Distance: ${parking.distanceKm} km<br>
+        <button class='popup-reserve-btn' onclick="reserveParking('${parking.name}')">Réserver</button>
+      `);
+      this.markers.push(parkingMarker);
     });
   }
+
+  reserveParking(parkingName: string): void {
+    this.router.navigate(['/parking'], { queryParams: { name: parkingName } });
+  }
+
+  goToSettings(): void {
+    this.router.navigate(['/modifier-utilisateur']); // Redirige vers la page de modification
+}
 }

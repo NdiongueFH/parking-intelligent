@@ -1,103 +1,83 @@
-<!-- parking-reservation.component.html -->
-<div class="reservation-container">
-    <div class="reservation-header">
-        <h2>Réserver une place de parking</h2>
-    </div>
-
-    <form [formGroup]="reservationForm" (ngSubmit)="onSubmit()">
-        <div class="parking-info-card">
-            <div class="parking-info">
-                <div>
+<div class="modal-overlay" *ngIf="isVisible">
+    <div class="reservation-container">
+        <div class="reservation-header">
+            <h2>Réserver une place de parking</h2>
+        </div>
+        <form [formGroup]="reservationForm" (ngSubmit)="onSubmit()">
+            <div class="parking-info-card">
+                <div class="parking-info">
                     <h3>Parking de la Place du Souvenir</h3>
-                    <div class="address">
-                        <span class="material-icons">location_on</span> Avenue Cheikh Anta Diop
-                    </div>
-                    <div class="price">
-                        <span class="material-icons">payments</span> 500FCFA/heure
-                    </div>
-                </div>
-                <div class="availability">
-                    <div class="available-spots">7 places disponibles</div>
+                    <div class="address">Avenue Cheikh Anta Diop</div>
+                    <div class="price">500FCFA/heure</div>
                 </div>
             </div>
-        </div>
-
-        <div class="form-section">
-            <h3>Informations du véhicule</h3>
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="vehicleType">Type de véhicule</label>
-                    <div class="select-wrapper">
+            <div class="form-section">
+                <h3>Informations du véhicule</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="vehicleType">Type de véhicule</label>
                         <select id="vehicleType" formControlName="vehicleType">
                             <option value="Vehicule">Voiture</option>
                             <option value="Moto">Moto</option>
                         </select>
-                        <span class="material-icons">arrow_drop_down</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="plateNumber">Numéro d'immatriculation</label>
+                        <input type="text" id="plateNumber" formControlName="plateNumber" placeholder="AA-674-AZ">
                     </div>
                 </div>
-                <div class="form-group">
-                    <label for="plateNumber">Numéro d'immatriculation</label>
-                    <input type="text" id="plateNumber" formControlName="plateNumber" placeholder="AA-674-AZ">
-                </div>
             </div>
-        </div>
-
-        <div class="form-section">
-            <h3>Date et durée</h3>
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="arrivalDate">Date d'arrivée</label>
-                    <div class="date-input-wrapper">
+            <div class="form-section">
+                <h3>Date et durée</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="arrivalDate">Date d'arrivée</label>
                         <input type="text" id="arrivalDate" formControlName="arrivalDate" placeholder="12/01/2025">
-                        <span class="material-icons">calendar_today</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="arrivalTime">Heure d'arrivée</label>
+                        <input type="text" id="arrivalTime" formControlName="arrivalTime" placeholder="10h15">
                     </div>
                 </div>
-                <div class="form-group">
-                    <label for="arrivalTime">Heure d'arrivée</label>
-                    <input type="text" id="arrivalTime" formControlName="arrivalTime" placeholder="10h15">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="departureTime">Heure de départ</label>
+                        <input type="text" id="departureTime" formControlName="departureTime" placeholder="11h15">
+                    </div>
+                    <div class="form-group">
+                        <label for="price">Prix</label>
+                        <input type="text" id="price" formControlName="price" placeholder="100FCFA" readonly>
+                    </div>
                 </div>
             </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="departureTime">Heure de départ</label>
-                    <input type="text" id="departureTime" formControlName="departureTime" placeholder="11h15">
-                </div>
-                <div class="form-group">
-                    <label for="price">Prix</label>
-                    <input type="text" id="price" formControlName="price" placeholder="100FCFA" readonly>
-                </div>
-            </div>
-        </div>
-
-        <div class="form-section">
-            <h3>Mode de paiement</h3>
-            <div class="form-row payment-options">
-                <div class="form-group payment-option">
-                    <label class="radio-label">
-                        <input type="radio" formControlName="paymentMethod" value="onsite">
-                        <span class="radio-custom" [ngClass]="{'selected': (reservationForm.get('paymentMethod')?.value || '') === 'onsite'}"></span>
-                        Paiement sur place
-                    </label>
-                </div>
-                <div class="form-group payment-option">
-                    <label class="radio-label">
-                        <input type="radio" formControlName="paymentMethod" value="online">
-                        <span class="radio-custom" [ngClass]="{'selected': (reservationForm.get('paymentMethod')?.value || '') === 'online'}"></span>
-                        Paiement en ligne
-                    </label>
+            <div class="form-section">
+                <h3>Mode de paiement</h3>
+                <div class="form-row payment-options">
+                    <div class="form-group payment-option">
+                        <label class="custom-radio">
+                            <input type="radio" formControlName="paymentMethod" value="onsite">
+                            <span class="radio-button"></span>
+                            Paiement sur place
+                        </label>
+                    </div>
+                    <div class="form-group payment-option">
+                        <label class="custom-radio">
+                            <input type="radio" formControlName="paymentMethod" value="online">
+                            <span class="radio-button"></span>
+                            Paiement en ligne
+                        </label>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="alert-warning">
-            <span class="material-icons">warning</span> Une amende sera appliquée en cas de dépassement du temps réservé.
-        </div>
+            <div class="alert-warning">
+                <span class="material-icons">warning</span> Une amende sera appliquée en cas de dépassement du temps réservé.
+            </div>
 
-        <div class="form-actions">
-            <button type="button" class="btn-back">
-                <span class="material-icons">arrow_back</span>
-            </button>
-            <button type="submit" class="btn-confirm">Confirmer la réservation</button>
-        </div>
-    </form>
+            <div class="form-actions">
+                <button type="button" (click)="closeModal()">Annuler</button>
+                <button type="submit">Confirmer la réservation</button>
+            </div>
+        </form>
+    </div>
 </div>

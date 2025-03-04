@@ -1,4 +1,3 @@
-<!-- utilisateurs.component.html -->
 <div class="dashboard-container">
     <!-- Header -->
     <header class="header">
@@ -7,23 +6,13 @@
         </div>
         <div class="search-container">
             <input type="text" placeholder="Rechercher un utilisateur" class="search-input">
-            <!-- <button class="search-button">
-          <i class="fa fa-search"></i>
-           </button> -->
+
         </div>
         <div class="header-icons">
-            <!-- Notification Button -->
-            <!-- <button class="notification-button">
-                <img src="path-to-bell-image.png" alt="Notifications" style="width: 20px; height: 20px; margin-right: 5px;">
-                <span class="notification-badge">3</span>
-            </button> -->
-
-            <!-- Settings Button -->
             <button class="settings-button">
-                <img src="parametres.png" alt="Settings" style="width: 20px; height: 20px;">
+                <img src="parametres.png" alt="Settings" style="width: 20px;">
             </button>
         </div>
-
     </header>
 
     <!-- Main Content -->
@@ -31,7 +20,7 @@
         <!-- Sidebar -->
         <div class="sidebar">
             <nav class="nav-menu">
-                <a class="nav-item active" [routerLink]="['/dashboard-admin']">
+                <a class="nav-item" [routerLink]="['/dashboard-admin']">
                     <img src="home.png" alt="Accueil" class="nav-icon">
                     <span>Accueil</span>
                 </a>
@@ -39,7 +28,7 @@
                     <img src="file.png" alt="Historiques" class="nav-icon">
                     <span>Historiques</span>
                 </a>
-                <a class="nav-item" [routerLink]="['/gestions-utilisateurs']">
+                <a class="nav-item active" [routerLink]="['/gestions-utilisateurs']">
                     <img src="group.png" alt="Utilisateurs" class="nav-icon">
                     <span>Utilisateurs</span>
                 </a>
@@ -65,6 +54,21 @@
                     <button class="add-user-btn" (click)="openAddUserModal()">Ajouter un utilisateur</button>
                 </div>
 
+                <!-- Message de succès -->
+                <div *ngIf="successMessage" class="success-message">
+                    {{ successMessage }}
+                </div>
+
+
+                <div class="filter-container">
+                    <label for="roleFilter">Filtrer par Rôle:</label>
+                    <select id="roleFilter" [(ngModel)]="selectedRole" (change)="filterUsers()">
+                        <option value="">Tous</option>
+                        <option value="utilisateur">Utilisateur</option>
+                        <option value="administrateur">Administrateur</option>
+                    </select>
+                </div>
+
                 <div class="users-table-container">
                     <table>
                         <thead>
@@ -78,31 +82,132 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr *ngFor="let utilisateur of utilisateurs">
+                            <tr *ngFor="let utilisateur of paginatedUsers">
                                 <td>{{ utilisateur.nom }}</td>
                                 <td>{{ utilisateur.prenom }}</td>
                                 <td>{{ utilisateur.telephone }}</td>
                                 <td>{{ utilisateur.email }}</td>
-                                <td [ngClass]="{'role-utilisateur': utilisateur.role === 'Utilisateur', 'role-admin': utilisateur.role === 'Admin'}">
+                                <td [ngClass]="{'role-utilisateur': utilisateur.role === 'utilisateur', 'role-admin': utilisateur.role === 'administrateur'}">
                                     {{ utilisateur.role }}
                                 </td>
                                 <td class="actions">
-                                    <img src="modifier.png" alt="Edit" (click)="editUser(utilisateur)" style="cursor: pointer; width: 20px; height: 20px; margin-right: 8px;">
-                                    <img src="supprimer.png" alt="Delete" (click)="deleteUser(utilisateur.id)" style="cursor: pointer; width: 20px; height: 20px;">
+                                    <img src="modif.png" alt="Edit" (click)="editUser(utilisateur)" style="cursor: pointer; width: 20px; height: 20px; margin-right: 8px;">
+                                    <img src="sup.png" alt="Delete" (click)="deleteUser(utilisateur._id)" style="cursor: pointer; width: 20px; height: 20px;">
                                 </td>
-
                             </tr>
                         </tbody>
                     </table>
+
                     <div class="pagination">
                         <button (click)="previousPage()" [disabled]="currentPage === 1">Précédent</button>
                         <div>
-                            <button *ngFor="let page of pageNumbers" (click)="goToPage(page)" [class.active]="currentPage === page">{{ page }}</button>
-                            <span>..</span>
-                            <button (click)="goToPage(pageNumbers[pageNumbers.length - 1])">{{ pageNumbers[pageNumbers.length - 1] }}</button>
+                            <button *ngFor="let page of pageNumbers; let i = index" (click)="goToPage(page)" [class.active]="currentPage === page">
+                                {{ page }}
+                            </button>
+                            <span *ngIf="(currentPage > 2 && totalPages > 3)">..</span>
                         </div>
                         <button (click)="nextPage()" [disabled]="currentPage === totalPages">Suivant</button>
                     </div>
+
                 </div>
             </div>
         </div>
+    </div>
+
+
+    <!-- Modal d'ajout d'utilisateur -->
+    <div *ngIf="showAddUserModal" class="modal-overlay">
+        <div class="inscription-card">
+            <div class="logo1-container">
+                <img src="imagelogoParking.png" alt="Logo" class="logo1">
+            </div>
+            <h1>Ajouter un utilisateur</h1>
+            <form [formGroup]="inscriptionForm" (ngSubmit)="onSubmit()">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="nom">Nom<span class="required">*</span></label>
+                        <input type="text" id="nom" formControlName="nom" placeholder="Entrer votre nom" [ngClass]="{'is-invalid': isFieldInvalid('nom')}">
+                        <div *ngIf="isFieldInvalid('nom') && inscriptionForm.get('nom')?.value" class="error-message">Le nom est obligatoire</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="prenom">Prenom<span class="required">*</span></label>
+                        <input type="text" id="prenom" formControlName="prenom" placeholder="Entrer votre prenom" [ngClass]="{'is-invalid': isFieldInvalid('prenom')}">
+                        <div *ngIf="isFieldInvalid('prenom') && inscriptionForm.get('prenom')?.value" class="error-message">Le prénom est obligatoire</div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="email">Email<span class="required">*</span></label>
+                        <input type="email" id="email" formControlName="email" placeholder="Entrer votre email" [ngClass]="{'is-invalid': isFieldInvalid('email')}">
+                        <div *ngIf="isFieldInvalid('email') && inscriptionForm.get('email')?.value" class="error-message">Veuillez entrer un email valide</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="telephone">Telephone<span class="required">*</span></label>
+                        <input type="tel" id="telephone" formControlName="telephone" placeholder="Entrer votre numero de telephone" [ngClass]="{'is-invalid': isFieldInvalid('telephone')}">
+                        <div *ngIf="isFieldInvalid('telephone') && inscriptionForm.get('telephone')?.value" class="error-message">Veuillez entrer un numéro valide (9 chiffres)</div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="mot_de_passe">Mot de passe<span class="required">*</span></label>
+                        <input type="password" id="mot_de_passe" formControlName="mot_de_passe" placeholder="Entrer votre mot de passe" [ngClass]="{'is-invalid': isFieldInvalid('mot_de_passe')}">
+                        <div *ngIf="isFieldInvalid('mot_de_passe') && inscriptionForm.get('mot_de_passe')?.value" class="error-message">Le mot de passe doit contenir au moins 8 caractères</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="adresse">Adresse de residence<span class="required">*</span></label>
+                        <input type="text" id="adresse" formControlName="adresse" placeholder="Entrer votre adresse" [ngClass]="{'is-invalid': isFieldInvalid('adresse')}">
+                        <div *ngIf="isFieldInvalid('adresse') && inscriptionForm.get('adresse')?.value" class="error-message">L'adresse est obligatoire</div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="role">Rôle<span class="required">*</span></label>
+                        <select id="role" formControlName="role" [ngClass]="{'is-invalid': isFieldInvalid('role')}" (change)="onRoleChange()">
+                            <option value="" disabled selected>Sélectionner un rôle</option>
+                            <option value="utilisateur">Utilisateur</option>
+                            <option value="administrateur">Administrateur</option>
+                        </select>
+                        <div *ngIf="isFieldInvalid('role') && inscriptionForm.get('role')?.value" class="error-message">Le rôle est obligatoire</div>
+                    </div>
+                    <div class="form-group" *ngIf="inscriptionForm.get('role')?.value !== 'utilisateur'">
+                        <label for="carteRfid">Carte RFID<span class="required">*</span></label>
+                        <input type="text" id="carteRfid" formControlName="carteRfid" placeholder="Scanner pour assigner la carte RFID" [ngClass]="{'is-invalid': isFieldInvalid('carteRfid')}">
+                        <div *ngIf="isFieldInvalid('carteRfid') && inscriptionForm.get('carteRfid')?.value" class="error-message">La carte RFID est obligatoire</div>
+                    </div>
+                </div>
+
+                <div *ngIf="error" class="alert-error">
+                    {{ error }}
+                </div>
+                <div *ngIf="success" class="alert-success">
+                    Inscription réussie!
+                </div>
+                <div class="button-container">
+                    <button type="submit" [disabled]="loading || !isFormValid()">
+                                <span *ngIf="loading" class="spinner"></span>
+                                S'inscrire
+                            </button>
+                </div>
+                <button class="back-to-home" (click)="closeAddUserModal()">
+                    <img src="retour.png" alt="Retour à l'accueil" class="home-icon">
+                </button>
+
+            </form>
+        </div>
+    </div>
+
+
+
+    <!-- Modal de confirmation de suppression -->
+    <div *ngIf="showDeleteModal" class="modal-overlay">
+        <div class="confirmation-card">
+            <h2>Voulez-vous vraiment supprimer cet utilisateur ?</h2>
+            <div class="button-container1">
+                <button class="btn-yes" (click)="confirmDelete()">OUI</button>
+                <button class="btn-no" (click)="cancelDelete()">NON</button>
+            </div>
+        </div>
+    </div>
+
+
+</div>

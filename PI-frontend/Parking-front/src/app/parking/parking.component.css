@@ -254,14 +254,23 @@ body {
     grid-template-columns: repeat(4, 1fr);
     gap: 1.5rem;
     margin-bottom: 2rem;
+    box-shadow: 0 0 0 2px rgba(209, 208, 208, 0.3), 0 8px 15px rgba(170, 169, 169, 0.8);
+    border: 1px solid #d1d5db;
+    height: 210px;
+    border-radius: 8px;
 }
 
 .stat-card {
     background-color: var(--white);
     border-radius: 8px;
-    padding: 1.5rem;
+    padding: 1rem;
     text-align: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 0 2px rgba(209, 208, 208, 0.3), 0 8px 15px rgba(170, 169, 169, 0.8);
+    border: 1px solid #d1d5db;
+    margin-top: 14px;
+    margin-bottom: 14px;
+    margin-left: 10px;
+    margin-right: 10px;
 }
 
 .stat-icon {
@@ -292,7 +301,8 @@ body {
     border-radius: 8px;
     padding: 2rem;
     margin-bottom: 1rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 0 2px rgba(209, 208, 208, 0.3), 0 8px 15px rgba(170, 169, 169, 0.8);
+    border: 1px solid #d1d5db;
 }
 
 .map-row {
@@ -320,18 +330,18 @@ body {
 
 .parking-spot.free {
     background-color: #4cd964;
-    color: white;
+    color: rgb(3, 3, 3);
     cursor: pointer;
 }
 
 .parking-spot.occupied {
     background-color: #ff3b30;
-    color: white;
+    color: rgb(5, 5, 5);
 }
 
 .parking-spot.reserved {
     background-color: #ff9500;
-    color: white;
+    color: rgb(5, 5, 5);
 }
 
 .parking-spot img {

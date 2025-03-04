@@ -243,6 +243,17 @@ body {
     line-height: 1.6;
 }
 
+.nav-item:hover,
+.nav-item.active {
+    color: var(--primary-color);
+    background-color: rgba(0, 74, 173, 0.1);
+    border-left: 4px solid var(--primary-color);
+}
+
+.nav-item.active {
+    font-weight: bold;
+}
+
 .nav-icon {
     width: 30px;
     height: auto;
@@ -270,23 +281,118 @@ body {
     margin-right: 1rem;
 }
 
+.reservation .info img {
+    width: 20px;
+    /* Ajustez la largeur selon vos besoins */
+    height: 20px;
+    /* Ajustez la hauteur selon vos besoins */
+    margin-right: 10px;
+    /* Espace entre l'image et le texte */
+}
+
 .reservation {
-    background-color: #f9f9f9;
-    /* Couleur de fond gris clair */
-    border: 1px solid #d1d5db;
-    /* Bordure grise claire */
-    border-radius: 8px;
-    /* Arrondi des coins */
-    padding: 15px;
-    /* Espacement interne */
+    background-color: #fff;
+    padding: 20px;
+    margin-top: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     display: flex;
-    /* Utilisation de flexbox pour aligner les éléments */
     justify-content: space-between;
-    /* Espace entre les éléments */
+    align-items: flex-start;
+}
+
+.reservation .info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.reservation .info p {
+    display: flex;
     align-items: center;
-    /* Alignement vertical centré */
-    margin-bottom: 15px;
-    /* Espace en bas pour séparer les réservations */
+    margin: 5px 0;
+}
+
+.reservation .info img {
+    margin-right: 10px;
+    /* Espace entre l'image et le texte */
+}
+
+.reservation .status {
+    text-align: center;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.reservation .status.en-cours {
+    background-color: #74f5b2;
+    /* Couleur verte */
+    color: #065f46;
+    /* Couleur du texte */
+    margin-right: 500px;
+}
+
+.reservation .status.annulee {
+    background-color: #ffb8b8;
+    /* Couleur rouge */
+    color: #b91c1c;
+    /* Couleur du texte */
+    margin-right: 500px;
+}
+
+.reservation .actions {
+    display: flex;
+    flex-direction: column;
+    /* Aligne les éléments verticalement */
+    align-items: flex-end;
+    /* Aligne les éléments à droite */
+}
+
+.reservation .actions .button-container {
+    display: flex;
+    /* Utilise le flexbox pour aligner les boutons horizontalement */
+    gap: 10px;
+    /* Ajoute un espace entre les boutons */
+    margin-bottom: 10px;
+    /* Espace en bas entre les boutons et le nom de l'utilisateur */
+}
+
+.reservation .actions .user-info {
+    margin-bottom: 10px;
+    /* Espace en bas entre le nom de l'utilisateur et le bouton de facture */
+    margin-top: 30px;
+}
+
+.reservation .actions button {
+    background-color: #e0f2fe;
+    color: #1d4ed8;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.reservation .actions .invoice {
+    background-color: #4cd964;
+    /* Couleur verte pour le bouton de facture */
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.reservation .user-info span {
+    display: block;
+    /* Affiche le prénom et le nom sur des lignes séparées */
+}
+
+.reservation .actions button img {
+    width: 20px;
+    /* Ajustez la largeur selon vos besoins */
+    height: 20px;
+    /* Ajustez la hauteur selon vos besoins */
 }
 
 
@@ -402,8 +508,18 @@ body {
     background-color: #fff;
     padding: 20px;
     margin-top: 20px;
-    border-radius: 5px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    box-shadow: 0 0 0 2px rgba(209, 208, 208, 0.3), 0 8px 15px rgba(201, 199, 199, 0.8);
+    /* Ombre légère */
+    border: 1px solid #d1d5db;
+    /* Bordure grise */
+    transition: box-shadow 0.3s;
+    /* Transition pour l'ombre lors du survol */
+}
+
+.reservation:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    /* Ombre plus prononcée au survol */
 }
 
 .reservation .details {
@@ -459,27 +575,415 @@ body {
 
 .pagination {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-    margin-top: 20px;
+    margin-top: 1rem;
+    font-weight: bold;
 }
 
 .pagination button {
-    background-color: #1d4ed8;
-    color: #fff;
+    background-color: var(--primary-color);
+    /* Couleur de fond bleu */
+    color: var(--user-color);
+    /* Couleur du texte en blanc */
     border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
+    /* Pas de bordure */
+    border-radius: 10px;
+    /* Coins arrondis */
+    padding: 0.5rem 1rem;
+    /* Espacement interne */
+    margin: 0 0.25rem;
+    /* Espace entre les boutons */
     cursor: pointer;
+    /* Curseur pointer */
+    transition: background-color 0.3s;
+    /* Transition pour le survol */
 }
 
-.pagination .pages {
+.pagination button:hover:not(:disabled) {
+    background-color: var(--secondary-color);
+    /* Couleur au survol */
+}
+
+.pagination button:disabled {
+    background-color: var(--gray);
+    /* Couleur pour le bouton désactivé */
+    cursor: not-allowed;
+    /* Change le curseur pour indiquer l'impossibilité */
+}
+
+.pagination .active {
+    font-weight: bold;
+    /* Met le numéro de page active en gras */
+    /* Couleur pour la page active */
+    font-size: 18px;
+    color: #fafbfd;
+    background-color: #0754A1;
+}
+
+.pagination span {
+    margin: 0 0.5rem;
+    /* Espace autour des ellipses */
+    color: var(--gray-dark);
+    /* Couleur des ellipses */
+    font-weight: bold;
+    /* Met les ellipses en gras */
+}
+
+.stats-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    /* Fond semi-transparent */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    /* Assure que le modal soit au-dessus des autres éléments */
+}
+
+.stats-modal-content {
+    background-color: white;
+    /* Fond blanc pour le contenu du modal */
+    border-radius: 10px;
+    /* Coins arrondis */
+    padding: 20px;
+    /* Espacement interne */
+    width: 90%;
+    /* Largeur du modal */
+    max-width: 600px;
+    /* Largeur maximale */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    /* Ombre pour le modal */
+    position: relative;
+    /* Position relative pour positionner le bouton de fermeture */
+    max-height: 90%;
+    /* Limite la hauteur maximale */
+}
+
+.stats-modal-header {
+    display: flex;
+    justify-content: space-between;
+    /* Espace entre le titre et le bouton de fermeture */
+    align-items: center;
+    /* Centre verticalement */
+}
+
+.stats-modal-header h2 {
+    margin: 0;
+    /* Supprime la marge par défaut */
+    color: var(--primary-color);
+    /* Couleur du titre */
+}
+
+.close-button {
+    background: none;
+    /* Pas de fond */
+    border: none;
+    /* Pas de bordure */
+    font-size: 1.5rem;
+    /* Taille du texte */
+    cursor: pointer;
+    /* Curseur pointer */
+    color: var(--primary-color);
+    /* Couleur du bouton de fermeture */
+    position: absolute;
+    /* Position absolue pour le bouton de fermeture */
+    top: 10px;
+    /* Espacement du haut */
+    right: 10px;
+    /* Espacement de droite */
+}
+
+.stats-modal-body {
+    margin-top: 20px;
+    /* Espace entre l'en-tête et le corps du modal */
+}
+
+.stats-modal-body .stats-chart {
+    margin: 20px 0;
+    /* Espace entre les graphiques */
+}
+
+.invoice-modal {
+    display: flex;
+    justify-content: center;
+    /* Centre horizontalement */
+    align-items: center;
+    /* Centre verticalement */
+    position: fixed;
+    /* Reste au même endroit même lors du défilement */
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    /* Fond semi-transparent pour l'arrière-plan */
+    z-index: 1000;
+    /* S'assure que le modal est au-dessus des autres éléments */
+}
+
+.invoice-modal-content {
+    background-color: white;
+    /* Fond blanc pour le contenu du modal */
+    border-radius: 10px;
+    /* Coins arrondis */
+    padding: 20px;
+    /* Espacement interne */
+    width: 90%;
+    /* Largeur du modal */
+    max-width: 600px;
+    /* Largeur maximale */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    /* Ombre pour le modal */
+}
+
+.invoice-container {
+    max-width: 600px;
+    margin: 20px auto;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.logo {
     display: flex;
     align-items: center;
 }
 
-.pagination .pages span {
-    margin: 0 10px;
+.logo-circle {
+    width: 30px;
+    height: 30px;
+    background-color: #1e3a8a;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.logo-image {
+    display: flex;
+    align-items: center;
+    border-radius: 30px;
+    width: 45px;
+}
+
+h1 {
+    font-size: 20px;
+    margin: 0;
+    color: white;
+}
+
+.date {
+    text-align: right;
+    color: white;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+.reservation-info {
+    background-color: #e0f7fa;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 10px;
+    margin: 10px;
+    border-top: 1px solid #a0a0a0;
+    box-shadow: 0 0 0 2px rgba(209, 208, 208, 0.3), 0 8px 15px rgba(170, 169, 169, 0.8);
+}
+
+.parking-info h2 {
+    margin-bottom: 10px;
+    font-size: 18px;
+}
+
+.code-box {
+    display: flex;
+    align-items: center;
+    margin-top: 5px;
+}
+
+.qr-code {
+    width: 20px;
+    height: 20px;
+    background-image: linear-gradient(to right, #000 33%, transparent 33%), linear-gradient(to right, #000 33%, transparent 33%), linear-gradient(to bottom, #000 33%, transparent 33%), linear-gradient(to bottom, #000 33%, transparent 33%);
+    background-position: left top, right top, left top, left bottom;
+    background-repeat: no-repeat;
+    background-size: 10px 10px;
+    margin-right: 10px;
+}
+
+.code-number {
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.status-box {
+    text-align: center;
+}
+
+.status {
+    background-color: white;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-weight: bold;
+    color: #ff9800;
+    margin-top: 5px;
+}
+
+.client-info {
+    padding: 15px 20px;
+    border-top: 1px solid #e0e0e0;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    box-shadow: 0 0 0 2px rgba(209, 208, 208, 0.3), 0 8px 15px rgba(170, 169, 169, 0.8);
+}
+
+.payment-info {
+    padding: 20px 20px;
+    border-top: 1px solid #e0e0e0;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    box-shadow: 0 0 0 2px rgba(209, 208, 208, 0.3), 0 8px 15px rgba(170, 169, 169, 0.8);
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.section-header h2 {
+    font-size: 16px;
+}
+
+.client-details {
+    display: flex;
+    justify-content: space-between;
+}
+
+.vehicle-info {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.car-icon {
+    width: 40px;
+    height: 20px;
+    border: 2px solid #333;
+    border-radius: 5px;
+    position: relative;
+    margin-bottom: 5px;
+}
+
+.license-plate {
+    font-weight: bold;
+    border: 1px solid #ccc;
+    padding: 5px 10px;
+    border-radius: 3px;
+    margin-bottom: 5px;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.total-row {
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+    border-top: 1px solid #e0e0e0;
+    padding-top: 10px;
+    margin-top: 5px;
+}
+
+.important-notes {
+    padding: 15px 20px;
+    border-top: 1px solid #e0e0e0;
+    position: relative;
+}
+
+.important-notes h3 {
+    color: #f44336;
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+.important-notes ul {
+    list-style-type: disc;
+    padding-left: 20px;
+}
+
+.important-notes li {
+    margin-bottom: 5px;
+}
+
+.stamp {
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+    width: 100px;
+    height: 100px;
+    border: 2px solid #f44336;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: rotate(-20deg);
+    color: #f44336;
+    font-weight: bold;
+    font-size: 12px;
+    text-align: center;
+}
+
+.close-button {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #333;
+    cursor: pointer;
+    position: absolute;
+    right: 20px;
+    top: 20px;
+}
+
+.close-button:hover {
+    color: #f44336;
+    /* Change la couleur au survol */
+}
+
+.logo-image {
+    height: 40px;
+    /* Ajustez la taille de l'image selon vos besoins */
+    margin-right: 10px;
+}
+
+.stamp-image {
+    width: 100px;
+    /* Ajustez la taille de l'image du tampon */
+    height: auto;
 }
 
 

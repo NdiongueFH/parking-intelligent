@@ -5,19 +5,17 @@
             <img src="imagelogoParking.png" alt="Parking Logo" class="logo">
         </div>
 
-        <div class="search-container">
-            <input type="text" placeholder="Rechercher un parking" class="search-input">
-            <button class="search-button">
-                <img src="search.png" alt="Search" class="search-icon" />
-            </button>
-        </div>
+
+        <h2 class="search-text">Gestions des utilisateurs</h2>
+
+
 
         <div class="header-icons">
             <button class="notification-button">
                 <img src="not.png" alt="Notifications" class="header-icon" />
                 <span class="notification-badge">3</span>
             </button>
-            <button class="settings-button" (click)="goToSettings()">
+            <button class="settings-button">
                 <img src="par.png" alt="Settings" class="header-icon" />
             </button>
         </div>
@@ -28,7 +26,7 @@
         <!-- Sidebar -->
         <div class="sidebar">
             <nav class="nav-menu">
-                <a class="nav-item active">
+                <a class="nav-item" [routerLink]="['/dashboard-admin']">
                     <img src="home.png" alt="Accueil" class="nav-icon">
                     <span>Accueil</span>
                 </a>
@@ -40,48 +38,19 @@
                     <img src="group.png" alt="Utilisateurs" class="nav-icon">
                     <span>Utilisateurs</span>
                 </a>
-                <a class="nav-item" [routerLink]="['/liste-parking']">
+                <a class="nav-item ">
                     <img src="total.png" alt="Parkings" class="nav-icon">
                     <span>Parkings</span>
                 </a>
             </nav>
             <div class="logout-container">
                 <hr class="logout-divider">
-                <!-- Trait au-dessus de la déconnexion -->
                 <a class="logout-button">
                     <img src="deconnexion.png" alt="Déconnexion" class="logout-icon">
-                    <!-- Icône de déconnexion -->
                     <span>Déconnexion</span>
                 </a>
             </div>
         </div>
 
 
-
-        <div class="map-container">
-            <div *ngIf="isLoading" class="loading-indicator">
-                <div class="spinner"></div>
-                <p>Récupération de votre position...</p>
-            </div>
-            <div *ngIf="mapOptions" class="map" leaflet [leafletOptions]="mapOptions" [leafletLayers]="markers" (leafletMapReady)="onMapReady($event)">
-            </div>
-        </div>
-        <!-- Parking Section -->
-        <div class="main-content">
-            <div class="parkings-list">
-                <h2>Parkings à proximité</h2>
-                <div class="parking-cards">
-                    <div class="parking-card" *ngFor="let parking of nearbyParkings">
-                        <h3>{{ parking.name }}</h3>
-                        <div class="parking-info">
-                            <span>{{ parking.distanceKm }} km</span>
-                        </div>
-                        <button class="reserve-button" [routerLink]="['/parking']">Réserver maintenant</button>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
-
-
-</div>

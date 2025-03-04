@@ -1,0 +1,128 @@
+<div class="dashboard-container">
+    <!-- Header -->
+    <header class="header">
+        <div class="logo-container">
+            <img src="imagelogoParking.png" alt="Parking Logo" class="logo">
+        </div>
+
+
+        <h2 class="search-text">Gestions des utilisateurs</h2>
+
+
+
+        <div class="header-icons">
+            <button class="notification-button">
+                <img src="not.png" alt="Notifications" class="header-icon" />
+                <span class="notification-badge">3</span>
+            </button>
+            <button class="settings-button">
+                <img src="par.png" alt="Settings" class="header-icon" />
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="content-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <nav class="nav-menu">
+                <a class="nav-item" [routerLink]="['/dashboard-admin']">
+                    <img src="home.png" alt="Accueil" class="nav-icon">
+                    <span>Accueil</span>
+                </a>
+                <a class="nav-item" [routerLink]="['/historiques-reservations']">
+                    <img src="file.png" alt="Historiques" class="nav-icon">
+                    <span>Historiques</span>
+                </a>
+                <a class="nav-item" [routerLink]="['/gestions-utilisateurs']">
+                    <img src="group.png" alt="Utilisateurs" class="nav-icon">
+                    <span>Utilisateurs</span>
+                </a>
+                <a class="nav-item ">
+                    <img src="total.png" alt="Parkings" class="nav-icon">
+                    <span>Parkings</span>
+                </a>
+            </nav>
+            <div class="logout-container">
+                <hr class="logout-divider">
+                <a class="logout-button">
+                    <img src="deconnexion.png" alt="Déconnexion" class="logout-icon">
+                    <span>Déconnexion</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Modal de modification d'utilisateur -->
+        <div class="modification-container">
+            <div class="modification-card">
+                <div class="logo-container">
+                    <img src="imagelogoParking.png" alt="Logo" class="logo">
+                </div>
+
+                <h1>Modifier un utilisateur</h1>
+
+                <form [formGroup]="modificationForm" (ngSubmit)="onSubmit()">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="nom">Nom<span class="required">*</span></label>
+                            <input type="text" id="nom" formControlName="nom" placeholder="Entrer votre nom" [ngClass]="{'is-invalid': isFieldInvalid('nom')}">
+                            <div *ngIf="isFieldInvalid('nom') && modificationForm.get('nom')?.value" class="error-message">Le nom est obligatoire</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="prenom">Prenom<span class="required">*</span></label>
+                            <input type="text" id="prenom" formControlName="prenom" placeholder="Entrer votre prenom" [ngClass]="{'is-invalid': isFieldInvalid('prenom')}">
+                            <div *ngIf="isFieldInvalid('prenom') && modificationForm.get('prenom')?.value" class="error-message">Le prénom est obligatoire</div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="email">Email<span class="required">*</span></label>
+                            <input type="email" id="email" formControlName="email" placeholder="Entrer votre email" [ngClass]="{'is-invalid': isFieldInvalid('email')}">
+                            <div *ngIf="isFieldInvalid('email') && modificationForm.get('email')?.value" class="error-message">Veuillez entrer un email valide</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="telephone">Telephone<span class="required">*</span></label>
+                            <input type="tel" id="telephone" formControlName="telephone" placeholder="Entrer votre numero de telephone" [ngClass]="{'is-invalid': isFieldInvalid('telephone')}">
+                            <div *ngIf="isFieldInvalid('telephone') && modificationForm.get('telephone')?.value" class="error-message">Veuillez entrer un numéro valide (9 chiffres)</div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="adresse">Adresse de residence<span class="required">*</span></label>
+                            <input type="text" id="adresse" formControlName="adresse" placeholder="Entrer votre adresse" [ngClass]="{'is-invalid': isFieldInvalid('adresse')}">
+                            <div *ngIf="isFieldInvalid('adresse') && modificationForm.get('adresse')?.value" class="error-message">L'adresse est obligatoire</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="carteRfid">Carte RFID<span class="required">*</span></label>
+                            <input type="text" id="carteRfid" formControlName="carteRfid" placeholder="Scanner pour assigner la carte RFID" [ngClass]="{'is-invalid': isFieldInvalid('carteRfid')}" [disabled]="isCarteRfidDisabled()">
+                            <div *ngIf="isFieldInvalid('carteRfid') && modificationForm.get('carteRfid')?.value"
+                                class="error-message">La carte RFID est obligatoire</div>
+                        </div>
+                    </div>
+
+                    <div *ngIf="error" class="alert-error">
+                        {{ error }}
+                    </div>
+                    <div *ngIf="success" class="alert-success">
+                        Modification réussie!
+                    </div>
+
+                    <div class="button-container">
+                        <button type="submit" [disabled]="loading || !isFormValid()">
+                    <span *ngIf="loading" class="spinner"></span>
+                    Modifier
+                </button>
+                    </div>
+                    <button class="back-to-home">
+                <img src="retour.png " alt="Retour à l 'accueil" class="home-icon">
+            </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

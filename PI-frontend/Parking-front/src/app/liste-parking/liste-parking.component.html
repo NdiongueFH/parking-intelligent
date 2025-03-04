@@ -2,23 +2,23 @@
     <!-- Header -->
     <header class="header">
         <div class="logo-container">
-            <img src="assets/imagelogoParking.png" alt="Parking Logo" class="logo">
+            <img src="imagelogoParking.png" alt="Parking Logo" class="logo">
         </div>
 
         <div class="search-container">
             <input type="text" placeholder="Rechercher un parking" class="search-input" [(ngModel)]="searchTerm">
             <button class="search-button">
-                <img src="assets/search.png" alt="Search" class="search-icon" />
+                <img src="search.png" alt="Search" class="search-icon" />
             </button>
         </div>
 
         <div class="header-icons">
             <button class="notification-button">
-                <img src="assets/not.png" alt="Notifications" class="header-icon" />
+                <img src="not.png" alt="Notifications" class="header-icon" />
                 <span class="notification-badge">3</span>
             </button>
             <button class="settings-button">
-                <img src="assets/par.png" alt="Settings" class="header-icon" />
+                <img src="par.png" alt="Settings" class="header-icon" />
             </button>
         </div>
     </header>
@@ -29,26 +29,26 @@
         <div class="sidebar">
             <nav class="nav-menu">
                 <a class="nav-item" [routerLink]="['/dashboard-admin']">
-                    <img src="assets/home.png" alt="Accueil" class="nav-icon">
+                    <img src="home.png" alt="Accueil" class="nav-icon">
                     <span>Accueil</span>
                 </a>
                 <a class="nav-item" [routerLink]="['/historiques-reservations']">
-                    <img src="assets/file.png" alt="Historiques" class="nav-icon">
+                    <img src="file.png" alt="Historiques" class="nav-icon">
                     <span>Historiques</span>
                 </a>
                 <a class="nav-item" [routerLink]="['/gestions-utilisateurs']">
-                    <img src="assets/group.png" alt="Utilisateurs" class="nav-icon">
+                    <img src="group.png" alt="Utilisateurs" class="nav-icon">
                     <span>Utilisateurs</span>
                 </a>
                 <a class="nav-item active">
-                    <img src="assets/total.png" alt="Parkings" class="nav-icon">
+                    <img src="total.png" alt="Parkings" class="nav-icon">
                     <span>Parkings</span>
                 </a>
             </nav>
             <div class="logout-container">
                 <hr class="logout-divider">
                 <a class="logout-button">
-                    <img src="assets/deconnexion.png" alt="Déconnexion" class="logout-icon">
+                    <img src="deconnexion.png" alt="Déconnexion" class="logout-icon">
                     <span>Déconnexion</span>
                 </a>
             </div>
@@ -56,29 +56,180 @@
 
         <!-- Main Content Area -->
         <div class="main-content">
+
             <div class="section-header">
                 <h2>Gestion des parkings</h2>
-                <button class="add-parking-btn" [routerLink]="['/ajouter-parking']">Ajouter un parking</button>
+                <button class="add-parking-btn" (click)="toggleAddForm()">
+                    {{ showAddForm ? 'Annuler' : 'Ajouter un parking' }}
+                </button> </div>
+
+            <!-- Formulaire d'ajout (affiché conditionnellement) -->
+            <div class="add-parking-form" *ngIf="showAddForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <input type="text" placeholder="Nom du parking" class="form-control" [(ngModel)]="newParking.nom_du_parking" name="nom_du_parking">
+                    </div>
+                    <div class="form-group">
+                        <input type="number" placeholder="Capacite totale" class="form-control" [(ngModel)]="newParking.capaciteTotale" name="capaciteTotale">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <input type="text" placeholder="Adresse" class="form-control" [(ngModel)]="newParking.adresse" name="adresse">
+                    </div>
+                    <div class="form-group">
+                        <button class="map-selector-btn" (click)="selectMapLocation()">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                <circle cx="12" cy="10" r="3"></circle>
+                            </svg>
+                            Selectionner sur la carte
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button class="btn-save" (click)="saveParking()">Enregistrer</button>
+                </div>
             </div>
+
 
             <div class="parkings-container">
                 <div *ngFor="let parking of paginatedParkings" class="parking-item">
-                    <div class="parking-header">
+                    <div class="parking-header" (click)="toggleParkingDetails(parking)">
                         <h3>{{ parking.nom_du_parking }}</h3>
-                        <button class="expand-btn">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="6 9 12 15 18 9"></polyline>
-                            </svg>
-                        </button>
+                        <button class="expand-btn" [class.expanded]="selectedParking === parking">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                      </svg>
+                    </button>
+                    </div>
+
+                    <!-- Contenu détaillé du parking (visible quand sélectionné) -->
+                    <div class="parking-details" *ngIf="selectedParking === parking">
+                        <div class="tab-navigation">
+                            <div class="tab" [class.active]="selectedTab === 'details'" (click)="selectTab('details')">Détails</div>
+                            <div class="tab" [class.active]="selectedTab === 'tarifs'" (click)="selectTab('tarifs')">Tarifs</div>
+                            <div class="tab" [class.active]="selectedTab === 'amendes'" (click)="selectTab('amendes')">Amendes</div>
+                            <div class="tab" [class.active]="selectedTab === 'places'" (click)="selectTab('places')">Places</div>
+                        </div>
+
+                        <!-- Contenu des onglets -->
+                        <div class="tab-content" *ngIf="selectedTab === 'details'">
+                            <p>Adresse : {{ parking.adresse }}</p>
+                            <p>Latitude : {{ parking.latitude }}</p>
+                            <p>Longitude : {{ parking.longitude }}</p>
+                            <p>Places disponibles : {{ parking.placesLibres }} / {{ parking.capaciteTotale }}</p>
+                        </div>
+
+                        <div class="tab-content" *ngIf="selectedTab === 'tarifs'">
+                            <div class="tarif-grid">
+                                <div class="tarif-row">
+                                    <div class="tarif-item">
+                                        <div class="tarif-label">Heure</div>
+                                        <div *ngIf="!isEditing; else editHour">
+                                            <span class="tarif-value">{{ modifiedTariffs.heure }} FCFA</span>
+                                        </div>
+                                        <ng-template #editHour>
+                                            <input type="number" [(ngModel)]="modifiedTariffs.heure" class="tarif-input" />
+                                        </ng-template>
+                                    </div>
+                                    <div class="tarif-item">
+                                        <div class="tarif-label">Jour</div>
+                                        <div *ngIf="!isEditing; else editDay">
+                                            <span class="tarif-value">{{ modifiedTariffs.jour }} FCFA</span>
+                                        </div>
+                                        <ng-template #editDay>
+                                            <input type="number" [(ngModel)]="modifiedTariffs.jour" class="tarif-input" />
+                                        </ng-template>
+                                    </div>
+                                    <div class="tarif-item">
+                                        <div class="tarif-label">Type de véhicule :</div>
+                                        <select id="vehicle-type" class="form-select">
+                                            <option>Voiture</option>
+                                            <option>Moto</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="tarif-row">
+                                    <div class="tarif-item">
+                                        <div class="tarif-label">Semaine</div>
+                                        <div *ngIf="!isEditing; else editWeek">
+                                            <span class="tarif-value">{{ modifiedTariffs.semaine }} FCFA</span>
+                                        </div>
+                                        <ng-template #editWeek>
+                                            <input type="number" [(ngModel)]="modifiedTariffs.semaine" class="tarif-input" />
+                                        </ng-template>
+                                    </div>
+                                    <div class="tarif-item">
+                                        <div class="tarif-label">Mois</div>
+                                        <div *ngIf="!isEditing; else editMonth">
+                                            <span class="tarif-value">{{ modifiedTariffs.mois }} FCFA</span>
+                                        </div>
+                                        <ng-template #editMonth>
+                                            <input type="number" [(ngModel)]="modifiedTariffs.mois" class="tarif-input" />
+                                        </ng-template>
+                                    </div>
+                                    <div class="tarif-item">
+                                        <button class="action-button" (click)="isEditing ? saveTariffs() : modifyTariffs()">
+                                            {{ isEditing ? 'Sauvegarder' : 'Modifier les tarifs' }}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-content" *ngIf="selectedTab === 'amendes'">
+                            <div class="form-row amendes-form">
+                                <input type="text" placeholder="Type infraction" class="form-control">
+                                <input type="text" placeholder="Montant" class="form-control">
+                                <input type="text" placeholder="Durée" class="form-control">
+                                <select class="form-select">
+                          <option>Type véhicule</option>
+                          <option>Voiture</option>
+                          <option>Moto</option>
+                        </select>
+                            </div>
+                            <button class="action-button">Ajouter</button>
+                        </div>
+
+                        <div class="tab-content" *ngIf="selectedTab === 'places'">
+                            <div class="places-grid">
+                                <div class="places-row">
+                                    <div class="places-item">
+                                        <div class="places-label">Nom de la place :</div>
+                                        <input type="text" [(ngModel)]="newPlace.name" class="places-input" placeholder="Entrez le nom de la place" />
+                                    </div>
+                                    <div class="places-item">
+                                        <div class="places-label">Statut :</div>
+                                        <select [(ngModel)]="newPlace.status" class="form-select">
+                                            <option>Libre</option>
+                                            <option>Occupée</option>
+                                            <option>Réservée</option>
+                                        </select>
+                                    </div>
+                                    <div class="places-item">
+                                        <div class="places-label">Type de véhicule :</div>
+                                        <select [(ngModel)]="newPlace.vehicleType" class="form-select">
+                                            <option>Voiture</option>
+                                            <option>Moto</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <button class="action-button" (click)="addPlace()">Ajouter la place</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Pagination -->
             <div class="pagination">
-                <button (click)="prevPage()" [disabled]="currentPage === 1">Precedent</button>
-                <button *ngFor="let page of [].constructor(totalPages); let i = index" [class.active]="currentPage === i + 1" (click)="goToPage(i + 1)">
-                    {{ i + 1 }}
+                <button (click)="previousPage()" [disabled]="currentPage === 1">Précédent</button>
+                <button *ngFor="let page of pageNumbers" (click)="goToPage(page)" [ngClass]="{'active': currentPage === page}">
+                    {{ page }}
                 </button>
                 <button (click)="nextPage()" [disabled]="currentPage === totalPages">Suivant</button>
             </div>

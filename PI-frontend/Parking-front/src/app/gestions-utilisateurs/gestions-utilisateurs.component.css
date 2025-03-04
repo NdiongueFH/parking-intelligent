@@ -7,7 +7,7 @@
     --primary-color: #0754A1;
     --secondary-color: #00A0E4;
     --white: #ffffff;
-    --gray-light: #f5f5f5;
+    --gray-light: #b6fffb;
     --gray: #e0e0e0;
     --gray-dark: #666666;
     --success-color: #4cd964;
@@ -47,10 +47,10 @@
 }
 
 .logo {
-    width: 80%;
+    width: 115%;
     height: auto;
     box-shadow: 0 8px 8px rgba(0, 0, 0, 0.2);
-    border-radius: 50%;
+    border-radius: 60%;
 }
 
 
@@ -156,7 +156,7 @@
 .users-list-container {
     background-color: var(--white);
     border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 0 2px rgba(209, 208, 208, 0.3), 0 8px 15px rgba(170, 169, 169, 0.8);
     padding: 1rem;
 }
 
@@ -169,12 +169,16 @@
 
 .add-user-btn {
     background-color: #4cd964;
-    color: white;
+    color: rgb(3, 3, 3);
     border: none;
-    border-radius: 5px;
+    border-radius: 7px;
     padding: 0.5rem 1rem;
     cursor: pointer;
     font-weight: bold;
+    box-shadow: 0 0 0 2px rgba(209, 208, 208, 0.3), 0 8px 15px rgba(170, 169, 169, 0.8);
+    height: 40px;
+    width: 200px;
+    font-size: 16px;
 }
 
 .users-table-container {
@@ -243,6 +247,17 @@
     font-weight: bold;
 }
 
+.search-container {
+    display: flex;
+    align-items: center;
+    background-color: var(--secondary-color);
+    border-radius: 25px;
+    padding: 0.5rem;
+    width: 25%;
+    position: relative;
+    /* Ajouté pour positionner le bouton */
+}
+
 .search-input {
     border: none;
     flex-grow: 1;
@@ -251,7 +266,7 @@
     outline: none;
     font-size: 1rem;
     border-radius: 10px;
-    height: 50px;
+    height: 35px;
 }
 
 .search-button {
@@ -363,52 +378,478 @@
 }
 
 
-/* Pagination */
+/* Style pour le filtre par statut */
+
+.filter-container {
+    margin-bottom: 1rem;
+}
+
+.filter-container label {
+    font-weight: bold;
+    margin-right: 0.5rem;
+}
+
+.filter-container select {
+    padding: 0.5rem;
+    border-radius: 4px;
+    border: 1px solid var(--gray);
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+
+/* Style pour le filtre actif */
+
+.filter-container select.active {
+    border-color: var(--primary-color);
+    /* Change la couleur de la bordure */
+    background-color: var(--gray-light);
+    /* Change la couleur de fond */
+    font-weight: bold;
+    /* Met le texte en gras */
+}
+
+
+/* Optionnel : Ajoutez une icône ou un indicateur visuel */
+
+.filter-container select.active::after {
+    content: '✔';
+    /* Ajoute une coche */
+    display: inline-block;
+    margin-left: 0.5rem;
+    color: var(--primary-color);
+}
 
 .pagination {
     display: flex;
     justify-content: center;
     align-items: center;
     margin-top: 1rem;
-    gap: 1rem;
+    font-weight: bold;
 }
 
-.pagination-btn {
+.pagination button {
+    background-color: var(--primary-color);
+    /* Couleur de fond bleu */
+    color: var(--user-color);
+    /* Couleur du texte en blanc */
+    border: none;
+    /* Pas de bordure */
+    border-radius: 10px;
+    /* Coins arrondis */
     padding: 0.5rem 1rem;
-    background-color: var(--white);
-    border: 1px solid var(--gray);
-    border-radius: 4px;
+    /* Espacement interne */
+    margin: 0 0.25rem;
+    /* Espace entre les boutons */
     cursor: pointer;
+    /* Curseur pointer */
+    transition: background-color 0.3s;
+    /* Transition pour le survol */
 }
 
-.pagination-btn:disabled {
+.pagination button:hover:not(:disabled) {
+    background-color: var(--secondary-color);
+    /* Couleur au survol */
+}
+
+.pagination button:disabled {
+    background-color: var(--gray);
+    /* Couleur pour le bouton désactivé */
     cursor: not-allowed;
-    opacity: 0.5;
+    /* Change le curseur pour indiquer l'impossibilité */
 }
 
-.pagination-numbers {
+.pagination .active {
+    font-weight: bold;
+    /* Met le numéro de page active en gras */
+    /* Couleur pour la page active */
+    font-size: 18px;
+    color: #fafbfd;
+    background-color: #0754A1;
+}
+
+.pagination span {
+    margin: 0 0.5rem;
+    /* Espace autour des ellipses */
+    color: var(--gray-dark);
+    /* Couleur des ellipses */
+    font-weight: bold;
+    /* Met les ellipses en gras */
+}
+
+
+/* Modal Overlay */
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
     display: flex;
+    justify-content: center;
     align-items: center;
-    gap: 0.5rem;
+    z-index: 1000;
 }
 
-.page-number {
-    width: 30px;
-    height: 30px;
+
+/* Inscription Container */
+
+.inscription-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    background-color: #f5f5f5;
+}
+
+
+/* Inscription Card */
+
+.inscription-card {
+    width: 100%;
+    max-width: 800px;
+    padding: 60px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(7, 84, 161, 0.4);
+    min-height: 550px;
+    position: relative;
+    overflow: hidden;
+}
+
+.inscription-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 15px;
+    box-shadow: inset 0 4px 6px rgba(0, 0, 0, 0.2);
+    pointer-events: none;
+}
+
+
+/* Logo Container */
+
+.logo1-container {
+    display: flex;
+    /* Utilise Flexbox */
+    justify-content: center;
+    /* Centre horizontalement */
+    align-items: center;
+    /* Centre verticalement */
+    height: 100px;
+    /* Hauteur du conteneur, ajustez si nécessaire */
+    margin-bottom: 1rem;
+    /* Espace en bas, ajustez si nécessaire */
+}
+
+.logo1 {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.2), 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+
+/* Header */
+
+h1 {
+    text-align: center;
+    margin-bottom: 50px;
+    color: #333;
+    font-weight: 600;
+}
+
+
+/* Form Row */
+
+.form-row {
+    display: flex;
+    gap: 70px;
+    margin-bottom: 30px;
+}
+
+
+/* Style pour le filtre par statut */
+
+.form-group select {
+    padding: 12px 16px;
+    /* Ajoute du padding comme les autres champs */
+    border: 1px solid #8a8989;
+    /* Bordure similaire aux autres champs */
+    border-radius: 8px;
+    /* Coins arrondis */
+    font-size: 16px;
+    /* Taille de police */
+    transition: border-color 0.3s;
+    /* Transition pour l'effet de focus */
+    box-shadow: 0 0 0 2px rgba(8, 8, 8, 0.3), 0 8px 15px rgba(0, 0, 0, 0.8);
+    /* Ombre pour le champ */
+}
+
+.form-group select:focus {
+    outline: none;
+    /* Supprime le contour par défaut */
+    border-color: #080808;
+    /* Couleur de la bordure au focus */
+    box-shadow: 0 0 0 2px rgba(8, 8, 8, 0.3), 0 8px 15px rgba(0, 0, 0, 0.8);
+    /* Ombre au focus */
+}
+
+.form-group select.is-invalid {
+    border-color: #e53935;
+    /* Couleur de la bordure pour les erreurs */
+    background-color: rgba(229, 57, 53, 0.05);
+    /* Fond pour les erreurs */
+}
+
+@media (max-width: 768px) {
+    .form-row {
+        flex-direction: column;
+        gap: 25px;
+    }
+}
+
+
+/* Form Group */
+
+.form-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #333;
+}
+
+label .required {
+    color: #e53935;
+    margin-left: 2px;
+}
+
+
+/* Input Styles */
+
+input {
+    padding: 12px 16px;
+    border: 1px solid #8a8989;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.3s;
+    box-shadow: 0 0 0 2px rgba(8, 8, 8, 0.3), 0 8px 15px rgba(0, 0, 0, 0.8);
+}
+
+input:focus {
+    outline: none;
+    border-color: #080808;
+    box-shadow: 0 0 0 2px rgba(8, 8, 8, 0.3), 0 8px 15px rgba(0, 0, 0, 0.8);
+}
+
+input.is-invalid {
+    border-color: #e53935;
+    background-color: rgba(229, 57, 53, 0.05);
+}
+
+input::placeholder {
+    color: #999;
+}
+
+
+/* Error Message */
+
+.error-message {
+    color: #e53935;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+
+/* Button Container */
+
+.button-container {
+    margin-top: 55px;
+    display: flex;
+    justify-content: center;
+}
+
+.button-container button {
+    background-color: #1a4ca0;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    min-width: 150px;
+    transition: background-color 0.3s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.button-container button:hover {
+    background-color: #0d3b81;
+}
+
+.button-container button:disabled {
+    background-color: #cacbcc;
+    cursor: not-allowed;
+}
+
+
+/* Spinner */
+
+.spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+    border: 2px solid rgba(3, 3, 3, 0.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
+/* Alert Messages */
+
+.alert-error {
+    background-color: #ffebee;
+    color: #c62828;
+    padding: 12px;
+    border-radius: 4px;
+    margin: 20px 0;
+    text-align: center;
+}
+
+.alert-success {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    padding: 12px;
+    border-radius: 4px;
+    margin: 20px 0;
+    text-align: center;
+}
+
+
+/* Back to Home */
+
+.back-to-home {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
+    z-index: 10;
+    text-decoration: none;
+}
+
+.home-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease;
+}
+
+.home-icon:hover {
+    transform: scale(1.1);
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.confirmation-card {
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.button-container1 {
+    margin-top: 20px;
+}
+
+.button-container1 button {
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
     cursor: pointer;
-    border-radius: 4px;
+    margin: 0 10px;
+    font-weight: bold;
+    /* Mettre le texte en gras */
 }
 
-.page-number.active {
-    background-color: var(--primary-color);
-    color: var(--white);
+.btn-yes {
+    background-color: #04f804;
+    /* Vert */
+    color: rgb(250, 252, 249);
+    font-weight: bold;
+    font-size: 15px;
 }
 
-.pagination-separator {
-    color: var(--gray-dark);
+.btn-yes:hover {
+    background-color: #45a049;
+}
+
+.btn-no {
+    background-color: #f44336;
+    /* Rouge */
+    color: rgb(253, 252, 252);
+    font-weight: bold;
+    font-size: 15px;
+}
+
+.btn-no:hover {
+    background-color: #9e0402;
+}
+
+.success-message {
+    background-color: #d4edda;
+    /* Vert clair */
+    color: #155724;
+    /* Texte vert foncé */
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #c3e6cb;
+    /* Bordure verte */
+    border-radius: 5px;
+}
+
+
+/* Mobile Adjustments */
+
+@media (max-width: 576px) {
+    .back-icon {
+        width: 32px;
+        height: 32px;
+    }
 }
 
 
@@ -520,14 +961,14 @@ th {
 }
 
 tr:nth-child(even) {
-    background-color: #f9fafb;
+    background-color: #f1f0f0;
 }
 
 
 /* Role Colors */
 
 .role-utilisateur {
-    color: #22c55e;
+    color: #2aa356;
 }
 
 .role-admin {
@@ -540,31 +981,4 @@ tr:nth-child(even) {
 .actions i {
     margin-right: 8px;
     cursor: pointer;
-}
-
-
-/* Pagination */
-
-.pagination {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 16px;
-}
-
-.pagination button {
-    background-color: #0754A1;
-    color: #ffffff;
-    padding: 4px 8px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-.pagination span {
-    margin: 0 8px;
-}
-
-.pagination .active {
-    background-color: #22c55e;
 }

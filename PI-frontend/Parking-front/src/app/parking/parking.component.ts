@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { ParkingReservationComponent } from '../form-reservation/form-reservation.component';
 
 @Component({
   selector: 'app-parking',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, ParkingReservationComponent],
   templateUrl: './parking.component.html',
   styleUrls: ['./parking.component.css']
 })
@@ -19,6 +20,17 @@ export class ParkingComponent implements OnInit {
     freeSpots: 4,
     reservedSpots: 2
   };
+  showReservationModal: boolean = false;
+  selectedSpot: string | null = null;
+
+  reserveSpot(spotId: string): void {
+    this.selectedSpot = spotId; // Enregistrer la place sélectionnée
+    this.showReservationModal = true; // Afficher le modal
+  }
+
+  closeReservationModal() {
+    this.showReservationModal = false; // Fermer le modal
+  }
   
   // Parking map data
   parkingMap = [
@@ -43,12 +55,6 @@ export class ParkingComponent implements OnInit {
   constructor() { }
   
   ngOnInit(): void {
-    // You can load data from a service here
-  }
-  
-  reserveSpot(spotId: string): void {
-    // Implementation for reservation logic
-    console.log(`Reserving spot ${spotId}`);
-    // This would typically call a service to make an API request
+    // Vous pouvez charger des données ici
   }
 }

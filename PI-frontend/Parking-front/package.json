@@ -23,6 +23,7 @@
     "@angular/ssr": "^19.1.8",
     "@asymmetrik/ngx-leaflet": "^17.0.0",
     "@types/leaflet": "^1.9.16",
+    "chart.js": "^4.4.8",
     "express": "^4.18.2",
     "leaflet": "^1.9.4",
     "rxjs": "~7.8.0",

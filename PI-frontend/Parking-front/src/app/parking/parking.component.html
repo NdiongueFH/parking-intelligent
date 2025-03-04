@@ -56,7 +56,7 @@
 
         <!-- Main Dashboard Content -->
         <div class="main-content">
-            <h1>Parking de la Place du souvenir</h1>
+            <h1>Parking de l'Aéroport LSS</h1>
 
             <!-- Parking Stats -->
             <div class="parking-stats">
@@ -97,15 +97,15 @@
             <div class="parking-map">
                 <div class="map-row">
                     <div class="map-label">A1</div>
-                    <div class="parking-spot free">Libre</div>
-                    <div class="parking-spot free">Libre</div>
+                    <div class="parking-spot free" (click)="reserveSpot('A1')">Libre</div>
+                    <div class="parking-spot free" (click)="reserveSpot('A2')">Libre</div>
                     <div class="map-label">A2</div>
                 </div>
 
                 <div class="map-row">
                     <div class="map-label">B1</div>
                     <div class="parking-spot reserved">Reservee</div>
-                    <div class="parking-spot free">Libre</div>
+                    <div class="parking-spot free" (click)="reserveSpot('B2')">Libre</div>
                     <div class="map-label">B2</div>
                 </div>
 
@@ -120,7 +120,7 @@
 
                 <div class="map-row">
                     <div class="map-label">D1</div>
-                    <div class="parking-spot free">Libre</div>
+                    <div class="parking-spot free" (click)="reserveSpot('D1')">Libre</div>
                     <div class="parking-spot occupied">
                         <img src="moto.png" alt="Motorcycle">
                     </div>
@@ -128,9 +128,12 @@
                 </div>
             </div>
 
+            <app-form-reservation *ngIf="showReservationModal" [isVisible]="showReservationModal" (close)="closeReservationModal()"></app-form-reservation>
+
             <div class="reservation-prompt">
                 Cliquez sur une place libre pour reserver !
             </div>
         </div>
     </div>
+
 </div>
