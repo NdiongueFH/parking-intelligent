@@ -1,13 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, Router } from '@angular/router'; // Importez Router
+import { RouterModule, Router } from '@angular/router';
 import { HttpClientModule, HttpClient, HttpHeaders } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import * as L from 'leaflet';
-import { latLng, tileLayer, marker, icon, Map, MapOptions } from 'leaflet';
+import { latLng, tileLayer, Map, MapOptions } from 'leaflet';
 
 export interface Parking {
+  _id: string; // Assurez-vous d'avoir un champ ID
   nom_du_parking: string;
   adresse: string;
   latitude: number;
@@ -39,15 +40,23 @@ export class ListeParkingComponent implements OnInit {
   totalParkings = 0;
   pageNumbers: number[] = [];
   searchTerm: string = '';
-  selectedVehicleType: string = 'Voiture'; // Valeur par défaut
+  selectedVehicleType: string = 'Voiture';
   markers: L.Layer[] = [];
+  successMessage: string = '';
+  showSuccessModal: boolean = false;
 
-  showMapModal: boolean = false; // Pour afficher / cacher le modal de la carte
-  selectedLocation: { lat: number; lng: number } | null = null; // Pour stocker la localisation sélectionnée
-  map: Map | null = null; // Ajoutez cette ligne pour définir la propriété 'map'
-  
 
-  isEditing: boolean = false; // État d'édition des tarifs
+
+  showDeleteModal: boolean = false;
+selectedParking: Parking | null = null; // Pour stocker le parking à supprimer
+
+showSuccessMessage: boolean = false;
+
+  showMapModal: boolean = false;
+  selectedLocation: { lat: number; lng: number } | null = null;
+  map: Map | null = null;
+
+  isEditing: boolean = false;
   modifiedTariffs = {
     heure: 100,
     jour: 1000,
@@ -61,9 +70,9 @@ export class ListeParkingComponent implements OnInit {
     vehicleType: 'Voiture'
   };
 
-  // Nouvelles propriétés
   showAddForm: boolean = false;
   newParking: Parking = {
+    _id: '', // Ajoutez le champ ID
     nom_du_parking: '',
     adresse: '',
     latitude: 0,
@@ -71,12 +80,11 @@ export class ListeParkingComponent implements OnInit {
     capaciteTotale: 0
   };
 
-  selectedParking: Parking | null = null; // Pour stocker le parking sélectionné
-  selectedTab: string = 'details'; // Tab par défaut
+  selectedTab: string = 'details';
+  messageType: string = '';
 
   private apiUrl = 'http://localhost:3000/api/v1/parkings';
-  
-  // Déclaration et initialisation de mapOptions
+
   mapOptions: MapOptions = {
     layers: [
       tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { 
@@ -84,9 +92,9 @@ export class ListeParkingComponent implements OnInit {
       })
     ],
     zoom: 15,
-    center: latLng(14.6937, -17.4441) // Coordonnées par défaut
+    center: latLng(14.6937, -17.4441)
   };
-  
+
   constructor(private router: Router, private http: HttpClient) {}
 
   ngOnInit(): void {
@@ -96,33 +104,28 @@ export class ListeParkingComponent implements OnInit {
   logout(): void {
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-  
+
     this.http.post('http://localhost:3000/api/v1/auth/logout', {}, { headers }).subscribe(
       () => {
-        // Supprimer le token du localStorage
         localStorage.removeItem('token');
-        // Rediriger vers la page de connexion ou une autre page appropriée
         this.router.navigate(['/login']);
       },
       (error) => {
         console.error('Erreur lors de la déconnexion', error);
-        // Gérer l'erreur, par exemple en affichant un message à l'utilisateur
       }
     );
   }
-  
-  // Méthode pour afficher/cacher le formulaire
+
   toggleAddForm() {
     this.showAddForm = !this.showAddForm;
-    // Réinitialiser le formulaire si on le ferme
     if (!this.showAddForm) {
       this.resetForm();
     }
   }
-  
-  // Méthode pour réinitialiser le formulaire
+
   resetForm() {
     this.newParking = {
+      _id: '',
       nom_du_parking: '',
       adresse: '',
       latitude: 0,
@@ -130,46 +133,52 @@ export class ListeParkingComponent implements OnInit {
       capaciteTotale: 0
     };
   }
-  
-  // Méthode pour sélectionner un emplacement sur la carte
+
   selectMapLocation() {
-    this.showMapModal = true; // Ouvre le modal de la carte
-}
-  
-  // Méthode pour enregistrer un nouveau parking
+    this.showMapModal = true;
+  }
+
   saveParking() {
     if (!this.newParking.nom_du_parking || !this.newParking.adresse || !this.newParking.capaciteTotale) {
-      alert('Veuillez remplir tous les champs obligatoires');
+      this.messageType = 'error';
       return;
     }
-    
+
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    
+
     this.http.post<Parking>(this.apiUrl, this.newParking, { headers }).subscribe(
       (response) => {
         console.log('Parking ajouté avec succès:', response);
-        this.loadParkings(); // Recharger la liste
-        this.toggleAddForm(); // Fermer le formulaire
-        alert('Parking ajouté avec succès!');
+        this.loadParkings();
+        this.toggleAddForm();
+        this.successMessage = 'Parking créé avec succès !';
+        this.showSuccessModal = true;
+
+        setTimeout(() => {
+          this.showSuccessModal = false;
+          this.successMessage = '';
+        }, 2000);
       },
       (error) => {
         console.error('Erreur lors de l\'ajout du parking:', error);
-        alert('Erreur lors de l\'ajout du parking. Veuillez réessayer.');
       }
     );
   }
-  
-  // Méthodes existantes inchangées
+
+  closeSuccessModal() {
+    this.showSuccessModal = false;
+  }
+
   loadParkings(): void {
     const params = {
       page: this.currentPage,
       limit: this.itemsPerPage
     };
-    
+
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    
+
     this.http.get<any>(this.apiUrl, { params, headers }).subscribe(
       (data) => {
         console.log('Données récupérées:', data);
@@ -184,79 +193,78 @@ export class ListeParkingComponent implements OnInit {
       }
     );
   }
-  
+
   generatePagination() {
     this.pageNumbers = [];
     for (let i = 1; i <= this.totalPages; i++) {
       this.pageNumbers.push(i);
     }
   }
-  
+
   updatePaginatedItems() {
-    const filteredParkings = this.parkings.filter(parking => 
+    const filteredParkings = this.parkings.filter(parking =>
       parking.nom_du_parking.toLowerCase().includes(this.searchTerm.toLowerCase())
     );
-    
+
     this.totalParkings = filteredParkings.length;
     this.totalPages = Math.ceil(this.totalParkings / this.itemsPerPage);
     this.generatePagination();
-    
+
     const start = (this.currentPage - 1) * this.itemsPerPage;
     const end = start + this.itemsPerPage;
     this.paginatedParkings = filteredParkings.slice(start, end);
   }
-  
+
   filterParkings() {
     this.currentPage = 1;
     this.updatePaginatedItems();
   }
-  
+
   previousPage() {
     if (this.currentPage > 1) {
       this.currentPage--;
       this.updatePaginatedItems();
     }
   }
-  
+
   nextPage() {
     if (this.currentPage < this.totalPages) {
       this.currentPage++;
       this.updatePaginatedItems();
     }
   }
-  
+
   goToPage(page: number) {
     this.currentPage = page;
     this.updatePaginatedItems();
   }
 
   toggleParkingDetails(parking: Parking) {
-    // Si le parking est déjà sélectionné, on le désélectionne
     if (this.selectedParking === parking) {
       this.selectedParking = null;
-      this.selectedTab = 'details'; // Réinitialiser l'onglet
+      this.selectedTab = 'details';
     } else {
-      this.selectedParking = parking; // Sélectionner le parking
-      this.selectedTab = 'details'; // Afficher les détails par défaut
+      this.selectedParking = parking;
+      this.selectedTab = 'details';
     }
   }
 
   selectTab(tab: string) {
-    this.selectedTab = tab; // Changer l'onglet sélectionné
+    this.selectedTab = tab;
   }
 
   modifyTariffs() {
-    this.isEditing = !this.isEditing; // Inverse l'état d'édition
+    this.isEditing = !this.isEditing;
   }
 
   saveTariffs() {
     console.log('Nouveaux tarifs sauvegardés:', this.modifiedTariffs);
-    this.isEditing = false; // Réinitialiser l'état d'édition
+    this.isEditing = false;
   }
 
   addPlace() {
     console.log('Nouvelle place ajoutée:', this.newPlace);
-    this.newPlace = { name: '', status: 'Libre', vehicleType: 'Voiture' }; // Exemple de réinitialisation
+    this.newPlace = { name: '', status: 'Libre', vehicleType: 'Voiture' };
   }
 
   saveSelectedLocation() {
@@ -265,30 +273,30 @@ export class ListeParkingComponent implements OnInit {
       this.newParking.longitude = this.selectedLocation.lng;
 
       this.getAddressFromCoordinates(this.selectedLocation.lat, this.selectedLocation.lng).then(address => {
-        this.newParking.adresse = address; // Stocker l'adresse dans le champ 'adresse'
-        alert(`Emplacement sélectionné : ${this.newParking.adresse}`);
-        this.closeMapModal(); // Fermer le modal
+        this.newParking.adresse = address;
+        this.messageType = 'success';
+        this.closeMapModal();
       }).catch(error => {
         console.error('Erreur lors de la récupération de l\'adresse:', error);
-        alert('Erreur lors de la récupération de l\'adresse.');
+        this.messageType = 'error';
       });
     } else {
-      alert('Veuillez sélectionner un emplacement sur la carte.');
+      this.messageType = 'error';
     }
   }
 
   closeMapModal() {
-    this.showMapModal = false; // Fermer le modal
+    this.showMapModal = false;
   }
 
   onMapReady(map: Map): void {
     this.map = map;
     this.map.on('click', (event: L.LeafletMouseEvent) => {
       this.selectedLocation = { lat: event.latlng.lat, lng: event.latlng.lng };
-      
+
       if (this.map) {
         const newMarker = L.marker([event.latlng.lat, event.latlng.lng]);
-        newMarker.addTo(this.map); // Ajoutez le marqueur à la carte
+        newMarker.addTo(this.map);
       }
     });
   }
@@ -299,7 +307,7 @@ export class ListeParkingComponent implements OnInit {
       this.http.get<any>(url).subscribe(
         (response) => {
           if (response && response.display_name) {
-            resolve(response.display_name); // Retourne l'adresse
+            resolve(response.display_name);
           } else {
             reject('Adresse non trouvée');
           }
@@ -310,4 +318,51 @@ export class ListeParkingComponent implements OnInit {
       );
     });
   }
+
+  deleteParking(parking: Parking) {
+    const parkingId = parking._id; // Assurez-vous d'utiliser le bon champ ID
+    console.log('ID du parking à supprimer:', parkingId); // Log de l'ID
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+  
+    this.http.delete(`${this.apiUrl}/${parkingId}`, { headers }).subscribe(
+      response => {
+        console.log('Parking supprimé avec succès:', response);
+        this.loadParkings(); // Recharger la liste après suppression
+      },
+      error => {
+        console.error('Erreur lors de la suppression du parking:', error);
+      }
+    );
+  }
+
+  openDeleteModal(parking: Parking) {
+    this.selectedParking = parking; // Stockez le parking sélectionné
+    this.showDeleteModal = true; // Affichez le modal
+}
+
+closeDeleteModal() {
+    this.showDeleteModal = false; // Cachez le modal
+    this.selectedParking = null; // Réinitialisez le parking sélectionné
+}
+
+confirmDelete() {
+  if (this.selectedParking) {
+    this.deleteParking(this.selectedParking); // Appel de la méthode pour supprimer le parking
+
+    // Afficher le message de succès
+    this.successMessage = 'Parking supprimé avec succès!';
+    this.showSuccessMessage = true;
+
+    // Fermer le modal
+    this.closeDeleteModal();
+
+    // Réinitialiser le message après quelques secondes
+    setTimeout(() => {
+      this.showSuccessMessage = false;
+      this.successMessage = '';
+    }, 3000);
+  }
+}
+
 }

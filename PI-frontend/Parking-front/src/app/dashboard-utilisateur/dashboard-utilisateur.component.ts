@@ -4,54 +4,68 @@ import { Router, RouterModule } from '@angular/router';
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import * as L from 'leaflet';
 import { latLng, tileLayer, marker, icon, Map } from 'leaflet';
-import { HttpClient } from '@angular/common/http';
-import { HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { HttpClientModule } from '@angular/common/http';
 
-
-
+interface Parking {
+  nom_du_parking: string;
+  latitude: number;
+  longitude: number;
+  distanceKm?: string;
+}
 
 @Component({
   selector: 'app-dashboard-utilisateur',
   standalone: true,
-  imports: [CommonModule, RouterModule, LeafletModule,HttpClientModule],
+  imports: [CommonModule, RouterModule, LeafletModule, HttpClientModule],
   templateUrl: './dashboard-utilisateur.component.html',
   styleUrls: ['./dashboard-utilisateur.component.css']
 })
 export class UtilisateurDashboardComponent implements OnInit {
-  nearbyParkings = [
-    { name: 'Parking de l\'Aéroport LSS', distanceKm: '1.5', lat: 14.739, lng: -17.490 },
-    { name: 'Parking de l\'Hôtel Terrou-Bi', distanceKm: '2', lat: 14.715, lng: -17.477 },
-    { name: 'Parking de la Place du Souvenir', distanceKm: '3', lat: 14.695, lng: -17.448 },
-    { name: 'Parking de l\'Hôtel Pullman', distanceKm: '3.5', lat: 14.705, lng: -17.460 }
-  ];
-
+  nearbyParkings: Parking[] = [];
+  displayedParkings: Parking[] = [];
   mapOptions: any = null;
   markers: L.Layer[] = [];
   userPosition: L.LatLng | null = null;
   map: Map | null = null;
   isLoading: boolean = true;
+  private apiUrl = 'http://localhost:3000/api/v1/parkings';
 
   constructor(private router: Router, private http: HttpClient) {}
 
   ngOnInit(): void {
     this.getUserLocation();
+    this.loadNearbyParkings();
   }
 
   logout(): void {
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-  
+
     this.http.post('http://localhost:3000/api/v1/auth/logout', {}, { headers }).subscribe(
       () => {
-        // Supprimer le token du localStorage
         localStorage.removeItem('token');
-        // Rediriger vers la page de connexion ou une autre page appropriée
         this.router.navigate(['/login']);
       },
       (error) => {
         console.error('Erreur lors de la déconnexion', error);
-        // Gérer l'erreur, par exemple en affichant un message à l'utilisateur
+      }
+    );
+  }
+
+  loadNearbyParkings(): void {
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+    this.http.get<Parking[]>(this.apiUrl, { headers }).subscribe(
+      (data) => {
+        this.nearbyParkings = data;
+        this.updateParkingDistances();
+        this.limitDisplayedParkings();
+        this.addMarkers(); // Ajoutez les marqueurs après avoir récupéré les parkings
+      },
+      (error) => {
+        console.error('Erreur lors de la récupération des parkings', error);
       }
     );
   }
@@ -88,12 +102,12 @@ export class UtilisateurDashboardComponent implements OnInit {
       center: this.userPosition,
       zoomControl: true
     };
-    this.addMarkers();
   }
 
   onMapReady(map: Map): void {
     this.map = map;
     console.log('Carte prête');
+    this.addMarkers(); // Ajoutez les marqueurs lorsque la carte est prête
   }
 
   updateUserMarker(): void {
@@ -118,33 +132,42 @@ export class UtilisateurDashboardComponent implements OnInit {
   updateParkingDistances(): void {
     if (!this.userPosition) return;
     this.nearbyParkings.forEach(parking => {
-      parking.distanceKm = this.calculateDistance(this.userPosition!.lat, this.userPosition!.lng, parking.lat, parking.lng).toString();
+      parking.distanceKm = this.calculateDistance(this.userPosition!.lat, this.userPosition!.lng, parking.latitude, parking.longitude).toString();
     });
-    this.nearbyParkings.sort((a, b) => parseFloat(a.distanceKm) - parseFloat(b.distanceKm));
+    this.nearbyParkings.sort((a, b) => parseFloat(a.distanceKm!) - parseFloat(b.distanceKm!));
+  }
+
+  limitDisplayedParkings(): void {
+    this.displayedParkings = this.nearbyParkings.slice(0, 4); // Limite à 4 parkings pour l'affichage
   }
 
   addMarkers(): void {
     const userIcon = icon({ iconUrl: 'posi.jpeg', iconSize: [60, 60], iconAnchor: [30, 30], popupAnchor: [0, -32] });
     const parkingIcon = icon({ iconUrl: 'imagelogoParking.png', iconSize: [32, 32], iconAnchor: [16, 16], popupAnchor: [0, -16] });
-    if (this.userPosition) this.markers.push(marker([this.userPosition.lat, this.userPosition.lng], { icon: userIcon }).bindPopup('Votre position actuelle'));
-    this.updateParkingDistances();
+
+    // Ajoutez le marqueur de l'utilisateur s'il n'est pas déjà présent
+    if (this.userPosition && !this.markers.some(m => m.getPopup()?.getContent() === 'Votre position actuelle')) {
+      this.markers.push(marker([this.userPosition.lat, this.userPosition.lng], { icon: userIcon }).bindPopup('Votre position actuelle'));
+    }
+
+    // Ajoutez les marqueurs pour chaque parking
     this.nearbyParkings.forEach(parking => {
-      const parkingMarker = marker([parking.lat, parking.lng], { icon: parkingIcon }).bindPopup(`
-        <b>${parking.name}</b><br>
-        Distance: ${parking.distanceKm} km<br>
-        <button class='popup-reserve-btn' onclick="reserveParking('${parking.name}')">Réserver</button>
-      `);
-      this.markers.push(parkingMarker);
+      if (parking.latitude !== undefined && parking.longitude !== undefined) {
+        const parkingMarker = marker([parking.latitude, parking.longitude], { icon: parkingIcon }).bindPopup(`
+          <b>${parking.nom_du_parking}</b><br>
+          Distance: ${parking.distanceKm} km<br>
+          <button class='popup-reserve-btn' onclick="reserveParking('${parking.nom_du_parking}')">Réserver</button>
+        `);
+        this.markers.push(parkingMarker);
+      }
     });
   }
 
   reserveParking(parkingName: string): void {
-    this.router.navigate(['/parking'], { queryParams: { name: parkingName } });
+    this.router.navigate(['/parking-utilisateur'], { queryParams: { name: parkingName } });
   }
 
   goToSettings(): void {
-    this.router.navigate(['/modifier-utilisateur']); // Redirige vers la page de modification
-}
-
-
+    this.router.navigate(['/modifier-utilisateur']);
+  }
 }

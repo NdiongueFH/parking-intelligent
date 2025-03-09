@@ -1,0 +1,11 @@
+<div class="modal" *ngIf="isVisible" (click)="closeModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <img src="path-to-your-success-icon.svg" alt="Success" />
+            <h2>Notification</h2>
+        </div>
+        <p *ngIf="messageType === 'error'" class="error-message">{{ message }}</p>
+        <p *ngIf="messageType === 'success'" class="success-message">{{ message }}</p>
+        <!-- Ajoutez une classe pour le succès si nécessaire -->
+    </div>
+</div>

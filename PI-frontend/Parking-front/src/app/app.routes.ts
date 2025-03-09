@@ -54,6 +54,11 @@ export const routes: Routes = [
   },
 
   { 
+    path: 'notification-modal', 
+    loadComponent: () => import('./notification-modal/notification-modal.component').then(m => m.NotificationModalComponent) 
+  },
+
+  { 
     path: 'parking-utilisateur', 
     loadComponent: () => import('./parking-utilisateur/parking-utilisateur.component').then(m => m.ParkingUtilisateurComponent) 
   },

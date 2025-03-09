@@ -36,19 +36,16 @@
                     <img src="file.png" alt="Historiques" class="nav-icon">
                     <span>Historiques</span>
                 </a>
+
             </nav>
             <div class="logout-container">
                 <hr class="logout-divider">
-                <!-- Trait au-dessus de la déconnexion -->
                 <a class="logout-button" (click)="logout()">
                     <img src="deconnexion.png" alt="Déconnexion" class="logout-icon">
                     <span>Déconnexion</span>
                 </a>
-
             </div>
         </div>
-
-
 
         <div class="map-container">
             <div *ngIf="isLoading" class="loading-indicator">
@@ -58,22 +55,21 @@
             <div *ngIf="mapOptions" class="map" leaflet [leafletOptions]="mapOptions" [leafletLayers]="markers" (leafletMapReady)="onMapReady($event)">
             </div>
         </div>
+
         <!-- Parking Section -->
         <div class="main-content">
             <div class="parkings-list">
                 <h2>Parkings à proximité</h2>
                 <div class="parking-cards">
-                    <div class="parking-card" *ngFor="let parking of nearbyParkings">
-                        <h3>{{ parking.name }}</h3>
+                    <div class="parking-card" *ngFor="let parking of displayedParkings">
+                        <h3>{{ parking.nom_du_parking }}</h3>
                         <div class="parking-info">
                             <span>{{ parking.distanceKm }} km</span>
                         </div>
-                        <button class="reserve-button" [routerLink]="['/parking-utilisateur']">Réserver maintenant</button>
+                        <button class="reserve-button" (click)="reserveParking(parking.nom_du_parking)">Réserver maintenant</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
-
 </div>

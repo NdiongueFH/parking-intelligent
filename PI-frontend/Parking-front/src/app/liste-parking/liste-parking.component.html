@@ -89,16 +89,38 @@
                     </div>
                 </div>
 
+
                 <div class="form-actions">
                     <button class="btn-save" (click)="saveParking()">Enregistrer</button>
                 </div>
+
             </div>
 
+            <!-- Modal de succès -->
+            <div class="modal" *ngIf="showSuccessModal" (click)="closeSuccessModal()">
+                <div class="modal-content" (click)="$event.stopPropagation()">
+                    <div class="icon-circle">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="green">
+                <path d="M9 19L2 12l2-2 5 5 13-13 2 2-15 15z" />
+            </svg>
+                    </div>
+                    <h2>{{ successMessage }}</h2>
+                </div>
+            </div>
+
+            <!-- Message de succès -->
+            <div *ngIf="showSuccessMessage" class="success-message">
+                <h3>{{ successMessage }}</h3>
+            </div>
 
             <div class="parkings-container">
                 <div *ngFor="let parking of paginatedParkings" class="parking-item">
                     <div class="parking-header" (click)="toggleParkingDetails(parking)">
                         <h3>{{ parking.nom_du_parking }}</h3>
+
+                        <!-- Ajouter l'image de suppression à l'extrême droite -->
+                        <img src="sup.png" alt="Supprimer" class="delete-icon" (click)="openDeleteModal(parking); $event.stopPropagation()" />
+
                         <button class="expand-btn" [class.expanded]="selectedParking === parking">
                       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <polyline points="6 9 12 15 18 9"></polyline>
@@ -179,6 +201,10 @@
                                     </div>
                                 </div>
                             </div>
+
+
+
+
                         </div>
 
                         <div class="tab-content" *ngIf="selectedTab === 'amendes'">
@@ -247,5 +273,18 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal de confirmation de suppression -->
+    <div class="modal" *ngIf="showDeleteModal" (click)="closeDeleteModal()">
+        <div class="modal-content" (click)="$event.stopPropagation()">
+            <h2>Confirmer la suppression</h2>
+            <p>Êtes-vous sûr de vouloir supprimer le parking "{{ selectedParking?.nom_du_parking }}" ?</p>
+            <div class="modal-actions">
+                <button class="btn-confirm" (click)="confirmDelete()">Confirmer</button>
+                <button class="btn-cancel" (click)="closeDeleteModal()">Annuler</button>
+            </div>
+        </div>
+    </div>
+
 
 </div>

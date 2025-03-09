@@ -243,7 +243,6 @@ body {
 .main-content h1 {
     color: var(--primary-color);
     margin-bottom: 2rem;
-    text-align: center;
 }
 
 
@@ -320,12 +319,17 @@ body {
 
 .parking-spot {
     height: 60px;
+    /* Hauteur actuelle, vous pouvez l'ajuster si nécessaire */
+    width: 350px;
+    /* Augmentez la largeur ici */
     margin: 0 0.5rem;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 4px;
     font-weight: bold;
+    font-size: 1.2rem;
+    /* Vous pouvez également ajuster la taille de la police si nécessaire */
 }
 
 .parking-spot.free {
@@ -353,7 +357,65 @@ body {
     text-align: center;
     margin-top: 1rem;
     font-weight: bold;
-    color: var(--primary-color);
+    color: #ffffff;
+    font-size: 30px;
+}
+
+.parking-map {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.map-columns {
+    display: flex;
+}
+
+.map-column {
+    flex: 1;
+    margin-right: -15.5rem;
+    /* Diminuer l'espace ici */
+    min-width: 120px;
+    /* Largeur minimale des colonnes */
+    display: flex;
+    flex-direction: column;
+    /* Assurez-vous que les places se disposent en colonne */
+}
+
+.map-column:last-child {
+    margin-right: 0;
+    /* Pas de marge pour la dernière colonne */
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    margin-top: 20px;
+}
+
+.pagination button {
+    background-color: white;
+    border: 1px solid #ddd;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.pagination button:disabled {
+    background-color: #f5f5f5;
+    color: #999;
+    cursor: not-allowed;
+}
+
+.pagination button.active {
+    color: rgb(20, 20, 20);
+    /* Couleur verte pour le numéro de la page actuelle */
+    font-weight: bold;
+    /* Optionnel : mettre en gras */
+    background-color: rgba(2, 180, 2, 0.1);
+    /* Optionnel : fond léger pour plus de visibilité */
+    border: 1px solid green;
+    /* Optionnel : bordure verte */
 }
 
 

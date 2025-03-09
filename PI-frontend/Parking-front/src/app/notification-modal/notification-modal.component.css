@@ -1,0 +1,86 @@
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: white;
+    border-radius: 12px;
+    padding: 20px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    animation: fadeIn 0.5s;
+    text-align: center;
+}
+
+.error-message {
+    font-size: 20px;
+    /* Taille de police plus grande */
+    color: red;
+    /* Couleur rouge pour l'erreur */
+    margin-top: 10px;
+    /* Espace au-dessus du message */
+    font-weight: bold;
+    /* Texte en gras */
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+
+.modal-header img {
+    width: 40px;
+    height: auto;
+    margin-right: 10px;
+}
+
+.modal-header h2 {
+    margin: 0;
+    color: #4cd964;
+    /* Couleur pour le succès */
+}
+
+.modal-content p {
+    font-size: 16px;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.modal-content button {
+    background-color: #4cd964;
+    /* Couleur du bouton */
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.modal-content button:hover {
+    background-color: #45b657;
+    /* Couleur au survol */
+}
