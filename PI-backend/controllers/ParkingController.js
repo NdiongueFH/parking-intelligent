@@ -20,8 +20,8 @@ exports.getAllParkings = async(req, res) => {
                 statut: 'reservee'
             });
 
-            // Supprimer le champ _id avant d'envoyer la réponse
-            const { _id, ...parkingData } = parking.toObject(); // Enlever _id
+            // Enlever le champ _id ici n'est plus nécessaire
+            const parkingData = parking.toObject(); // Gardez l'_id
 
             // Ajouter les informations des places libres et réservées
             parkingData.placesLibres = placesLibres;
@@ -35,7 +35,6 @@ exports.getAllParkings = async(req, res) => {
         res.status(500).json({ message: err.message });
     }
 };
-
 // Récupérer un parking par son ID avec le nombre de places libres et réservées
 exports.getParkingById = async(req, res) => {
     try {

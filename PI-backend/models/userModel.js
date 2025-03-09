@@ -38,9 +38,9 @@ const userSchema = new mongoose.Schema({
         required: [true, 'Le mot de passe est obligatoire'],
         minlength: [8, 'Le mot de passe doit contenir au moins 8 caractères']
     },
-    adresse: { // Changement ici de "num_immatri" à "adresse"
+    adresse: {
         type: String,
-        required: [true, 'L\'adresse est obligatoire'] // Message d'erreur adapté
+        required: [true, 'L\'adresse est obligatoire']
     },
     role: {
         type: String,
@@ -49,21 +49,31 @@ const userSchema = new mongoose.Schema({
     },
     carteRfid: {
         type: String,
+        unique: true,
         required: function() {
             return this.role === 'administrateur';
         },
         validate: {
             validator: function(v) {
-                // Si l'utilisateur est un administrateur, la carte RFID est obligatoire
                 if (this.role === 'administrateur') {
                     return v && v.length > 0;
                 }
-                // Si l'utilisateur est un utilisateur normal, la carte RFID doit être absente
                 return v === undefined || v === null || v === '';
             },
             message: props =>
                 this.role === 'administrateur' ?
                 'La carte RFID est obligatoire pour les administrateurs' : 'Les utilisateurs normaux ne doivent pas avoir de carte RFID'
+        }
+    },
+    solde: {
+        type: Number,
+        default: 0, // La valeur par défaut sera définie lors de la création de l'utilisateur
+        required: true,
+        validate: {
+            validator: function(v) {
+                return v >= 0; // Validation pour s'assurer que le solde est positif
+            },
+            message: props => 'Le solde doit être un nombre positif.'
         }
     },
     createdAt: {
@@ -80,11 +90,9 @@ const userSchema = new mongoose.Schema({
 
 // Middleware pre-save pour hacher le mot de passe avant l'enregistrement
 userSchema.pre('save', async function(next) {
-    // Si le mot de passe n'a pas été modifié, passer à l'étape suivante
     if (!this.isModified('mot_de_passe')) return next();
 
     try {
-        // Générer un sel et hacher le mot de passe
         const salt = await bcrypt.genSalt(10);
         this.mot_de_passe = await bcrypt.hash(this.mot_de_passe, salt);
         next();

@@ -42,6 +42,9 @@ exports.signup = async(req, res) => {
             delete req.body.carteRfid;
         }
 
+        // Définir le solde par défaut selon le rôle
+        let solde = (req.body.role === 'administrateur') ? 2000000 : 0;
+
         // Créer un nouvel utilisateur
         const newUser = await User.create({
             nom: req.body.nom,
@@ -51,7 +54,8 @@ exports.signup = async(req, res) => {
             mot_de_passe: req.body.mot_de_passe,
             adresse: req.body.adresse,
             role: req.body.role,
-            carteRfid: req.body.carteRfid // La carte RFID est laissée de côté si le rôle est 'utilisateur'
+            carteRfid: req.body.carteRfid, // La carte RFID est laissée de côté si le rôle est 'utilisateur'
+            solde // Ajouter le solde
         });
 
         // Répondre avec les informations de l'utilisateur sans envoyer de token
@@ -71,6 +75,8 @@ exports.signup = async(req, res) => {
                 errorMessage = 'Cet email est déjà utilisé. Veuillez en choisir un autre.';
             } else if (err.keyPattern && err.keyPattern.telephone) {
                 errorMessage = 'Ce numéro de téléphone est déjà associé à un compte.';
+            } else if (err.keyPattern && err.keyPattern.carteRfid) {
+                errorMessage = 'Cette carte RFID est déjà utilisée. Veuillez en choisir une autre.';
             }
         }
 
