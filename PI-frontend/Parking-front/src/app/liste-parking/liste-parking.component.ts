@@ -8,7 +8,7 @@ import * as L from 'leaflet';
 import { latLng, tileLayer, Map, MapOptions } from 'leaflet';
 
 export interface Parking {
-  _id: string; // Assurez-vous d'avoir un champ ID
+  _id: string;
   nom_du_parking: string;
   adresse: string;
   latitude: number;
@@ -19,9 +19,12 @@ export interface Parking {
 }
 
 export interface Place {
-  name: string;
-  status: string;
-  vehicleType: string;
+  _id?: string;
+  parkingId: string;
+  nomPlace: string;
+  statut: string;
+  typeVehicule: string;
+ 
 }
 
 @Component({
@@ -40,22 +43,16 @@ export class ListeParkingComponent implements OnInit {
   totalParkings = 0;
   pageNumbers: number[] = [];
   searchTerm: string = '';
-  selectedVehicleType: string = 'Voiture';
+  selectedVehicleType: string = 'voiture';
   markers: L.Layer[] = [];
   successMessage: string = '';
   showSuccessModal: boolean = false;
-
-
-
   showDeleteModal: boolean = false;
-selectedParking: Parking | null = null; // Pour stocker le parking à supprimer
-
-showSuccessMessage: boolean = false;
-
+  selectedParking: Parking | null = null;
+  showSuccessMessage: boolean = false;
   showMapModal: boolean = false;
   selectedLocation: { lat: number; lng: number } | null = null;
   map: Map | null = null;
-
   isEditing: boolean = false;
   modifiedTariffs = {
     heure: 100,
@@ -65,20 +62,42 @@ showSuccessMessage: boolean = false;
   };
 
   newPlace: Place = {
-    name: '',
-    status: 'Libre',
-    vehicleType: 'Voiture'
+    parkingId: '',
+    nomPlace: '',
+    statut: 'libre',
+    typeVehicule: 'voiture'
   };
 
   showAddForm: boolean = false;
   newParking: Parking = {
-    _id: '', // Ajoutez le champ ID
+    _id: '',
     nom_du_parking: '',
     adresse: '',
     latitude: 0,
     longitude: 0,
     capaciteTotale: 0
   };
+
+  newAmende = {
+    duree: 0,
+    montant: 0,
+    typeInfraction: '',
+    typeVehicule: 'voiture'
+  };
+
+
+  resetNewAmende() {
+    this.newAmende = {
+      duree: 0,
+      montant: 0,
+      typeInfraction: '',
+      typeVehicule: 'voiture'
+    };
+  }
+
+  isEditingAmende = false;
+selectedAmende: any; // Assurez-vous que cela est initialisé lorsque vous sélectionnez une amende
+
 
   selectedTab: string = 'details';
   messageType: string = '';
@@ -139,32 +158,36 @@ showSuccessMessage: boolean = false;
   }
 
   saveParking() {
-    if (!this.newParking.nom_du_parking || !this.newParking.adresse || !this.newParking.capaciteTotale) {
-      this.messageType = 'error';
-      return;
+    // Validation des champs requis
+    if (!this.newParking.nom_du_parking || !this.newParking.adresse) {
+        this.messageType = 'error';
+        return;
     }
+
+    // Si capaciteTotale n'est pas défini, le mettre à 0
+    this.newParking.capaciteTotale = this.newParking.capaciteTotale || 0;
 
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
     this.http.post<Parking>(this.apiUrl, this.newParking, { headers }).subscribe(
-      (response) => {
-        console.log('Parking ajouté avec succès:', response);
-        this.loadParkings();
-        this.toggleAddForm();
-        this.successMessage = 'Parking créé avec succès !';
-        this.showSuccessModal = true;
+        (response) => {
+            console.log('Parking ajouté avec succès:', response);
+            this.loadParkings();
+            this.toggleAddForm();
+            this.successMessage = 'Parking créé avec succès !';
+            this.showSuccessModal = true;
 
-        setTimeout(() => {
-          this.showSuccessModal = false;
-          this.successMessage = '';
-        }, 2000);
-      },
-      (error) => {
-        console.error('Erreur lors de l\'ajout du parking:', error);
-      }
+            setTimeout(() => {
+                this.showSuccessModal = false;
+                this.successMessage = '';
+            }, 2000);
+        },
+        (error) => {
+            console.error('Erreur lors de l\'ajout du parking:', error);
+        }
     );
-  }
+}
 
   closeSuccessModal() {
     this.showSuccessModal = false;
@@ -257,14 +280,63 @@ showSuccessMessage: boolean = false;
     this.isEditing = !this.isEditing;
   }
 
-  saveTariffs() {
-    console.log('Nouveaux tarifs sauvegardés:', this.modifiedTariffs);
-    this.isEditing = false;
-  }
-
+  
   addPlace() {
-    console.log('Nouvelle place ajoutée:', this.newPlace);
-    this.newPlace = { name: '', status: 'Libre', vehicleType: 'Voiture' };
+    if (!this.newPlace.nomPlace || !this.newPlace.statut || !this.newPlace.typeVehicule) {
+        console.error('Tous les champs doivent être remplis.');
+        return;
+    }
+
+    // Assurez-vous que les valeurs sont en minuscules
+    this.newPlace.statut = this.newPlace.statut.toLowerCase();
+    this.newPlace.typeVehicule = this.newPlace.typeVehicule.toLowerCase();
+
+    // Vérifiez si newParking est défini
+    if (!this.newParking || !this.newParking._id) {
+        console.error('Aucun parking sélectionné. Veuillez sélectionner un parking.');
+        return;
+    }
+
+    // Remplir le parkingId
+    this.newPlace.parkingId = this.newParking._id;
+
+    // Log des données que vous allez envoyer
+    console.log('Données de la nouvelle place:', this.newPlace);
+
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+    this.http.post<Place>('http://localhost:3000/api/v1/place-parking', this.newPlace, { headers }).subscribe(
+        (response) => {
+            console.log('Place ajoutée avec succès:', response);
+            this.loadParkings();
+            this.resetNewPlace();
+            this.showSuccessMessage = true;
+            this.successMessage = 'Place ajoutée avec succès !';
+            setTimeout(() => {
+                this.showSuccessMessage = false;
+                this.successMessage = '';
+            }, 2000);
+        },
+        (error) => {
+            console.error('Erreur lors de l\'ajout de la place:', error);
+            console.error('Détails de l\'erreur:', error.error);
+        }
+    );
+}
+
+  selectParking(parking: Parking) {
+    this.newParking = parking; // Mettez à jour newParking avec le parking sélectionné
+    console.log('Parking sélectionné:', this.newParking); // Log pour vérifier la sélection
+}
+
+  resetNewPlace() {
+    this.newPlace = {
+      parkingId: '',
+      nomPlace: '',
+      statut: 'libre',
+      typeVehicule: 'voiture'
+    };
   }
 
   saveSelectedLocation() {
@@ -320,15 +392,15 @@ showSuccessMessage: boolean = false;
   }
 
   deleteParking(parking: Parking) {
-    const parkingId = parking._id; // Assurez-vous d'utiliser le bon champ ID
-    console.log('ID du parking à supprimer:', parkingId); // Log de l'ID
+    const parkingId = parking._id;
+    console.log('ID du parking à supprimer:', parkingId);
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
   
     this.http.delete(`${this.apiUrl}/${parkingId}`, { headers }).subscribe(
       response => {
         console.log('Parking supprimé avec succès:', response);
-        this.loadParkings(); // Recharger la liste après suppression
+        this.loadParkings();
       },
       error => {
         console.error('Erreur lors de la suppression du parking:', error);
@@ -337,32 +409,91 @@ showSuccessMessage: boolean = false;
   }
 
   openDeleteModal(parking: Parking) {
-    this.selectedParking = parking; // Stockez le parking sélectionné
-    this.showDeleteModal = true; // Affichez le modal
-}
-
-closeDeleteModal() {
-    this.showDeleteModal = false; // Cachez le modal
-    this.selectedParking = null; // Réinitialisez le parking sélectionné
-}
-
-confirmDelete() {
-  if (this.selectedParking) {
-    this.deleteParking(this.selectedParking); // Appel de la méthode pour supprimer le parking
-
-    // Afficher le message de succès
-    this.successMessage = 'Parking supprimé avec succès!';
-    this.showSuccessMessage = true;
-
-    // Fermer le modal
-    this.closeDeleteModal();
-
-    // Réinitialiser le message après quelques secondes
-    setTimeout(() => {
-      this.showSuccessMessage = false;
-      this.successMessage = '';
-    }, 3000);
+    this.selectedParking = parking;
+    this.showDeleteModal = true;
   }
+
+  closeDeleteModal() {
+    this.showDeleteModal = false;
+    this.selectedParking = null;
+  }
+
+  confirmDelete() {
+    if (this.selectedParking) {
+      this.deleteParking(this.selectedParking);
+      this.successMessage = 'Parking supprimé avec succès!';
+      this.showSuccessMessage = true;
+
+      this.closeDeleteModal();
+
+      setTimeout(() => {
+        this.showSuccessMessage = false;
+        this.successMessage = '';
+      }, 3000);
+    }
+  }
+
+  saveTariffs() {
+    if (!this.selectedParking || !this.selectedParking._id) {
+        console.error('Aucun parking sélectionné.');
+        return;
+    }
+
+    const tarifData = {
+        parkingId: this.selectedParking._id,
+        typeVehicule: this.selectedVehicleType,
+        tarifDurations: this.modifiedTariffs
+    };
+
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+    this.http.post('http://localhost:3000/api/v1/tarifs', tarifData, { headers }).subscribe(
+        (response) => {
+            console.log('Tarifs enregistrés avec succès:', response);
+            this.isEditing = false; // Fermer le mode édition
+            this.showSuccessMessage = true;
+            this.successMessage = 'Tarifs ajoutés avec succès !';
+            setTimeout(() => {
+                this.showSuccessMessage = false;
+                this.successMessage = '';
+            }, 2000);
+        },
+        (error) => {
+            console.error('Erreur lors de l\'enregistrement des tarifs:', error);
+        }
+    );
 }
+
+saveAmende() {
+  const amendeData = {
+      duree: this.newAmende.duree,
+      montant: this.newAmende.montant,
+      typeInfraction: this.newAmende.typeInfraction,
+      typeVehicule: this.newAmende.typeVehicule
+  };
+
+  const token = localStorage.getItem('token');
+  const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+  this.http.post('http://localhost:3000/api/v1/amendes', amendeData, { headers }).subscribe(
+      (response) => {
+          console.log('Amende créée avec succès:', response);
+          this.showSuccessMessage = true;
+          this.successMessage = 'Amende ajoutée avec succès !';
+          this.resetNewAmende(); // Réinitialiser le formulaire
+          setTimeout(() => {
+              this.showSuccessMessage = false;
+              this.successMessage = '';
+          }, 2000);
+      },
+      (error) => {
+          console.error('Erreur lors de l\'ajout de l\'amende:', error);
+      }
+  );
+}
+
+
+
 
 }

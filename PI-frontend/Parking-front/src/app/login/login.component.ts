@@ -48,16 +48,19 @@ export class LoginComponent {
     if (this.loginForm.valid) {
       this.loading = true;
       this.error = '';
-  
+
       this.http.post('http://localhost:3000/api/v1/auth/login', this.loginForm.value)
         .subscribe({
           next: (response: any) => {
             this.loading = false;
-  
-            // Stocker le token et le rôle
+
+            // Stocker le token et l'ID de l'utilisateur
             localStorage.setItem('token', response.token);
+            localStorage.setItem('userId', response.data.user._id); // Assurez-vous que l'ID est ici
+            console.log("User ID stocké:", response.data.user._id); // Log pour vérifier
+
             localStorage.setItem('userRole', response.data.user.role); // Récupérer le rôle
-  
+
             // Redirection selon le rôle
             if (response.data.user.role === 'utilisateur') {
               this.router.navigate(['/dashboard-utilisateur']);

@@ -152,7 +152,7 @@ body {
 }
 
 .logo {
-    width: 80%;
+    width: 110%;
     height: auto;
     box-shadow: 0 8px 8px rgba(0, 0, 0, 0.2);
     /* Ombre légère */
@@ -286,7 +286,7 @@ body {
 }
 
 .header-icon {
-    width: 40px;
+    width: 60px;
     /* Ajustez la taille selon vos besoins */
     height: auto;
     /* Maintient le ratio de l'image */

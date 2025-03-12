@@ -307,7 +307,7 @@ input {
 }
 
 .header-icon {
-    width: 40px;
+    width: 60px;
     /* Ajustez la taille selon vos besoins */
     height: auto;
     /* Maintient le ratio de l'image */
@@ -394,6 +394,24 @@ input {
 
 .logout-button:hover {
     color: crimson;
+}
+
+.logo-container {
+    width: 60px;
+    height: 60px;
+    background-color: var(--white);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.logo {
+    width: 110%;
+    height: auto;
+    box-shadow: 0 8px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 50%;
 }
 
 
@@ -1121,6 +1139,15 @@ input {
 .modal-actions {
     display: flex;
     justify-content: space-between;
+}
+
+.error-message {
+    color: red;
+    /* Texte rouge */
+    font-weight: bold;
+    /* Texte en gras */
+    margin: 10px 0;
+    /* Marges pour l'espacement */
 }
 
 

@@ -28,22 +28,31 @@ interface ReservationData {
   styleUrls: ['./facture.component.css']
 })
 export class FactureComponent {
-  reservationData: ReservationData = {
-    emissionDate: '20 Fevrier 2025',
-    parkingName: 'Parking de la Place du Souvenir',
-    reservationCode: '24681',
-    status: 'En attente',
-    receiptNumber: 'N-0003',
-    clientName: 'Mamadou Dia',
-    clientEmail: 'mamadou@gmail.com',
-    clientPhone: '775323872',
-    licensePlate: 'AA-672-AZ',
-    parkingPlace: 'Place A1',
-    startTime: '10h15',
-    endTime: '11h15',
-    duration: '1 heure',
-    hourlyRate: 100,
-    totalAmount: 100,
-    currency: 'FCFA'
-  };
+  reservationData: ReservationData;
+
+  constructor() {
+    const data = localStorage.getItem('reservationData');
+    if (data) {
+      this.reservationData = JSON.parse(data);
+    } else {
+      this.reservationData = {
+        emissionDate: '',
+        parkingName: '',
+        reservationCode: '',
+        status: '',
+        receiptNumber: '',
+        clientName: '',
+        clientEmail: '',
+        clientPhone: '',
+        licensePlate: '',
+        parkingPlace: '',
+        startTime: '',
+        endTime: '',
+        duration: '',
+        hourlyRate: 0,
+        totalAmount: 0,
+        currency: 'FCFA'
+      };
+    }
+  }
 }

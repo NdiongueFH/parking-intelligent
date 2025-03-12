@@ -13,12 +13,12 @@
         </div>
 
         <div class="header-icons">
-            <button class="notification-button">
+            <!-- <button class="notification-button">
                 <img src="not.png" alt="Notifications" class="header-icon" />
                 <span class="notification-badge">3</span>
-            </button>
+            </button> -->
             <button class="settings-button">
-                <img src="par.png" alt="Settings" class="header-icon" />
+                <img src="iconeParametre.jpg" alt="Settings" class="header-icon" />
             </button>
         </div>
     </header>
@@ -93,7 +93,6 @@
                 <div class="form-actions">
                     <button class="btn-save" (click)="saveParking()">Enregistrer</button>
                 </div>
-
             </div>
 
             <!-- Modal de succès -->
@@ -114,6 +113,11 @@
             </div>
 
             <div class="parkings-container">
+
+                <div *ngIf="paginatedParkings.length === 0" class="error-message">
+                    Aucun parking n'est disponible dans cette liste.
+                </div>
+
                 <div *ngFor="let parking of paginatedParkings" class="parking-item">
                     <div class="parking-header" (click)="toggleParkingDetails(parking)">
                         <h3>{{ parking.nom_du_parking }}</h3>
@@ -121,12 +125,13 @@
                         <!-- Ajouter l'image de suppression à l'extrême droite -->
                         <img src="sup.png" alt="Supprimer" class="delete-icon" (click)="openDeleteModal(parking); $event.stopPropagation()" />
 
-                        <button class="expand-btn" [class.expanded]="selectedParking === parking">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="6 9 12 15 18 9"></polyline>
-                      </svg>
-                    </button>
+                        <button class="expand-btn" [class.expanded]="selectedParking === parking" (click)="selectParking(parking)">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </button>
                     </div>
+
 
                     <!-- Contenu détaillé du parking (visible quand sélectionné) -->
                     <div class="parking-details" *ngIf="selectedParking === parking">
@@ -168,9 +173,9 @@
                                     </div>
                                     <div class="tarif-item">
                                         <div class="tarif-label">Type de véhicule :</div>
-                                        <select id="vehicle-type" class="form-select">
-                                            <option>Voiture</option>
-                                            <option>Moto</option>
+                                        <select [(ngModel)]="selectedVehicleType" class="form-select">
+                                            <option value="voiture">Voiture</option>
+                                            <option value="moto">Moto</option>
                                         </select>
                                     </div>
                                 </div>
@@ -201,24 +206,31 @@
                                     </div>
                                 </div>
                             </div>
-
-
-
-
                         </div>
 
                         <div class="tab-content" *ngIf="selectedTab === 'amendes'">
                             <div class="form-row amendes-form">
-                                <input type="text" placeholder="Type infraction" class="form-control">
-                                <input type="text" placeholder="Montant" class="form-control">
-                                <input type="text" placeholder="Durée" class="form-control">
-                                <select class="form-select">
-                          <option>Type véhicule</option>
-                          <option>Voiture</option>
-                          <option>Moto</option>
-                        </select>
+                                <div class="form-group">
+                                    <label for="typeInfraction">Type d'infraction</label>
+                                    <input type="text" id="typeInfraction" placeholder="Type infraction" class="form-control" [(ngModel)]="newAmende.typeInfraction" required />
+                                </div>
+                                <div class="form-group">
+                                    <label for="montant">Montant (FCFA)</label>
+                                    <input type="number" id="montant" placeholder="Montant" class="form-control" [(ngModel)]="newAmende.montant" required />
+                                </div>
+                                <div class="form-group">
+                                    <label for="duree">Durée (minutes)</label>
+                                    <input type="number" id="duree" placeholder="Durée" class="form-control" [(ngModel)]="newAmende.duree" required />
+                                </div>
+                                <div class="form-group">
+                                    <label for="typeVehicule">Type de véhicule</label>
+                                    <select id="typeVehicule" [(ngModel)]="newAmende.typeVehicule" class="form-select" required>
+                                        <option value="voiture">Voiture</option>
+                                        <option value="moto">Moto</option>
+                                    </select>
+                                </div>
                             </div>
-                            <button class="action-button">Ajouter</button>
+                            <button class="action-button" (click)="saveAmende()">Ajouter</button>
                         </div>
 
                         <div class="tab-content" *ngIf="selectedTab === 'places'">
@@ -226,21 +238,21 @@
                                 <div class="places-row">
                                     <div class="places-item">
                                         <div class="places-label">Nom de la place :</div>
-                                        <input type="text" [(ngModel)]="newPlace.name" class="places-input" placeholder="Entrez le nom de la place" />
+                                        <input type="text" [(ngModel)]="newPlace.nomPlace" class="places-input" placeholder="Entrez le nom de la place" />
                                     </div>
                                     <div class="places-item">
                                         <div class="places-label">Statut :</div>
-                                        <select [(ngModel)]="newPlace.status" class="form-select">
-                                            <option>Libre</option>
-                                            <option>Occupée</option>
-                                            <option>Réservée</option>
+                                        <select [(ngModel)]="newPlace.statut" class="form-select">
+                                            <option>libre</option>
+                                            <option>occupee</option>
+                                            <option>reservee</option>
                                         </select>
                                     </div>
                                     <div class="places-item">
                                         <div class="places-label">Type de véhicule :</div>
-                                        <select [(ngModel)]="newPlace.vehicleType" class="form-select">
-                                            <option>Voiture</option>
-                                            <option>Moto</option>
+                                        <select [(ngModel)]="newPlace.typeVehicule" class="form-select">
+                                            <option>voiture</option>
+                                            <option>moto</option>
                                         </select>
                                     </div>
                                 </div>

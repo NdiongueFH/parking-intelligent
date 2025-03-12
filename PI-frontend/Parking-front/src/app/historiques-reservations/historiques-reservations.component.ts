@@ -38,7 +38,6 @@ interface ApiReservation {
   placeId: ApiPlace; // Changez ceci pour le type ApiPlace
   heureRestante: string; // ou Date si vous traitez cela comme une date
   duree: string;
-  statut: string;
   etat: string;
   montant: number;
   paiement: string;
@@ -97,7 +96,6 @@ export class HistoriquesReservationsComponent implements OnInit, AfterViewInit {
     placeId: { _id: '', nomPlace: '', statut: '' },
     heureRestante: '',
     duree: '',
-    statut: '',
     etat: '',
     montant: 0,
     paiement: '',

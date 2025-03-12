@@ -10,12 +10,8 @@
         </div>
 
         <div class="header-icons">
-            <button class="notification-button">
-                <img src="not.png" alt="Notifications" class="header-icon" />
-                <span class="notification-badge">3</span>
-            </button>
             <button class="settings-button">
-                <img src="par.png" alt="Settings" class="header-icon" />
+                <img src="iconeParametre.jpg" alt="Settings" class="header-icon" />
             </button>
         </div>
     </header>
@@ -54,6 +50,11 @@
         <!-- Main Dashboard Content -->
         <div class="main-content">
             <h1>{{ parkingName }}</h1>
+
+            <!-- Message de succès -->
+            <div *ngIf="successMessage" class="success-message">
+                <p>{{ successMessage }}</p>
+            </div>
 
             <!-- Parking Stats -->
             <div class="parking-stats">
@@ -95,11 +96,11 @@
                             <div *ngFor="let place of column" class="map-row">
                                 <div class="map-label">{{ place.nomPlace }}</div>
                                 <div [ngClass]="{
-                        'parking-spot': true,
-                        'free': place.statut === 'libre',
-                        'occupied': place.statut === 'occupee',
-                        'reserved': place.statut === 'reservee'
-                    }" (click)="place.statut === 'libre' ? reserveSpot(place.nomPlace) : null">
+                                    'parking-spot': true,
+                                    'free': place.statut === 'libre',
+                                    'occupied': place.statut === 'occupee',
+                                    'reserved': place.statut === 'reservee'
+                                }" (click)="place.statut === 'libre' ? reserveSpot(place) : null">
                                     {{ place.statut.charAt(0).toUpperCase() + place.statut.slice(1) }}
                                 </div>
                             </div>
@@ -107,6 +108,12 @@
                     </ng-container>
                 </div>
             </div>
+
+
+            <!-- Modal de réservation -->
+            <app-form-reservation *ngIf="showReservationModal" [isVisible]="showReservationModal" [selectedSpot]="selectedSpot" [parkingId]="parkingId" [placeId]="selectedSpot?.placeId" [parkingName]="parkingName" [parkingAddress]="parkingAddress" (close)="closeReservationModal()"
+                (reservationSuccess)="onReservationSuccess($event)"> >
+            </app-form-reservation>
 
             <!-- Pagination -->
             <div class="pagination">
@@ -116,10 +123,6 @@
                 </button>
                 <button (click)="nextPage()" [disabled]="currentPage === totalPages">Suivant</button>
             </div>
-
-            <app-form-reservation *ngIf="showReservationModal" [isVisible]="showReservationModal" (close)="closeReservationModal()"></app-form-reservation>
-
-
         </div>
     </div>
 </div>
