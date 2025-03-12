@@ -2,17 +2,14 @@ const Reservation = require('../models/reservationModel');
 const Parking = require('../models/parking');
 const PlaceParking = require('../models/placeParking');
 const TarifStationnement = require('../models/tarifStationnementModel');
+const User = require('../models/userModel'); // Assurez-vous d'importer le modèle User
 
-
-// Ajouter une réservation
 // Ajouter une réservation
 exports.addReservation = async(req, res) => {
     try {
-        // 1. Vérifier que la date et l'heure d'arrivée sont supérieures ou égales à la date et l'heure actuelles
         const heureArrivee = new Date(req.body.heureArrivee);
         const maintenant = new Date();
 
-        // Comparer la date et l'heure d'arrivée avec la date et l'heure actuelles
         if (heureArrivee < maintenant) {
             return res.status(400).json({
                 status: 'fail',
@@ -20,7 +17,6 @@ exports.addReservation = async(req, res) => {
             });
         }
 
-        // 2. Récupérer le parking en utilisant l'id de parking
         const parking = await Parking.findById(req.body.parkingId);
         if (!parking) {
             return res.status(404).json({
@@ -29,7 +25,6 @@ exports.addReservation = async(req, res) => {
             });
         }
 
-        // 3. Récupérer les tarifs pour le type de véhicule spécifié
         const tarif = await TarifStationnement.findOne({
             parkingId: req.body.parkingId,
             typeVehicule: req.body.typeVehicule
@@ -41,7 +36,6 @@ exports.addReservation = async(req, res) => {
             });
         }
 
-        // 4. Récupérer les informations de la place de parking
         const place = await PlaceParking.findById(req.body.placeId);
         if (!place) {
             return res.status(404).json({
@@ -50,15 +44,14 @@ exports.addReservation = async(req, res) => {
             });
         }
 
-        // Vérifier que la place est libre avant de la réserver
-        if (place.statut === 'reservee') {
-            throw new Error('Place de parking déjà réservée');
+        if (place.statut === 'reservee' || place.statut === 'occupee') {
+            return res.status(400).json({
+                status: 'fail',
+                message: 'Place de parking déjà réservée ou occupée',
+            });
         }
 
-        // 5. Calculer la durée de la réservation (heureArrivée - heureDépart)
         const heureDepart = new Date(req.body.heureDepart);
-
-        // Vérifier que l'heure d'arrivée est bien inférieure à l'heure de départ
         if (heureArrivee >= heureDepart) {
             return res.status(400).json({
                 status: 'fail',
@@ -66,22 +59,39 @@ exports.addReservation = async(req, res) => {
             });
         }
 
-        // Calcul de la durée en millisecondes
+        // Calculer le montant
         const dureeEnMillisecondes = heureDepart - heureArrivee;
+        const dureeEnMinutes = Math.floor(dureeEnMillisecondes / (1000 * 60));
 
-        // Convertir la durée en minutes
-        const dureeEnMinutes = Math.floor(dureeEnMillisecondes / (1000 * 60)); // 1 minute = 60000 millisecondes
-
-        // 6. Calculer le montant en fonction de la durée et du tarif
         let montant = 0;
-
-        if (dureeEnMinutes >= 1440) { // Si la durée est supérieure ou égale à un jour (1440 minutes)
-            montant = tarif.tarifDurations.jour * Math.ceil(dureeEnMinutes / 1440); // Tarif journalier
-        } else if (dureeEnMinutes >= 60) { // Si la durée est en heures (>= 60 minutes)
-            montant = tarif.tarifDurations.heure * Math.ceil(dureeEnMinutes / 60); // Tarif horaire
+        if (dureeEnMinutes >= 1440) {
+            montant = tarif.tarifDurations.jour * Math.ceil(dureeEnMinutes / 1440);
+        } else if (dureeEnMinutes >= 60) {
+            montant = tarif.tarifDurations.heure * Math.ceil(dureeEnMinutes / 60);
         } else {
             montant = tarif.tarifDurations.heure; // Minimum de 1 heure
         }
+
+        const user = await User.findById(req.body.userId);
+        if (!user) {
+            return res.status(404).json({
+                status: 'fail',
+                message: 'Utilisateur non trouvé',
+            });
+        }
+
+        if (user.role === 'utilisateur' && user.solde < montant) {
+            return res.status(400).json({
+                status: 'fail',
+                message: 'Le montant de votre solde ne vous permet pas de faire cette réservation, veuillez faire un dépôt.',
+            });
+        }
+
+        const fraisTransaction = montant * 0.02;
+        const montantTotal = montant + fraisTransaction;
+
+        // Calculer le temps restant en minutes
+        const tempsRestant = Math.floor(dureeEnMillisecondes / (1000 * 60));
 
         // 7. Générer le code numérique (code aléatoire à 5 chiffres)
         const codeNumerique = Math.floor(10000 + Math.random() * 90000); // Générer un code numérique aléatoire
@@ -90,49 +100,72 @@ exports.addReservation = async(req, res) => {
         const lastReservation = await Reservation.findOne().sort({ reservationId: -1 }).limit(1); // Chercher la dernière réservation
         const numeroRecu = lastReservation ? `N-${String(lastReservation.reservationId + 1).padStart(4, '0')}` : 'N-0001';
 
-        // 9. Créer une nouvelle réservation
-        const reservation = await Reservation.create({
+        // Créer une nouvelle réservation
+        const reservation = new Reservation({
             userId: req.body.userId,
             parkingId: req.body.parkingId,
-            tarifId: tarif._id, // Utilisation de l'ID du tarif trouvé
+            tarifId: tarif._id,
             typeVehicule: req.body.typeVehicule,
             placeId: req.body.placeId,
+            numeroImmatriculation: req.body.numeroImmatriculation,
             heureArrivee: req.body.heureArrivee,
             heureDepart: req.body.heureDepart,
-            heureRestante: req.body.heureRestante,
-            duree: dureeEnMinutes, // Durée en minutes (en tant que nombre entier)
-            statut: req.body.paiement === 'en ligne' ? 'confirmée' : 'en attente',
-            etat: 'En cours', // Par défaut
-            montant: montant, // Calcul du montant
-            paiement: req.body.paiement,
+            heureRestante: tempsRestant, // Calculé automatiquement dans le modèle
+            duree: `${String(Math.floor(dureeEnMinutes / 60)).padStart(2, '0')}:${String(dureeEnMinutes % 60).padStart(2, '0')}:00`, // Format HH:mm:ss
+            etat: 'En cours',
+            montant: montantTotal,
+            paiement: 'en ligne', // Paiement uniquement en ligne
             codeNumerique: codeNumerique,
             numeroRecu: numeroRecu,
         });
 
-        // 10. Mettre à jour le statut de la place de parking à "reservee" si ce n'est pas déjà réservé
+        await reservation.save();
+
+
+        // Mettre à jour le solde de l'utilisateur
+        user.solde -= montantTotal; // Déduire le montant total du solde
+        await user.save(); // Sauvegarder les modifications
+
+        // Mettre à jour la place de parking à "reservee"
         place.statut = 'reservee';
         await place.save();
 
-        // 11. Planifier la mise à jour du statut de la place à "libre" à la fin de la réservation
+        // Vérifier et gérer les amendes après la période de réservation
         setTimeout(async() => {
-            place.statut = 'libre';
-            await place.save();
-            console.log(`Place ${place.nomPlace} mise à jour à "libre" à la fin de la réservation.`);
+            const currentTime = new Date();
+            if (currentTime >= heureDepart) {
+                // Vérifier si la réservation est toujours "occupée"
+                const updatedReservation = await Reservation.findById(reservation._id);
+                if (updatedReservation && updatedReservation.etat === 'En cours') {
+                    const amende = await Amende.findOne({
+                        typeInfraction: 'Dépassement de durée',
+                        typeVehicule: req.body.typeVehicule
+                    });
+
+                    if (amende) {
+                        // Créer une nouvelle amende pour cette réservation
+                        await Amende.create({
+                            duree: `${dureeEnMinutes} minutes`,
+                            montant: amende.montant,
+                            typeInfraction: amende.typeInfraction,
+                            typeVehicule: req.body.typeVehicule,
+                            reservationId: reservation._id
+                        });
+                    }
+                }
+
+                // Mettre à jour la place à "libre"
+                place.statut = 'libre';
+                await place.save();
+                console.log(`Place ${place.nomPlace} mise à jour à "libre" après la réservation.`);
+            }
         }, dureeEnMillisecondes);
 
-        // 12. Renvoyer la réponse avec les informations demandées, y compris le nom du parking et le nom de la place
+        // Renvoyer la réponse avec les informations de la réservation
         res.status(201).json({
             status: 'success',
             message: 'Réservation effectuée avec succès',
-            data: {
-                parkingNom: parking.nom_du_parking, // Nom du parking
-                placeNom: place.nomPlace, // Nom de la place
-                typeVehicule: reservation.typeVehicule, // Type de véhicule
-                duree: dureeEnMinutes, // Durée correcte en minutes (et non pas en chaîne de caractères)
-                montant: reservation.montant, // Montant calculé
-                codeNumerique: reservation.codeNumerique, // Code numérique
-                numeroRecu: reservation.numeroRecu // Numéro de reçu
-            },
+            data: reservation,
         });
     } catch (err) {
         res.status(400).json({
@@ -141,9 +174,6 @@ exports.addReservation = async(req, res) => {
         });
     }
 };
-
-
-
 
 // Modifier une réservation
 exports.updateReservation = async(req, res) => {
@@ -158,47 +188,68 @@ exports.updateReservation = async(req, res) => {
             });
         }
 
+        if (existingReservation.etat !== 'En cours') {
+            return res.status(400).json({
+                status: 'fail',
+                message: 'La réservation ne peut être modifiée que si elle est en cours',
+            });
+        }
+
         const updateData = {...req.body };
 
-        if (updateData.heureArrivée || updateData.heureDépart) {
+        if (updateData.heureArrivee || updateData.heureDepart) {
             const heureArrivee = new Date(updateData.heureArrivee || existingReservation.heureArrivee);
             const heureDepart = new Date(updateData.heureDepart || existingReservation.heureDepart);
 
-            // Vérifier que les dates sont valides
-            if (isNaN(heureArrivée.getTime()) || isNaN(heureDepart.getTime())) {
+            if (isNaN(heureArrivee.getTime()) || isNaN(heureDepart.getTime())) {
                 return res.status(400).json({
                     status: 'fail',
                     message: 'Les heures d\'arrivée ou de départ sont invalides',
                 });
             }
 
+            const place = await PlaceParking.findById(existingReservation.placeId);
+            if (place.statut === 'reservee' || place.statut === 'occupee') {
+                return res.status(400).json({
+                    status: 'fail',
+                    message: 'La place est déjà réservée ou occupée.',
+                });
+            }
+
             const dureeEnMillisecondes = heureDepart - heureArrivee;
             const dureeEnMinutes = Math.floor(dureeEnMillisecondes / (1000 * 60));
 
-            updateData.duree = dureeEnMinutes;
-
-            const tarif = await TarifStationnement.findById(existingReservation.tarifId);
-
-            if (tarif) {
-                let montant = 0;
-                if (dureeEnMinutes >= 1440) {
-                    montant = tarif.tarifDurations.jour * Math.ceil(dureeEnMinutes / 1440);
-                } else if (dureeEnMinutes >= 60) {
-                    montant = tarif.tarifDurations.heure * Math.ceil(dureeEnMinutes / 60);
-                } else {
-                    montant = tarif.tarifDurations.heure;
-                }
-
-                updateData.montant = montant;
-            } else {
-                return res.status(404).json({
+            if (heureArrivee >= heureDepart) {
+                return res.status(400).json({
                     status: 'fail',
-                    message: 'Tarif non trouvé pour cette réservation',
+                    message: 'L\'heure d\'arrivée doit être strictement inférieure à l\'heure de départ',
                 });
             }
+
+            const tarif = await TarifStationnement.findById(existingReservation.tarifId);
+            let montant = 0;
+            if (dureeEnMinutes >= 1440) {
+                montant = tarif.tarifDurations.jour * Math.ceil(dureeEnMinutes / 1440);
+            } else if (dureeEnMinutes >= 60) {
+                montant = tarif.tarifDurations.heure * Math.ceil(dureeEnMinutes / 60);
+            } else {
+                montant = tarif.tarifDurations.heure; // Minimum de 1 heure
+            }
+
+            // Mettre à jour les données de réservation
+            updateData.duree = dureeEnMinutes;
+            updateData.montant = montant;
         }
 
-        const updatedReservation = await Reservation.findByIdAndUpdate(id, updateData, {
+        // Mettre à jour le numéro d'immatriculation et le type de véhicule si fournis
+        if (updateData.immatriculation) {
+            existingReservation.immatriculation = updateData.immatriculation;
+        }
+        if (updateData.typeVehicule) {
+            existingReservation.typeVehicule = updateData.typeVehicule;
+        }
+
+        const updatedReservation = await Reservation.findByIdAndUpdate(id, {...existingReservation, ...updateData }, {
             new: true,
             runValidators: true,
         });
@@ -217,13 +268,10 @@ exports.updateReservation = async(req, res) => {
     }
 };
 
-
-// 3. Annuler une réservation
+// Annuler une réservation
 exports.cancelReservation = async(req, res) => {
     try {
         const { id } = req.params;
-
-        // Récupérer la réservation pour vérifier l'état de la place avant l'annulation
         const canceledReservation = await Reservation.findById(id);
 
         if (!canceledReservation) {
@@ -233,12 +281,16 @@ exports.cancelReservation = async(req, res) => {
             });
         }
 
-        // Mettre à jour l'état de la réservation à 'Annulée'
-        canceledReservation.etat = 'Annulee'; // La réservation est annulée
+        if (canceledReservation.etat !== 'En cours') {
+            return res.status(400).json({
+                status: 'fail',
+                message: 'La réservation ne peut être annulée que si elle est en cours'
+            });
+        }
 
-        // Récupérer la place de parking associée à cette réservation
+        canceledReservation.etat = 'Annulee';
+
         const place = await PlaceParking.findById(canceledReservation.placeId);
-
         if (!place) {
             return res.status(404).json({
                 status: 'fail',
@@ -246,11 +298,8 @@ exports.cancelReservation = async(req, res) => {
             });
         }
 
-        // Mettre à jour l'état de la place de parking à 'libre'
         place.statut = 'libre';
-        await place.save(); // Sauvegarder la place mise à jour
-
-        // Sauvegarder la réservation mise à jour
+        await place.save();
         await canceledReservation.save();
 
         res.status(200).json({
@@ -268,12 +317,10 @@ exports.cancelReservation = async(req, res) => {
     }
 };
 
-
-// 4. Lister toutes les réservations d'un utilisateur spécifique
+// Lister toutes les réservations d'un utilisateur spécifique
 exports.getReservationsByUser = async(req, res) => {
     try {
         const { userId } = req.params;
-
         const reservations = await Reservation.find({ userId });
 
         if (!reservations || reservations.length === 0) {
@@ -303,7 +350,7 @@ exports.getAllReservations = async(req, res) => {
         const reservations = await Reservation.find()
             .populate('parkingId', 'nom_du_parking adresse')
             .populate('userId', 'nom prenom telephone')
-            .populate('placeId', 'nomPlace statut'); // Ajoutez ce populate
+            .populate('placeId', 'nomPlace statut');
 
         if (!reservations || reservations.length === 0) {
             return res.status(404).json({

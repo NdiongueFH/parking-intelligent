@@ -7,7 +7,6 @@ const generateCodeNumerique = () => {
 
 // Fonction pour générer un numéro de reçu
 const generateNumeroRecu = async() => {
-    // Récupérer le dernier numéro de reçu de la base de données pour incrémentation
     const lastReservation = await Reservation.findOne().sort({ numeroRecu: -1 }).limit(1);
     const lastNumber = lastReservation ? parseInt(lastReservation.numeroRecu.split('-')[1]) : 0;
     const newNumber = lastNumber + 1;
@@ -16,7 +15,7 @@ const generateNumeroRecu = async() => {
 
 // Fonction pour calculer la durée entre heureArrivée et heureDépart
 const calculateDuration = (heureArrivée, heureDépart) => {
-    const diff = new Date(heureDépart) - new Date(heureArrivée); // Différence en millisecondes
+    const diff = new Date(heureDépart) - new Date(heureArrivée);
     const hours = Math.floor(diff / (1000 * 60 * 60));
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((diff % (1000 * 60)) / 1000);
@@ -62,17 +61,12 @@ const reservationSchema = new mongoose.Schema({
         required: true
     },
     duree: {
-        type: String, // Formater la durée en HH:mm:ss
-        required: true
-    },
-    statut: {
         type: String,
-        enum: ['confirmée', 'en attente'],
         required: true
     },
     etat: {
         type: String,
-        enum: ['En cours', 'Annulee', 'Terminée'],
+        enum: ['En cours', 'Annulée', 'Terminée'],
         required: true
     },
     montant: {
@@ -81,7 +75,11 @@ const reservationSchema = new mongoose.Schema({
     },
     paiement: {
         type: String,
-        enum: ['en ligne', 'sur place'],
+        enum: ['en ligne'],
+        required: true
+    },
+    numeroImmatriculation: {
+        type: String,
         required: true
     },
     codeNumerique: {
@@ -96,20 +94,11 @@ const reservationSchema = new mongoose.Schema({
     timestamps: true // Ajoute createdAt et updatedAt automatiquement
 });
 
-// Pré-hook Mongoose pour calculer la durée et le statut avant la sauvegarde
+// Pré-hook Mongoose pour calculer la durée avant la sauvegarde
 reservationSchema.pre('save', async function(next) {
-    // Calcul de la durée
-    this.durée = calculateDuration(this.heureArrivée, this.heureDépart);
-
-    // Calcul du statut basé sur le mode de paiement
-    this.statut = this.paiement === 'en ligne' ? 'confirmée' : 'en attente';
-
-    // Génération du code numérique
+    this.duree = calculateDuration(this.heureArrivee, this.heureDepart);
     this.codeNumerique = generateCodeNumerique();
-
-    // Génération du numéro de reçu
     this.numeroRecu = await generateNumeroRecu();
-
     next();
 });
 

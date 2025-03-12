@@ -5,34 +5,46 @@ const Parking = require('../models/parking'); // Assurez-vous d'importer le mod�
 exports.addPlaceParking = async(req, res) => {
     try {
         const { parkingId, nomPlace, statut, typeVehicule } = req.body;
+        console.log('Données reçues:', req.body); // Log des données reçues
 
         // Validation des champs
         if (!parkingId || !nomPlace || !typeVehicule) {
             return res.status(400).json({ message: 'Tous les champs sont requis' });
         }
 
+        // Vérifiez si le parking existe
+        const parkingExists = await Parking.findById(parkingId);
+        if (!parkingExists) {
+            return res.status(404).json({ message: 'Parking non trouvé' });
+        }
+
+        // Vérifiez si la place existe déjà
+        const existingPlace = await PlaceParking.findOne({ parkingId, nomPlace });
+        if (existingPlace) {
+            return res.status(400).json({ message: 'Cette place existe déjà dans ce parking.' });
+        }
+
         const newPlaceParking = new PlaceParking({
             parkingId,
             nomPlace,
-            statut: statut || 'libre', // Par défaut, une place est libre
+            statut: statut || 'libre',
             typeVehicule
         });
 
         // Sauvegarde de la place de parking
         const savedPlaceParking = await newPlaceParking.save();
+        console.log('Place de parking sauvegardée:', savedPlaceParking); // Log pour débogage
 
         // Mise à jour de la capacité totale du parking
-        const parking = await Parking.findById(parkingId);
-        if (parking) {
-            parking.capaciteTotale += 1; // Incrémenter la capacité du parking
-            await parking.save(); // Sauvegarder la mise à jour
-        }
+        parkingExists.capaciteTotale += 1;
+        await parkingExists.save();
 
         res.status(201).json({
             message: 'Place de parking ajoutée avec succès',
             placeParking: savedPlaceParking
         });
     } catch (err) {
+        console.error('Erreur lors de l\'ajout de la place:', err); // Log détaillé de l'erreur
         res.status(400).json({ message: err.message });
     }
 };

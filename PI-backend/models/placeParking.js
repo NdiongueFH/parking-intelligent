@@ -10,13 +10,11 @@ const placeParkingSchema = new mongoose.Schema({
     nomPlace: {
         type: String,
         required: true,
-        unique: true
     },
     statut: {
         type: String,
-        enum: ['libre', 'occupee', 'reservee', 'hors service'],
+        enum: ['libre', 'occupee', 'reservee'],
         default: 'libre',
-        unique: true
     },
     typeVehicule: {
         type: String,
@@ -24,6 +22,9 @@ const placeParkingSchema = new mongoose.Schema({
         required: true
     }
 }, { timestamps: true });
+
+// Ajouter un index composé pour garantir l'unicité du nom de la place par parking
+placeParkingSchema.index({ parkingId: 1, nomPlace: 1 }, { unique: true });
 
 // Créer le modèle PlaceParking
 const PlaceParking = mongoose.model('PlaceParking', placeParkingSchema);

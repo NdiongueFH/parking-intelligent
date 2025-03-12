@@ -21,6 +21,7 @@ const parkingSchema = new mongoose.Schema({
     },
     capaciteTotale: {
         type: Number,
+        default: 0, // Valeur par défaut à 0
         required: true
     },
     placesLibres: {

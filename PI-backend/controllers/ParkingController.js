@@ -101,12 +101,13 @@ exports.getParkingByName = async(req, res) => {
 };
 
 
+
 // Ajouter un nouveau parking
 exports.addParking = async(req, res) => {
     const { nom_du_parking, adresse, latitude, longitude, capaciteTotale } = req.body;
 
-    // Validation des données
-    if (!nom_du_parking || !adresse || !latitude || !longitude || !capaciteTotale) {
+    // Vérification des champs requis
+    if (!nom_du_parking || !adresse || latitude === undefined || longitude === undefined) {
         return res.status(400).json({ message: 'Tous les champs sont requis' });
     }
 
@@ -115,19 +116,29 @@ exports.addParking = async(req, res) => {
         adresse,
         latitude,
         longitude,
-        capaciteTotale
+        capaciteTotale: capaciteTotale || 0 // Définit à 0 si non spécifié
     });
 
     try {
         const newParking = await parking.save();
-        // Supprimer le champ _id (ou parkingId) avant de renvoyer la réponse
-        const { _id, ...parkingData } = newParking.toObject(); // Enlever _id
-        res.status(201).json({
-            message: 'Parking ajouté avec succès',
-            parking: parkingData
-        });
-    } catch (err) {
-        res.status(400).json({ message: err.message });
+
+        // Créer des places de parking si la capacité totale est supérieure à 0
+        if (capaciteTotale > 0) {
+            const places = [];
+            for (let i = 1; i <= capaciteTotale; i++) {
+                places.push({
+                    parkingId: newParking._id,
+                    nomPlace: `P ${i}`,
+                    statut: 'libre',
+                    typeVehicule: 'voiture' // Vous pouvez ajuster cela selon vos besoins
+                });
+            }
+            await PlaceParking.insertMany(places); // Insérer toutes les places en une fois
+        }
+
+        res.status(201).json(newParking);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
     }
 };
 

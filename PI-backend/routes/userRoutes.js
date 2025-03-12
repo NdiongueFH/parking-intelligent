@@ -24,4 +24,11 @@ router.patch('/update/:id', userController.restrictTo('administrateur'), userCon
 // Supprimer un utilisateur (réservé à l'administrateur)
 router.delete('/:id', userController.restrictTo('administrateur'), userController.deleteUser);
 
+// Route pour déposer de l'argent
+router.post('/deposit', userController.restrictTo('administrateur'), userController.deposit);
+
+// Route pour retirer de l'argent
+router.post('/withdraw', userController.restrictTo('administrateur'), userController.withdraw);
+
+
 module.exports = router;

@@ -467,3 +467,106 @@ exports.logout = async(req, res, next) => {
         });
     }
 };
+
+// Méthode pour déposer de l'argent à un utilisateur
+exports.deposit = async(req, res) => {
+    const { telephone, montant } = req.body;
+
+    if (!telephone || !montant || montant <= 0) {
+        return res.status(400).json({
+            status: 'fail',
+            message: 'Veuillez fournir un numéro de téléphone valide et un montant positif pour le dépôt.'
+        });
+    }
+
+    try {
+        const user = await User.findOne({ telephone });
+
+        if (!user) {
+            return res.status(404).json({
+                status: 'fail',
+                message: 'Utilisateur non trouvé avec ce numéro de téléphone.'
+            });
+        }
+
+        const admin = req.user; // L'administrateur effectue l'opération
+
+        // Créditez l'utilisateur
+        user.solde += montant;
+        await user.save();
+
+        // Débiter l'administrateur et ajouter le bonus
+        admin.solde -= montant;
+        admin.solde += montant * 0.01; // 1% de bonus
+        await admin.save();
+
+        res.status(200).json({
+            status: 'success',
+            message: 'Dépôt réussi.',
+            data: {
+                solde: user.solde
+            }
+        });
+    } catch (err) {
+        res.status(500).json({
+            status: 'fail',
+            message: 'Erreur lors du dépôt.',
+            error: err.message
+        });
+    }
+};
+
+// Méthode pour retirer de l'argent d'un utilisateur
+exports.withdraw = async(req, res) => {
+    const { telephone, montant } = req.body;
+
+    if (!telephone || !montant || montant <= 0) {
+        return res.status(400).json({
+            status: 'fail',
+            message: 'Veuillez fournir un numéro de téléphone valide et un montant positif pour le retrait.'
+        });
+    }
+
+    try {
+        const user = await User.findOne({ telephone });
+
+        if (!user) {
+            return res.status(404).json({
+                status: 'fail',
+                message: 'Utilisateur non trouvé avec ce numéro de téléphone.'
+            });
+        }
+
+        if (user.solde < montant) {
+            return res.status(400).json({
+                status: 'fail',
+                message: 'Solde insuffisant pour le retrait.'
+            });
+        }
+
+        // Soustraire le montant du solde de l'utilisateur
+        user.solde -= montant;
+        await user.save();
+
+        const admin = req.user; // L'administrateur effectue l'opération
+
+        // Créditer le montant au solde de l'administrateur et ajouter le bonus
+        admin.solde += montant;
+        admin.solde += montant * 0.01; // 1% de bonus
+        await admin.save();
+
+        res.status(200).json({
+            status: 'success',
+            message: 'Retrait réussi.',
+            data: {
+                solde: user.solde
+            }
+        });
+    } catch (err) {
+        res.status(500).json({
+            status: 'fail',
+            message: 'Erreur lors du retrait.',
+            error: err.message
+        });
+    }
+};
