@@ -62,15 +62,39 @@ exports.addReservation = async(req, res) => {
         // Calculer le montant
         const dureeEnMillisecondes = heureDepart - heureArrivee;
         const dureeEnMinutes = Math.floor(dureeEnMillisecondes / (1000 * 60));
+        const dureeEnJours = Math.floor(dureeEnMinutes / 1440); // Conversion en jours
 
         let montant = 0;
-        if (dureeEnMinutes >= 1440) {
-            montant = tarif.tarifDurations.jour * Math.ceil(dureeEnMinutes / 1440);
-        } else if (dureeEnMinutes >= 60) {
-            montant = tarif.tarifDurations.heure * Math.ceil(dureeEnMinutes / 60);
-        } else {
-            montant = tarif.tarifDurations.heure; // Minimum de 1 heure
+
+        // Gestion des durées de 30 jours ou plus
+        if (dureeEnMinutes >= 43200) { // 30 jours
+            montant = tarif.tarifDurations.mois; // Montant pour le premier mois
+            const joursSup = dureeEnJours - 30; // Jours après le premier mois
+            if (joursSup > 0) {
+                montant += (tarif.tarifDurations.jour / 1440) * (joursSup * 1440);
+            }
         }
+        // Gestion des durées de 7 jours ou plus
+        else if (dureeEnMinutes >= 10080) { // 7 jours
+            montant = tarif.tarifDurations.semaine; // Montant pour la première semaine
+            const joursSup = dureeEnJours - 7; // Jours après la première semaine
+            if (joursSup > 0) {
+                montant += (tarif.tarifDurations.jour / 1440) * (joursSup * 1440);
+            }
+        }
+        // Gestion des durées de 24 heures ou plus
+        else if (dureeEnMinutes >= 1440) { // 24 heures
+            montant = (tarif.tarifDurations.jour / 1440) * dureeEnMinutes; // Règle de trois pour le tarif journalier
+        }
+        // Gestion des durées d'1 heure ou plus
+        else if (dureeEnMinutes >= 60) { // 1 heure
+            montant = (tarif.tarifDurations.heure / 60) * dureeEnMinutes; // Règle de trois pour le tarif horaire
+        }
+        // Gestion des durées de moins d'1 heure
+        else { // Moins d'une heure
+            montant = (tarif.tarifDurations.heure / 60) * dureeEnMinutes; // Règle de trois pour le tarif horaire
+        }
+
 
         const user = await User.findById(req.body.userId);
         if (!user) {
@@ -281,6 +305,7 @@ exports.cancelReservation = async(req, res) => {
             });
         }
 
+        // Vérifier que l'état de la réservation est 'En cours'
         if (canceledReservation.etat !== 'En cours') {
             return res.status(400).json({
                 status: 'fail',
@@ -288,8 +313,7 @@ exports.cancelReservation = async(req, res) => {
             });
         }
 
-        canceledReservation.etat = 'Annulee';
-
+        // Vérifier le statut de la place de parking
         const place = await PlaceParking.findById(canceledReservation.placeId);
         if (!place) {
             return res.status(404).json({
@@ -298,9 +322,29 @@ exports.cancelReservation = async(req, res) => {
             });
         }
 
+        // Vérifier que la place est toujours 'reservee'
+        if (place.statut !== 'reservee') {
+            return res.status(400).json({
+                status: 'fail',
+                message: 'La réservation ne peut être annulée que si la place est toujours réservée'
+            });
+        }
+
+        // Vérifier si l'heure d'arrivée est dans le futur
+        const maintenant = new Date();
+        const heureArrivee = new Date(canceledReservation.heureArrivee);
+
+        if (heureArrivee > maintenant) {
+            canceledReservation.codeNumerique = null; // Invalider le code numérique
+        }
+
+        // Mettre à jour l'état de la réservation à 'Annulée'
+        canceledReservation.etat = 'Annulée';
+        await canceledReservation.save();
+
+        // Libérer la place de parking
         place.statut = 'libre';
         await place.save();
-        await canceledReservation.save();
 
         res.status(200).json({
             status: 'success',
@@ -372,3 +416,23 @@ exports.getAllReservations = async(req, res) => {
         });
     }
 };
+
+
+
+// Fonction pour invalider le code numérique si l'heure de départ est atteinte
+const invalidateExpiredCodes = async() => {
+    const now = new Date();
+    const expiredReservations = await Reservation.find({
+        heureDepart: { $lte: now },
+        etat: 'En cours',
+    });
+
+    for (const reservation of expiredReservations) {
+        reservation.codeNumerique = null; // Invalider le code numérique
+        reservation.etat = 'Terminée'; // Optionnel : changer l'état si nécessaire
+        await reservation.save();
+    }
+};
+
+// Appeler cette fonction à intervalles réguliers
+setInterval(invalidateExpiredCodes, 60000); // Par exemple, toutes les minutes

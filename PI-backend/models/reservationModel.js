@@ -84,7 +84,7 @@ const reservationSchema = new mongoose.Schema({
     },
     codeNumerique: {
         type: Number,
-        required: true
+        required: false
     },
     numeroRecu: {
         type: String,
