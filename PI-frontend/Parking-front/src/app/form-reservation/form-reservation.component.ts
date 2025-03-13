@@ -39,6 +39,8 @@ export class ParkingReservationComponent implements OnInit {
 
     reservationForm: FormGroup;
     isPaymentProcessed: boolean = false; // État du paiement
+    isPaymentInitiated: boolean = false; // Nouvelle propriété pour indiquer si le paiement a été initié
+
 
     constructor(private fb: FormBuilder, private http: HttpClient) {
         this.reservationForm = this.fb.group({
@@ -87,7 +89,7 @@ export class ParkingReservationComponent implements OnInit {
     }
 
     processPayment() {
-        // Prendre en compte le paiement en ligne
+        this.isPaymentInitiated = true; // Mettre à jour la propriété
         this.isPaymentProcessed = true; // Marquer le paiement comme effectué
         console.log("Paiement en ligne pris en compte:", this.reservationForm.value);
     }

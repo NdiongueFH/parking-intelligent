@@ -251,6 +251,16 @@ button[type="submit"]:hover {
 }
 
 
+/* form-reservation.component.css */
+
+.payment-initiated {
+    color: rgb(147, 252, 147);
+    /* Changez la couleur du texte à vert */
+    font-weight: bold;
+    /* Optionnel : mettre en gras */
+}
+
+
 /* Animation */
 
 @keyframes slideIn {

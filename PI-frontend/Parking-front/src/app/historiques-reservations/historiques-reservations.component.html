@@ -98,7 +98,7 @@
                         <p><img src="heure.png" alt="Heure de départ"> <strong>Heure de départ:</strong> {{ reservation.heureDepart | date:'short' }}</p>
                         <p><img src="prix.png" alt="Montant"> <strong>Montant:</strong> {{ reservation.montant }} FCFA</p>
                     </div>
-                    <div class="status" [ngClass]="{'en-cours': reservation.etat === 'En cours', 'annulee': reservation.etat === 'Annulee'}">
+                    <div class="status" [ngClass]="{'en-cours': reservation.etat === 'En cours', 'annulee': reservation.etat === 'Annulée'}">
                         {{ reservation.etat }}
                     </div>
                     <div class="actions">
@@ -107,9 +107,22 @@
                                 <button (click)="openEditModal(reservation)">
                                     <img src="modif.png" alt="Modifier">
                                 </button>
-                                <button (click)="cancelReservation(reservation)">
+                                <button (click)="openCancelModal(reservation)">
                                     <img src="sup.png" alt="Annuler">
                                 </button>
+                            </div>
+                        </div>
+
+                        <!-- Modal d'annulation -->
+                        <div *ngIf="isCancelModalActive" class="modal">
+                            <div class="modal-content">
+                                <span (click)="closeCancelModal()" class="close">&times;</span>
+                                <h2>Annulation de Réservation</h2>
+                                <p>Voulez-vous vraiment annuler cette réservation ?</p>
+                                <div class="button-container">
+                                    <button class="btn-oui" (click)="cancelReservation(editReservation)">OUI</button>
+                                    <button class="btn-non" (click)="closeCancelModal()">NON</button>
+                                </div>
                             </div>
                         </div>
 
@@ -230,6 +243,7 @@
                         <img src="cachet.png" alt="Stamp" class="stamp-image" />
                     </div>
                 </div>
+                <button class="download-invoice" (click)="downloadInvoice(selectedReservation)">Télécharger la facture</button>
             </div>
         </div>
     </div>

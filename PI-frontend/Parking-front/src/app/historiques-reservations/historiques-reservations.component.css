@@ -1033,6 +1033,91 @@ button:hover {
     background-color: #45a049;
 }
 
+.download-invoice {
+    background-color: #4CAF50;
+    /* Couleur de fond */
+    color: white;
+    /* Couleur du texte */
+    border: none;
+    /* Pas de bordure */
+    padding: 10px 20px;
+    /* Espacement intérieur */
+    text-align: center;
+    /* Centrer le texte */
+    text-decoration: none;
+    /* Pas de soulignement */
+    display: inline-block;
+    /* Pour que le padding fonctionne */
+    font-size: 16px;
+    /* Taille de la police */
+    margin-top: 20px;
+    /* Espacement au-dessus */
+    cursor: pointer;
+    /* Curseur en forme de main */
+    border-radius: 5px;
+    /* Coins arrondis */
+    transition: background-color 0.3s;
+    /* Transition pour l'effet au survol */
+}
+
+.download-invoice:hover {
+    background-color: #45a049;
+    /* Couleur de fond au survol */
+}
+
+.btn-oui {
+    background-color: #4CAF50;
+    /* Vert */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin-right: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.btn-oui:hover {
+    background-color: #74f57b;
+    /* Couleur plus foncée au survol */
+}
+
+.btn-non {
+    background-color: #f44336;
+    /* Rouge */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.btn-non:hover {
+    background-color: #e53935;
+    /* Couleur plus foncée au survol */
+}
+
+.button-container {
+    display: flex;
+    /* Utiliser Flexbox */
+    justify-content: space-between;
+    /* Espacement entre les boutons */
+    margin-top: 20px;
+    /* Optionnel : marge au-dessus des boutons */
+}
+
+.btn-oui,
+.btn-non {
+    margin-right: 10px;
+    /* Espace entre les boutons */
+}
+
+.btn-non {
+    margin-right: 0;
+    /* Pas de marge à droite pour le dernier bouton */
+}
+
 
 /* Media queries */
 

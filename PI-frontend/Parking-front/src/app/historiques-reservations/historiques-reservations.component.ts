@@ -5,6 +5,10 @@ import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http'; 
 import { FormsModule } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms'; // Importer ReactiveFormsModule
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
+
+
 
 import { Chart, registerables } from 'chart.js';
 
@@ -71,7 +75,7 @@ export class HistoriquesReservationsComponent implements OnInit, AfterViewInit {
   completedReservations: number = 0;
   cancelledReservations: number = 0;
 
-  etatOptions: string[] = ['Tous les statuts', 'En cours', 'Terminées', 'Annulee'];
+  etatOptions: string[] = ['Tous les statuts', 'En cours', 'Terminée', 'Annulée'];
   parkingOptions: string[] = [];
 
   selectedEtat: string = 'Tous les statuts';
@@ -195,28 +199,25 @@ closeEditModal(): void {
   this.isModalActive = false; // Fermer le modal
 }
 
+
 cancelReservation(reservation: ApiReservation): void {
-  this.http.patch(`http://localhost:3000/api/v1/reservations/${reservation._id}/cancel`, {})
+  const token = localStorage.getItem('token'); // Récupérer le token
+  const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}` // Ajouter le token aux en-têtes
+  });
+
+  this.http.patch(`http://localhost:3000/api/v1/reservations/${reservation._id}/cancel`, {}, { headers })
       .subscribe(
           (response) => {
               console.log('Réservation annulée:', response);
               this.loadReservations(); // Rechargez les réservations après annulation
+              this.closeCancelModal(); // Fermer le modal après annulation
           },
           (error) => {
               console.error('Erreur lors de l\'annulation:', error);
           }
       );
 }
-
-openCancelModal(reservation: ApiReservation): void {
-  this.editReservation = reservation; // Passer la réservation à annuler
-  this.isCancelModalActive = true; // Ouvrir le modal d'annulation
-}
-
-closeCancelModal(): void {
-  this.isCancelModalActive = false; // Fermer le modal d'annulation
-}
-
 
 
 
@@ -264,8 +265,8 @@ closeCancelModal(): void {
   updateStats(): void {
     this.totalReservations = this.reservations.length;
     this.ongoingReservations = this.reservations.filter(res => res.etat === 'En cours').length;
-    this.completedReservations = this.reservations.filter(res => res.etat === 'Terminées').length;
-    this.cancelledReservations = this.reservations.filter(res => res.etat === 'Annulee').length;
+    this.completedReservations = this.reservations.filter(res => res.etat === 'Terminée').length;
+    this.cancelledReservations = this.reservations.filter(res => res.etat === 'Annulée').length;
   }
 
   updatePaginatedItems(): void {
@@ -492,4 +493,55 @@ closeModalIfOutside(event: MouseEvent): void {
   }
 }
 
+
+openCancelModal(reservation: ApiReservation): void {
+  this.editReservation = reservation; // Passer la réservation à annuler
+  this.isCancelModalActive = true; // Ouvrir le modal d'annulation
+}
+
+closeCancelModal(): void {
+  this.isCancelModalActive = false; // Fermer le modal d'annulation
+}
+
+
+downloadInvoice(reservation: ApiReservation | null): void {
+  if (!reservation) return;
+
+  const invoiceElement = document.querySelector('.invoice-container') as HTMLElement; // Sélectionner le conteneur de la facture
+  const downloadButton = document.querySelector('.download-invoice') as HTMLElement; // Sélectionner le bouton
+
+  if (invoiceElement && downloadButton) {
+      // Masquer le bouton
+      downloadButton.style.display = 'none';
+
+      html2canvas(invoiceElement).then(canvas => {
+          const imgData = canvas.toDataURL('image/png');
+          const pdf = new jsPDF();
+          const imgWidth = 190; // Largeur de l'image dans le PDF
+          const pageHeight = pdf.internal.pageSize.height;
+          const imgHeight = (canvas.height * imgWidth) / canvas.width;
+          let heightLeft = imgHeight;
+
+          let position = 0;
+
+          // Ajouter l'image au PDF
+          pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+          heightLeft -= pageHeight;
+
+          // Ajouter des pages supplémentaires si nécessaire
+          while (heightLeft >= 0) {
+              position = heightLeft - imgHeight;
+              pdf.addPage();
+              pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+              heightLeft -= pageHeight;
+          }
+
+          // Télécharger le PDF
+          pdf.save(`facture_${reservation.codeNumerique}.pdf`);
+
+          // Réafficher le bouton après le téléchargement
+          downloadButton.style.display = 'block';
+      });
+  }
+}
 }

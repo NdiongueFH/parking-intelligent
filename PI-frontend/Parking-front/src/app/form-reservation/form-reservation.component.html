@@ -53,10 +53,9 @@
             <div class="form-section">
                 <h3>Payer ici</h3>
                 <div class="form-row payment-options">
-                    <div class="form-group payment-option">
+                    <div class="form-group payment-option" [ngClass]="{'payment-initiated': isPaymentInitiated}">
                         <label class="custom-radio">
                             <input type="radio" formControlName="paymentMethod" value="online" checked>
-                            <!-- <span class="radio-button"></span> -->
                             Paiement en ligne uniquement
                         </label>
                     </div>
