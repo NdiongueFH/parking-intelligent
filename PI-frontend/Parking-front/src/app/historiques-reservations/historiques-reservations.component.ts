@@ -51,6 +51,7 @@ interface ApiReservation {
   updatedAt: string; // ou Date si vous traitez cela comme une date
   heureArrivee: string; // ou Date si vous traitez cela comme une date
   heureDepart: string; // ou Date si vous traitez cela comme une date
+  numeroImmatriculation: string;
 }
 @Component({
   selector: 'app-historiques-reservations',
@@ -89,6 +90,8 @@ export class HistoriquesReservationsComponent implements OnInit, AfterViewInit {
   showInvoiceModal: boolean = false;
   selectedReservation: ApiReservation | null = null;
 
+  currentDate: Date = new Date(); // Initialise à la date actuelle
+
   isModalActive: boolean = false; // Initialiser à false pour que le modal soit fermé par défaut
   isCancelModalActive: boolean = false; // Pour le modal d'annulation
   editReservation: ApiReservation = {
@@ -108,7 +111,8 @@ export class HistoriquesReservationsComponent implements OnInit, AfterViewInit {
     createdAt: '',
     updatedAt: '',
     heureArrivee: '',
-    heureDepart: ''
+    heureDepart: '',
+    numeroImmatriculation: ''
 };
 
 
@@ -165,19 +169,40 @@ export class HistoriquesReservationsComponent implements OnInit, AfterViewInit {
         );
 }
 
-// Méthode pour modifier une réservation
+
+
+openEditModal(reservation: ApiReservation): void {
+  this.editReservation = { ...reservation }; // Créez une copie pour l'édition
+  this.isModalActive = true; // Ouvrir le modal
+}
+
+closeEditModal(): void {
+  this.isModalActive = false; // Fermer le modal
+}
+
 updateReservation(): void {
   if (!this.editReservation) return;
+
+  const token = localStorage.getItem('token');
+  if (!token) {
+      console.error('Token manquant');
+      return; // Gestion de l'erreur
+  }
 
   const updatedData = {
       heureArrivee: this.editReservation.heureArrivee,
       heureDepart: this.editReservation.heureDepart,
       typeVehicule: this.editReservation.typeVehicule,
+      numeroImmatriculation: this.editReservation.numeroImmatriculation,
       placeId: this.editReservation.placeId,
       paiement: this.editReservation.paiement
   };
 
-  this.http.put(`http://localhost:3000/api/v1/reservations/${this.editReservation._id}`, updatedData)
+  const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+  });
+
+  this.http.put(`http://localhost:3000/api/v1/reservations/${this.editReservation._id}`, updatedData, { headers })
       .subscribe(
           (response) => {
               console.log('Réservation mise à jour:', response);
@@ -190,13 +215,14 @@ updateReservation(): void {
       );
 }
 
-openEditModal(reservation: ApiReservation): void {
-  this.editReservation = { ...reservation }; // Créez une copie pour l'édition
-  this.isModalActive = true; // Ouvrir le modal
-}
+handleOutsideClick(event: MouseEvent): void {
+  const target = event.target as HTMLElement;
+  const modalContent = document.querySelector('.stats-modal-content');
 
-closeEditModal(): void {
-  this.isModalActive = false; // Fermer le modal
+  // Vérifier si le clic a eu lieu en dehors du contenu du modal
+  if (modalContent && !modalContent.contains(target)) {
+      this.closeStatsModal(); // Fermer le modal
+  }
 }
 
 
@@ -275,21 +301,21 @@ cancelReservation(reservation: ApiReservation): void {
     this.paginatedReservations = this.reservations.slice(start, end);
   }
 
-  previousPage(): void {
+  previousPage() {
     if (this.currentPage > 1) {
       this.currentPage--;
       this.updatePaginatedItems();
     }
   }
 
-  nextPage(): void {
+  nextPage() {
     if (this.currentPage < this.totalPages) {
       this.currentPage++;
       this.updatePaginatedItems();
     }
   }
 
-  goToPage(page: number): void {
+  goToPage(page: number) {
     this.currentPage = page;
     this.updatePaginatedItems();
   }
@@ -328,8 +354,9 @@ cancelReservation(reservation: ApiReservation): void {
   generateOccupancyChart(): void {
     if (!this.occupancyChartRef) return;
 
+    // Filtrer les réservations pour le parking sélectionné
     const parkingReservations = this.reservations.filter(
-      reservation => reservation.parkingId.nom_du_parking === this.selectedStatsParking
+        reservation => reservation.parkingId.nom_du_parking === this.selectedStatsParking
     );
 
     // Obtenir les 7 derniers jours
@@ -337,61 +364,63 @@ cancelReservation(reservation: ApiReservation): void {
     
     // Calculer le taux d'occupation pour chaque jour
     const occupancyData = last7Days.map(day => {
-      const dayReservations = parkingReservations.filter(reservation => {
-        const arrivalDate = new Date(reservation.heureArrivee);
-        return arrivalDate.toDateString() === day.date.toDateString();
-      });
-      
-      // Calcul du taux d'occupation (pour l'exemple, nous utilisons une valeur aléatoire entre 10 et 90%)
-      // En production, cela devrait être basé sur la capacité réelle du parking
-      return Math.floor(Math.random() * 80) + 10;
+        const dayReservations = parkingReservations.filter(reservation => {
+            const arrivalDate = new Date(reservation.heureArrivee);
+            return arrivalDate.toDateString() === day.date.toDateString();
+        });
+
+        const totalCapacity = 100; // Remplacez avec la capacité réelle de votre parking
+        const occupiedSpots = dayReservations.length; // Nombre de réservations pour le jour
+        return (occupiedSpots / totalCapacity) * 100; // Taux d'occupation en pourcentage
     });
 
+    // Détruire le graphique précédent s'il existe
     if (this.occupancyChart) {
-      this.occupancyChart.destroy();
+        this.occupancyChart.destroy();
     }
 
     const ctx = this.occupancyChartRef.nativeElement.getContext('2d');
     this.occupancyChart = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: last7Days.map(day => day.label),
-        datasets: [{
-          label: 'Taux d\'occupation (%)',
-          data: occupancyData,
-          borderColor: '#4CAF50',
-          backgroundColor: 'rgba(76, 175, 80, 0.1)',
-          tension: 0.4,
-          fill: true
-        }]
-      },
-      options: {
-        responsive: true,
-        scales: {
-          y: {
-            beginAtZero: true,
-            max: 100,
-            title: {
-              display: true,
-              text: 'Taux d\'occupation (%)'
+        type: 'line',
+        data: {
+            labels: last7Days.map(day => day.label),
+            datasets: [{
+                label: 'Taux d\'occupation (%)',
+                data: occupancyData,
+                borderColor: '#4CAF50',
+                backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    title: {
+                        display: true,
+                        text: 'Taux d\'occupation (%)'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Jour'
+                    }
+                }
             }
-          },
-          x: {
-            title: {
-              display: true,
-              text: 'Jour'
-            }
-          }
         }
-      }
     });
-  }
+}
 
   generatePeakHoursChart(): void {
     if (!this.peakHoursChartRef) return;
 
+    // Filtrer les réservations pour le parking sélectionné
     const parkingReservations = this.reservations.filter(
-      reservation => reservation.parkingId.nom_du_parking === this.selectedStatsParking
+        reservation => reservation.parkingId.nom_du_parking === this.selectedStatsParking
     );
 
     // Créer un tableau pour les 24 heures de la journée
@@ -399,72 +428,82 @@ cancelReservation(reservation: ApiReservation): void {
     
     // Calculer l'affluence pour chaque heure
     const hourlyData = hours.map(hour => {
-      const hourReservations = parkingReservations.filter(reservation => {
-        const arrivalDate = new Date(reservation.heureArrivee);
-        return arrivalDate.getHours() === hour;
-      });
-      
-      // Nombre de réservations pour cette heure
-      // Pour l'exemple, nous ajoutons une valeur aléatoire pour simuler les données
-      const baseCount = hourReservations.length;
-      return baseCount + Math.floor(Math.random() * 10);
+        const hourReservations = parkingReservations.filter(reservation => {
+            const arrivalDate = new Date(reservation.heureArrivee);
+            return arrivalDate.getHours() === hour;
+        });
+        
+        // Nombre de réservations pour cette heure
+        return hourReservations.length;
     });
 
+    // Détruire le graphique précédent s'il existe
     if (this.peakHoursChart) {
-      this.peakHoursChart.destroy();
+        this.peakHoursChart.destroy();
     }
 
     const ctx = this.peakHoursChartRef.nativeElement.getContext('2d');
     this.peakHoursChart = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: hours.map(hour => `${hour}h`),
-        datasets: [{
-          label: 'Nombre de réservations',
-          data: hourlyData,
-          backgroundColor: 'rgba(33, 150, 243, 0.7)',
-          borderColor: 'rgba(33, 150, 243, 1)',
-          borderWidth: 1
-        }]
-      },
-      options: {
-        responsive: true,
-        scales: {
-          y: {
-            beginAtZero: true,
-            title: {
-              display: true,
-              text: 'Nombre de réservations'
+        type: 'bar',
+        data: {
+            labels: hours.map(hour => `${hour}h`),
+            datasets: [{
+                label: 'Nombre de réservations',
+                data: hourlyData,
+                backgroundColor: 'rgba(250, 226, 8, 0.7)',
+                borderColor: 'rgb(173, 134, 4)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Nombre de réservations'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Heure'
+                    }
+                }
             }
-          },
-          x: {
-            title: {
-              display: true,
-              text: 'Heure'
-            }
-          }
         }
-      }
     });
-  }
-
+}
   // Fonction utilitaire pour obtenir les 7 derniers jours
   getLast7Days(): { date: Date, label: string }[] {
     const days = [];
-    const dayNames = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
+    const dayNames = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
     
-    for (let i = 6; i >= 0; i--) {
-      const date = new Date();
-      date.setDate(date.getDate() - i);
-      days.push({
-        date,
-        label: `${dayNames[date.getDay()]} ${date.getDate()}/${date.getMonth() + 1}`
-      });
+    // Obtenir le jour de la semaine actuel
+    const today = new Date();
+    const dayOfWeek = today.getDay(); // Dimanche = 0, Lundi = 1, ..., Samedi = 6
+    const lastMonday = new Date(today);
+    
+    // Déterminer le dernier lundi
+    if (dayOfWeek === 0) {
+        lastMonday.setDate(today.getDate() - 6); // Si aujourd'hui est dimanche, commence au lundi précédent
+    } else {
+        lastMonday.setDate(today.getDate() - (dayOfWeek - 1)); // Récupérer le lundi de cette semaine
+    }
+
+    // Créer un tableau des 7 derniers jours en commençant par le lundi
+    for (let i = 0; i < 7; i++) {
+        const date = new Date(lastMonday);
+        date.setDate(lastMonday.getDate() + i);
+        days.push({
+            date,
+            label: `${dayNames[date.getDay()]} ${date.getDate()}/${date.getMonth() + 1}`
+        });
     }
     
     return days;
-  }
-
+}
    // Méthode pour ouvrir le modal de facture
    openInvoiceModal(reservation: ApiReservation): void {
     this.selectedReservation = reservation;

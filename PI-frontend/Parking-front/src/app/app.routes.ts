@@ -42,6 +42,10 @@ export const routes: Routes = [
     path: 'facture', 
     loadComponent: () => import('./facture/facture.component').then(m => m.FactureComponent) 
   },
+  { 
+    path: 'minibank', 
+    loadComponent: () => import('./minibank/minibank.component').then(m => m.MinibankComponent) 
+  },
 
 
   { 

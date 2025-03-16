@@ -541,6 +541,49 @@ body {
     margin-bottom: 15px;
 }
 
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    margin-top: 20px;
+}
+
+.pagination button {
+    background-color: white;
+    border: 1px solid #ddd;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.pagination button:disabled {
+    background-color: #f5f5f5;
+    color: #999;
+    cursor: not-allowed;
+}
+
+.pagination button.active {
+    color: rgb(20, 20, 20);
+    /* Couleur verte pour le numéro de la page actuelle */
+    font-weight: bold;
+    /* Optionnel : mettre en gras */
+    background-color: rgba(2, 180, 2, 0.1);
+    /* Optionnel : fond léger pour plus de visibilité */
+    border: 1px solid green;
+    /* Optionnel : bordure verte */
+}
+
+.geo-error-indicator {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    /* Centrer le texte également */
+    height: 200%;
+    /* Assurez-vous que la div prend toute la hauteur disponible */
+}
+
 @keyframes spin {
     0% {
         transform: rotate(0deg);

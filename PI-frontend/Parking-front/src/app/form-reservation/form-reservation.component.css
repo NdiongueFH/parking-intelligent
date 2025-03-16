@@ -260,6 +260,16 @@ button[type="submit"]:hover {
     /* Optionnel : mettre en gras */
 }
 
+.error-message {
+    color: red;
+    font-size: 0.9em;
+    margin-top: 5px;
+    text-align: center;
+    /* Centre le texte */
+    width: 100%;
+    /* Prend toute la largeur du conteneur */
+}
+
 
 /* Animation */
 

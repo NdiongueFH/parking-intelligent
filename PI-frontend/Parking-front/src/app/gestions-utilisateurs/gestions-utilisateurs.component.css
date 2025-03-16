@@ -554,6 +554,17 @@
     box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.2), 0 4px 6px rgba(0, 0, 0, 0.2);
 }
 
+.readonly-input {
+    background-color: #f0f0f0;
+    /* Couleur de fond grisée */
+    color: #666;
+    /* Texte grisé */
+    pointer-events: none;
+    /* Empêche les interactions */
+    opacity: 0.7;
+    /* Réduit l'opacité pour un effet désactivé */
+}
+
 
 /* Header */
 

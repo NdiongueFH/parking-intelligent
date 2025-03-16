@@ -51,6 +51,7 @@ export class ListeParkingComponent implements OnInit {
   selectedParking: Parking | null = null;
   showSuccessMessage: boolean = false;
   showMapModal: boolean = false;
+  errorMessage: string = '';
   selectedLocation: { lat: number; lng: number } | null = null;
   map: Map | null = null;
   isEditing: boolean = false;
@@ -79,22 +80,22 @@ export class ListeParkingComponent implements OnInit {
   };
 
   newAmende = {
-    duree: 0,
+    duree: '00:00:00', // Format de durée sous forme de chaîne
     montant: 0,
     typeInfraction: '',
-    typeVehicule: 'voiture'
-  };
+    typeVehicule: 'voiture',
+    parkingId: '' // Initialiser parkingId comme une chaîne vide
+};
 
-
-  resetNewAmende() {
+resetNewAmende() {
     this.newAmende = {
-      duree: 0,
-      montant: 0,
-      typeInfraction: '',
-      typeVehicule: 'voiture'
+        duree: '00:00:00', // Réinitialiser à la chaîne vide au format HH:mm:ss
+        montant: 0,
+        typeInfraction: '',
+        typeVehicule: 'voiture',
+        parkingId: '' // Réinitialiser parkingId à une chaîne vide
     };
-  }
-
+}
   isEditingAmende = false;
 selectedAmende: any; // Assurez-vous que cela est initialisé lorsque vous sélectionnez une amende
 
@@ -263,14 +264,15 @@ selectedAmende: any; // Assurez-vous que cela est initialisé lorsque vous séle
   }
 
   toggleParkingDetails(parking: Parking) {
+    // Vérifie si le parking est déjà sélectionné
     if (this.selectedParking === parking) {
-      this.selectedParking = null;
-      this.selectedTab = 'details';
+        this.selectedParking = null; // Désélectionner le parking
     } else {
-      this.selectedParking = parking;
-      this.selectedTab = 'details';
+        this.selectedParking = parking; // Sélectionner le parking
     }
-  }
+    this.selectedTab = 'details'; // Réinitialiser l'onglet sur 'details'
+    console.log('Parking sélectionné:', this.selectedParking); // Log pour le débogage
+}
 
   selectTab(tab: string) {
     this.selectedTab = tab;
@@ -280,10 +282,11 @@ selectedAmende: any; // Assurez-vous que cela est initialisé lorsque vous séle
     this.isEditing = !this.isEditing;
   }
 
-  
   addPlace() {
+    // Vérifiez si newPlace est correctement rempli
     if (!this.newPlace.nomPlace || !this.newPlace.statut || !this.newPlace.typeVehicule) {
-        console.error('Tous les champs doivent être remplis.');
+        this.errorMessage = 'Tous les champs doivent être remplis.'; // Message d'erreur
+        console.error(this.errorMessage);
         return;
     }
 
@@ -293,14 +296,14 @@ selectedAmende: any; // Assurez-vous que cela est initialisé lorsque vous séle
 
     // Vérifiez si newParking est défini
     if (!this.newParking || !this.newParking._id) {
-        console.error('Aucun parking sélectionné. Veuillez sélectionner un parking.');
+        this.errorMessage = 'Aucun parking sélectionné. Veuillez sélectionner un parking.'; // Message d'erreur
+        console.error(this.errorMessage);
         return;
     }
 
     // Remplir le parkingId
     this.newPlace.parkingId = this.newParking._id;
 
-    // Log des données que vous allez envoyer
     console.log('Données de la nouvelle place:', this.newPlace);
 
     const token = localStorage.getItem('token');
@@ -309,10 +312,12 @@ selectedAmende: any; // Assurez-vous que cela est initialisé lorsque vous séle
     this.http.post<Place>('http://localhost:3000/api/v1/place-parking', this.newPlace, { headers }).subscribe(
         (response) => {
             console.log('Place ajoutée avec succès:', response);
-            this.loadParkings();
-            this.resetNewPlace();
+            this.loadParkings(); // Recharger les parkings
+            this.resetNewPlace(); // Réinitialiser le formulaire
             this.showSuccessMessage = true;
             this.successMessage = 'Place ajoutée avec succès !';
+            this.errorMessage = ''; // Réinitialiser le message d'erreur
+
             setTimeout(() => {
                 this.showSuccessMessage = false;
                 this.successMessage = '';
@@ -320,14 +325,16 @@ selectedAmende: any; // Assurez-vous que cela est initialisé lorsque vous séle
         },
         (error) => {
             console.error('Erreur lors de l\'ajout de la place:', error);
-            console.error('Détails de l\'erreur:', error.error);
+            this.errorMessage = error.error.message || 'Une erreur s\'est produite lors de l\'ajout de la place.'; // Message d'erreur
         }
     );
 }
 
-  selectParking(parking: Parking) {
-    this.newParking = parking; // Mettez à jour newParking avec le parking sélectionné
-    console.log('Parking sélectionné:', this.newParking); // Log pour vérifier la sélection
+
+selectParking(parking: Parking) {
+  this.newParking = parking; // Met à jour newParking avec le parking sélectionné
+  this.selectedParking = parking; // Met également à jour selectedParking pour d'autres usages
+  console.log('Parking sélectionné:', this.newParking); // Log pour vérifier la sélection
 }
 
   resetNewPlace() {
@@ -432,7 +439,6 @@ selectedAmende: any; // Assurez-vous que cela est initialisé lorsque vous séle
       }, 3000);
     }
   }
-
   saveTariffs() {
     if (!this.selectedParking || !this.selectedParking._id) {
         console.error('Aucun parking sélectionné.');
@@ -454,6 +460,8 @@ selectedAmende: any; // Assurez-vous que cela est initialisé lorsque vous séle
             this.isEditing = false; // Fermer le mode édition
             this.showSuccessMessage = true;
             this.successMessage = 'Tarifs ajoutés avec succès !';
+            this.errorMessage = ''; // Réinitialiser le message d'erreur
+
             setTimeout(() => {
                 this.showSuccessMessage = false;
                 this.successMessage = '';
@@ -461,16 +469,26 @@ selectedAmende: any; // Assurez-vous que cela est initialisé lorsque vous séle
         },
         (error) => {
             console.error('Erreur lors de l\'enregistrement des tarifs:', error);
+            // Ajoutez ici la gestion du message d'erreur
+            this.errorMessage = error.error.message || 'Une erreur s\'est produite lors de l\'enregistrement des tarifs.';
         }
     );
 }
 
 saveAmende() {
+  // Vérifiez si selectedParking est défini
+  if (!this.selectedParking) {
+      console.error('Aucun parking sélectionné. Veuillez sélectionner un parking.');
+      this.errorMessage = 'Veuillez sélectionner un parking avant d\'ajouter une amende.';
+      return;
+  }
+
   const amendeData = {
       duree: this.newAmende.duree,
       montant: this.newAmende.montant,
       typeInfraction: this.newAmende.typeInfraction,
-      typeVehicule: this.newAmende.typeVehicule
+      typeVehicule: this.newAmende.typeVehicule,
+      parkingId: this.selectedParking._id // Accéder à _id en toute sécurité
   };
 
   const token = localStorage.getItem('token');
@@ -482,6 +500,8 @@ saveAmende() {
           this.showSuccessMessage = true;
           this.successMessage = 'Amende ajoutée avec succès !';
           this.resetNewAmende(); // Réinitialiser le formulaire
+          this.errorMessage = ''; // Réinitialiser le message d'erreur
+
           setTimeout(() => {
               this.showSuccessMessage = false;
               this.successMessage = '';
@@ -489,10 +509,11 @@ saveAmende() {
       },
       (error) => {
           console.error('Erreur lors de l\'ajout de l\'amende:', error);
+          // Ajoutez ici la gestion du message d'erreur
+          this.errorMessage = error.error.message || 'Une erreur s\'est produite lors de l\'ajout de l\'amende.';
       }
   );
 }
-
 
 
 

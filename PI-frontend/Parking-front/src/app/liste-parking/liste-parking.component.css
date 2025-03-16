@@ -1105,6 +1105,14 @@ input {
     /* Espace en bas */
 }
 
+.error-message {
+    color: red;
+    /* Ou toute autre couleur visible */
+    margin-top: 10px;
+    /* Espacement pour le rendre visible */
+    font-weight: bold;
+}
+
 @keyframes bounce {
     0%,
     20%,

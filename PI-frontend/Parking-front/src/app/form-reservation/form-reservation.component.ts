@@ -40,6 +40,7 @@ export class ParkingReservationComponent implements OnInit {
     reservationForm: FormGroup;
     isPaymentProcessed: boolean = false; // État du paiement
     isPaymentInitiated: boolean = false; // Nouvelle propriété pour indiquer si le paiement a été initié
+    errorMessage: string | null = null; // Pour stocker les messages d'erreur
 
 
     constructor(private fb: FormBuilder, private http: HttpClient) {
@@ -97,48 +98,44 @@ export class ParkingReservationComponent implements OnInit {
     onSubmit() {
         if (this.reservationForm.valid && this.isPaymentProcessed) {
             const userId = localStorage.getItem('userId');
-            console.log("User ID récupéré:", userId);
-
+    
             const token = localStorage.getItem('token');
             const headers = new HttpHeaders({
                 'Authorization': `Bearer ${token}`
             });
-
+    
             const formData = {
                 userId: userId,
-                parkingId: this.parkingId, // Utilisation de parkingId passé depuis le parent
-            placeId: this.placeId, // Utilisation de l'ID de la place
+                parkingId: this.parkingId,
+                placeId: this.placeId,
                 typeVehicule: this.reservationForm.value.vehicleType,
                 numeroImmatriculation: this.reservationForm.value.plateNumber,
                 heureArrivee: new Date(this.reservationForm.value.arrivalDateTime).toISOString(),
                 heureDepart: new Date(this.reservationForm.value.departureDateTime).toISOString(),
-                paiement: 'en ligne' // Inclure l'attribut de paiement
+                paiement: 'en ligne'
             };
-
-            console.log("Données envoyées à l'API:", formData); // Log des données envoyées
-
+    
             this.http.post(`http://localhost:3000/api/v1/reservations`, formData, { headers })
                 .subscribe({
                     next: (response: any) => {
-                        console.log("Réservation réussie:", response);
+                        this.errorMessage = null; // Réinitialiser le message d'erreur
                         this.reservationForm.patchValue({
-                            price: `${response.data.montant} FCFA` // Mettre à jour avec le montant total
+                            price: `${response.data.montant} FCFA`
                         });
                         this.closeModal();
-                        this.reservationSuccess.emit('Réservation effectuée avec succès !'); // Émet le message
-
+                        this.reservationSuccess.emit('Réservation effectuée avec succès !');
                     },
                     error: (error) => {
+                        this.errorMessage = error.error.message; // Afficher le message d'erreur
                         console.error("Erreur lors de la réservation:", error);
-                        console.error("Status de l'erreur:", error.status);
-                        console.error("Message de l'erreur:", error.message);
                     }
                 });
         } else {
-            console.log("Formulaire invalide ou paiement non traité.");
+            this.errorMessage = "Formulaire invalide ou paiement non traité.";
+            console.log(this.errorMessage);
         }
     }
-
+    
     closeModal() {
         this.close.emit();
     }

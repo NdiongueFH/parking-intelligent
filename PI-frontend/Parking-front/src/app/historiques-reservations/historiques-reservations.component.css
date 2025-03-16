@@ -359,9 +359,9 @@ body {
 }
 
 .reservation .actions .user-info {
-    margin-bottom: 10px;
+    margin-bottom: 20px;
     /* Espace en bas entre le nom de l'utilisateur et le bouton de facture */
-    margin-top: 30px;
+    margin-top: 10px;
 }
 
 .reservation .actions button {
@@ -381,6 +381,7 @@ body {
     padding: 10px;
     border-radius: 5px;
     cursor: pointer;
+    margin-top: 2px;
 }
 
 .reservation .user-info span {
@@ -596,7 +597,7 @@ body {
     border: none;
     border-radius: 10px;
     padding: 0.5rem 1rem;
-    margin: 0 0.25rem;
+    margin: 0 0.01rem;
     /* Espace entre les boutons */
     cursor: pointer;
     transition: background-color 0.3s;

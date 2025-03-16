@@ -44,6 +44,10 @@
                     <img src="total.png" alt="Parkings" class="nav-icon">
                     <span>Parkings</span>
                 </a>
+                <a class="nav-item" [routerLink]="['/minibank']">
+                    <img src="bank.png" alt="Bank" class="nav-icon">
+                    <span>MiniBank</span>
+                </a>
             </nav>
             <div class="logout-container">
                 <hr class="logout-divider">
@@ -112,6 +116,7 @@
                 <h3>{{ successMessage }}</h3>
             </div>
 
+
             <div class="parkings-container">
 
                 <div *ngIf="paginatedParkings.length === 0" class="error-message">
@@ -125,13 +130,12 @@
                         <!-- Ajouter l'image de suppression à l'extrême droite -->
                         <img src="sup.png" alt="Supprimer" class="delete-icon" (click)="openDeleteModal(parking); $event.stopPropagation()" />
 
-                        <button class="expand-btn" [class.expanded]="selectedParking === parking" (click)="selectParking(parking)">
+                        <button class="expand-btn" [class.expanded]="selectedParking === parking" (click)="selectParking(parking); toggleParkingDetails(parking)">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <polyline points="6 9 12 15 18 9"></polyline>
                             </svg>
                         </button>
                     </div>
-
 
                     <!-- Contenu détaillé du parking (visible quand sélectionné) -->
                     <div class="parking-details" *ngIf="selectedParking === parking">
@@ -206,6 +210,10 @@
                                     </div>
                                 </div>
                             </div>
+                            <!-- Affichage des messages d'erreur -->
+                            <div *ngIf="errorMessage" class="error-message">
+                                <h3>{{ errorMessage }}</h3>
+                            </div>
                         </div>
 
                         <div class="tab-content" *ngIf="selectedTab === 'amendes'">
@@ -229,6 +237,10 @@
                                         <option value="moto">Moto</option>
                                     </select>
                                 </div>
+                            </div>
+                            <!-- Affichage des messages d'erreur -->
+                            <div *ngIf="errorMessage" class="error-message">
+                                <h3>{{ errorMessage }}</h3>
                             </div>
                             <button class="action-button" (click)="saveAmende()">Ajouter</button>
                         </div>
@@ -256,8 +268,15 @@
                                         </select>
                                     </div>
                                 </div>
+
                                 <button class="action-button" (click)="addPlace()">Ajouter la place</button>
+                                <!-- Affichage des messages d'erreur -->
+                                <div *ngIf="errorMessage" class="error-message">
+                                    <h3>{{ errorMessage }}</h3>
+                                </div>
+
                             </div>
+
                         </div>
                     </div>
                 </div>

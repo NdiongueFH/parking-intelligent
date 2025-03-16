@@ -6,6 +6,8 @@ import * as L from 'leaflet';
 import { latLng, tileLayer, marker, icon, Map } from 'leaflet';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { HttpClientModule } from '@angular/common/http';
+import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
+
 
 interface Parking {
   _id: string; 
@@ -18,7 +20,7 @@ interface Parking {
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule, LeafletModule, HttpClientModule],
+  imports: [CommonModule, RouterModule, LeafletModule, HttpClientModule,FormsModule,ReactiveFormsModule],
   templateUrl: './dashboard-admin.component.html',
   styleUrls: ['./dashboard-admin.component.css']
 })
@@ -32,15 +34,25 @@ export class AdminDashboardComponent implements OnInit {
   isLoading: boolean = true;
   searchQuery: string = ''; 
 
+  currentPage: number = 1; // Page actuelle
+  itemsPerPage: number = 4; // Nombre d'éléments par page
+  totalPages: number = 0; // Total de pages
+  pageNumbers: number[] = []; // Numéros de pages
+
+  mapError: boolean = false; // Nouvelle propriété pour gérer l'erreur de chargement de la carte
+  geoError: boolean = false; // Nouvelle propriété pour gérer l'erreur de géolocalisation
+
+
+
   private apiUrl = 'http://localhost:3000/api/v1/parkings';
 
   constructor(private router: Router, private http: HttpClient) {}
 
   ngOnInit(): void {
-    this.getUserLocation();
-    this.loadNearbyParkings();
-  }
-
+    this.initMap(); // Initialiser la carte avec des coordonnées par défaut
+    this.getUserLocation(); // Démarrer la récupération de la position
+    this.loadNearbyParkings(); // Charger les parkings à proximité
+}
   logout(): void {
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
@@ -56,6 +68,7 @@ export class AdminDashboardComponent implements OnInit {
     );
   }
 
+  
   loadNearbyParkings(): void {
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
@@ -64,15 +77,47 @@ export class AdminDashboardComponent implements OnInit {
       (data) => {
         this.nearbyParkings = data;
         this.updateParkingDistances();
+        this.calculateTotalPages();
         this.limitDisplayedParkings();
-        this.addMarkers(); // Ajoutez les marqueurs après avoir récupéré les parkings
+        this.addMarkers();
       },
       (error) => {
         console.error('Erreur lors de la récupération des parkings', error);
+        this.handleMapError(); // Gérer l'erreur ici
+
       }
     );
   }
 
+  calculateTotalPages(): void {
+    this.totalPages = Math.ceil(this.nearbyParkings.length / this.itemsPerPage);
+    this.pageNumbers = Array.from({ length: this.totalPages }, (_, i) => i + 1);
+  }
+
+  limitDisplayedParkings(): void {
+    const start = (this.currentPage - 1) * this.itemsPerPage;
+    const end = start + this.itemsPerPage;
+    this.displayedParkings = this.nearbyParkings.slice(start, end); // Limite les parkings affichés
+  }
+
+  nextPage(): void {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.limitDisplayedParkings();
+    }
+  }
+
+  previousPage(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.limitDisplayedParkings();
+    }
+  }
+
+  goToPage(page: number): void {
+    this.currentPage = page;
+    this.limitDisplayedParkings();
+  }
   getUserLocation(): void {
     const options = { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 };
     this.isLoading = true;
@@ -87,11 +132,15 @@ export class AdminDashboardComponent implements OnInit {
         if (!this.map) this.initMap();
         else this.map.setView(this.userPosition, this.map.getZoom(), { animate: true });
         this.isLoading = false;
+        this.geoError = false; // Réinitialiser l'erreur si la géolocalisation réussit
+
       },
       (error) => {
         console.error('Erreur de géolocalisation:', error);
         alert('Veuillez activer la géolocalisation.');
         this.isLoading = false;
+        this.geoError = true; // Définir l'erreur de géolocalisation
+
       },
       options
     );
@@ -111,6 +160,11 @@ export class AdminDashboardComponent implements OnInit {
     this.map = map;
     console.log('Carte prête');
     this.addMarkers(); // Ajoutez les marqueurs lorsque la carte est prête
+  }
+
+  handleMapError() {
+    this.mapError = true;
+    this.isLoading = false;
   }
 
   updateUserMarker(): void {
@@ -140,9 +194,7 @@ export class AdminDashboardComponent implements OnInit {
     this.nearbyParkings.sort((a, b) => parseFloat(a.distanceKm!) - parseFloat(b.distanceKm!));
   }
 
-  limitDisplayedParkings(): void {
-    this.displayedParkings = this.nearbyParkings.slice(0, 4); // Limite à 4 parkings pour l'affichage
-  }
+ 
 
   addMarkers(): void {
     const userIcon = icon({ iconUrl: 'posi.jpeg', iconSize: [60, 60], iconAnchor: [30, 30], popupAnchor: [0, -32] });
@@ -165,6 +217,13 @@ export class AdminDashboardComponent implements OnInit {
     });
   }
 
+  reserveParkingById(parkingId: string): void {
+    const parking = this.nearbyParkings.find(p => p._id === parkingId);
+    if (parking) {
+        this.reserveParking(parking);
+    }
+}
+
 reserveParking(parking: Parking): void {
     this.router.navigate(['/parking'], { queryParams: { parkingId: parking._id } });
 }
@@ -173,50 +232,74 @@ reserveParking(parking: Parking): void {
   }
 
   searchParking(): void {
-    const parkingFound = this.nearbyParkings.find(parking =>
-        parking.nom_du_parking.toLowerCase().includes(this.searchQuery.toLowerCase())
-    );
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
-    if (parkingFound) {
-        if (this.map) { // Vérification si this.map est initialisé
-            this.map.setView(latLng(parkingFound.latitude, parkingFound.longitude), 15);
-            this.addRouteToParking(parkingFound);
-        } else {
-            console.error("La carte n'est pas encore initialisée.");
-        }
-    } else {
-        alert('Parking non trouvé');
+    // Vérifiez si le champ de recherche est vide
+    if (!this.searchQuery.trim()) {
+        this.displayedParkings = [...this.nearbyParkings]; // Réinitialiser avec tous les parkings
+        this.updateParkingDistances(); // Mettre à jour les distances si nécessaire
+        this.addMarkers(); // Ajouter les marqueurs pour tous les parkings
+        return; // Sortir de la méthode si le champ est vide
     }
+
+    // Appel à l'API pour rechercher un parking par nom
+    this.http.get<Parking[]>(`http://localhost:3000/api/v1/parkings/nom/${this.searchQuery}`, { headers })
+        .subscribe(
+            (data) => {
+                if (data.length > 0) {
+                    this.displayedParkings = data; // Afficher les parkings trouvés
+                    const parkingFound = data[0]; // Supposons que le premier soit celui que nous voulons
+                    if (this.map) { // Vérifiez si this.map n'est pas null
+                        this.map.setView(latLng(parkingFound.latitude, parkingFound.longitude), 15);
+                        this.addRouteToParking(parkingFound); // Tracer l'itinéraire
+                    } else {
+                        console.error("La carte n'est pas initialisée.");
+                    }
+                } else {
+                    alert('Aucun parking trouvé avec ce nom.');
+                    this.displayedParkings = []; // Réinitialiser l'affichage
+                }
+            },
+            (error) => {
+                console.error("Erreur lors de la recherche du parking", error);
+                alert('Erreur lors de la recherche du parking.');
+            }
+        );
 }
 
 addRouteToParking(parking: Parking): void {
-    if (!this.userPosition) {
-        console.error("La position de l'utilisateur n'est pas disponible.");
-        return;
-    }
+  if (!this.userPosition) {
+      console.error("La position de l'utilisateur n'est pas disponible.");
+      return;
+  }
 
-    if (!this.map) {
-        console.error("La carte n'est pas initialisée.");
-        return; // Empêcher l'exécution si la carte n'est pas encore prête
-    }
+  if (!this.map) {
+      console.error("La carte n'est pas initialisée.");
+      return; // Empêcher l'exécution si la carte n'est pas encore prête
+  }
 
-    const start = `${this.userPosition.lng},${this.userPosition.lat}`;
-    const end = `${parking.longitude},${parking.latitude}`;
-    const url = `https://router.project-osrm.org/route/v1/driving/${start};${end}?overview=false`;
+  const start = `${this.userPosition.lng},${this.userPosition.lat}`;
+  const end = `${parking.longitude},${parking.latitude}`;
+  const url = `https://router.project-osrm.org/route/v1/driving/${start};${end}?overview=false`;
 
-    this.http.get<any>(url).subscribe(response => {
-        if (response.routes.length > 0) {
-            const route = response.routes[0];
-            const latLngs = route.geometry.coordinates.map((coord: number[]) => latLng(coord[1], coord[0]));
+  console.log(`URL de l'itinéraire: ${url}`); // Log de l'URL de l'API
 
-            const polyline = L.polyline(latLngs, { color: 'blue' }).addTo(this.map!); // Ajout du "!" pour indiquer à TypeScript que this.map n'est plus null
-            this.map!.fitBounds(polyline.getBounds());
-        } else {
-            console.error('Aucune route trouvée.');
-        }
-    }, error => {
-        console.error("Erreur lors de la récupération de l'itinéraire", error);
-    });
+  this.http.get<any>(url).subscribe(response => {
+      if (response.routes && response.routes.length > 0) {
+          const route = response.routes[0];
+          const latLngs = route.geometry.coordinates.map((coord: number[]) => latLng(coord[1], coord[0]));
+
+          const polyline = L.polyline(latLngs, { color: 'red' }).addTo(this.map!);
+          this.map!.fitBounds(polyline.getBounds());
+      } else {
+          console.error('Aucune route trouvée.');
+          alert('Aucune route trouvée.');
+      }
+  }, error => {
+      console.error("Erreur lors de la récupération de l'itinéraire", error);
+      alert('Erreur lors de la récupération de l\'itinéraire');
+  });
 }
 
 }

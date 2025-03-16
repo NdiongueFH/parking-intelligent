@@ -1,0 +1,198 @@
+<div class="dashboard-container">
+    <!-- Header -->
+    <header class="header">
+        <div class="logo-container">
+            <img src="imagelogoParking.png" alt="Parking Logo" class="logo">
+        </div>
+
+
+        <h1 class="search-text">Systeme de transfert d'argent</h1>
+
+
+
+        <div class="header-icons">
+
+            <button class="settings-button">
+                <img src="iconeParametre.jpg" alt="Settings" class="header-icon" />
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="content-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <nav class="nav-menu">
+                <a class="nav-item" [routerLink]="['/dashboard-admin']">
+                    <img src="home.png" alt="Accueil" class="nav-icon">
+                    <span>Accueil</span>
+                </a>
+                <a class="nav-item" [routerLink]="['/historiques-reservations']">
+                    <img src="file.png" alt="Historiques" class="nav-icon">
+                    <span>Historiques</span>
+                </a>
+                <a class="nav-item" [routerLink]="['/gestions-utilisateurs']">
+                    <img src="group.png" alt="Utilisateurs" class="nav-icon">
+                    <span>Utilisateurs</span>
+                </a>
+                <a class="nav-item " [routerLink]="['/liste-parking']">
+                    <img src="total.png" alt="Parkings" class="nav-icon">
+                    <span>Parkings</span>
+                </a>
+
+                <a class="nav-item active" [routerLink]="['/minibank']">
+                    <img src="bank.png" alt="Bank" class="nav-icon">
+                    <span>MiniBank</span>
+                </a>
+            </nav>
+            <div class="logout-container">
+                <hr class="logout-divider">
+                <a class="logout-button">
+                    <img src="deconnexion.png" alt="Déconnexion" class="logout-icon">
+                    <span>Déconnexion</span>
+                </a>
+            </div>
+        </div>
+
+
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <!-- User Profile Card -->
+            <!-- Zone de message de succès -->
+            <div *ngIf="successMessage" class="success-message">
+                {{ successMessage }}
+            </div>
+            <div class="user-profile-card">
+                <div class="profile-header">
+                    <div class="profile-info">
+                        <h2 class="welcome-text">Bienvenue, <span class="user-name">{{ userData.name || 'Chargement...' }}</span></h2>
+                        <p class="user-phone">{{ userData.phone || 'Chargement...' }}</p>
+                    </div>
+                    <div class="balance-container">
+                        <div class="balance-header">
+                            <h3>Solde du compte</h3>
+                            <button class="toggle-balance-btn" (click)="toggleBalanceVisibility()">
+                                <i class="fa" [ngClass]="isBalanceVisible ? 'fa-eye' : 'fa-eye-slash'" id="eyeIcon"></i>
+                            </button>
+                        </div>
+                        <div class="balance-amount" *ngIf="isBalanceVisible">
+                            <span>{{ userData.balance }} FCFA</span>
+                        </div>
+                        <div class="balance-hidden" *ngIf="!isBalanceVisible">
+                            <span>••••••</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Boutons d'action -->
+                <div class="action-buttons">
+                    <button class="action-btn deposit-btn" (click)="showDepositModal()">
+        <i class="fa fa-plus-circle"></i>
+        Faire un dépôt
+    </button>
+                    <button class="action-btn withdraw-btn" (click)="showWithdrawModal()">
+        <i class="fa fa-minus-circle"></i>
+        Faire un retrait
+    </button>
+                </div>
+                <!-- Modal Dépôt -->
+                <div class="modal" id="depositModal" *ngIf="isDepositModalOpen">
+                    <div class="modal-content">
+                        <span class="close" (click)="closeDepositModal()">&times;</span>
+                        <h3>Faire un Dépôt</h3>
+                        <div class="image-placeholder">
+                            <img src="imagelogoParking.png" alt="Image" style="max-width: 100%; height: auto; border-radius: 8px;">
+                            <!-- Remplacez par l'URL de votre image -->
+                        </div>
+                        <form [formGroup]="depositForm" (ngSubmit)="submitDeposit()">
+                            <label for="telephone">Téléphone :</label>
+                            <input id="telephone" formControlName="telephone" placeholder="Entrer le numero de telephone" required>
+
+                            <label for="montant">Montant (FCFA) :</label>
+                            <input id="montant" formControlName="montant" placeholder="Entrer le montant" required type="number">
+
+                            <h4>1% de bonus pour chaque transaction</h4>
+
+                            <button type="submit">Confirmer</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Modal Retrait -->
+                <div class="modal" id="withdrawModal" *ngIf="isWithdrawModalOpen">
+                    <div class="modal-content">
+                        <span class="close" (click)="closeWithdrawModal()">&times;</span>
+                        <h3>Faire un Retrait</h3>
+                        <div class="image-placeholder">
+                            <img src="imagelogoParking.png" alt="Image" style="max-width: 100%; height: auto; border-radius: 8px;">
+                            <!-- Remplacez par l'URL de votre image -->
+                        </div>
+                        <form [formGroup]="withdrawForm" (ngSubmit)="submitWithdraw()">
+                            <label for="telephone">Téléphone :</label>
+                            <input id="telephone" formControlName="telephone" placeholder="Entrer le numero de telephone" required>
+
+                            <label for="montant">Montant (FCFA) :</label>
+                            <input id="montant" formControlName="montant" placeholder="Entrer le montant" required type="number">
+
+                            <h4>1% de bonus pour chaque transaction</h4>
+
+                            <button type="submit">Confirmer</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transaction History & Chart Section -->
+            <div class="transaction-section">
+                <div class="section-header">
+                    <h3>Aperçu des transactions</h3>
+                    <div class="period-selector">
+                        <button class="period-btn active" (click)="changePeriod('week')">Semaine</button>
+                        <!-- <button class="period-btn" (click)="changePeriod('month')">Mois</button>
+                        <button class="period-btn" (click)="changePeriod('year')">Année</button> -->
+                    </div>
+                </div>
+
+                <!-- Transaction Chart -->
+                <div class="chart-container">
+                    <canvas id="transactionChart"></canvas>
+                </div>
+
+                <!-- Transaction History Table -->
+                <div class="transaction-history">
+                    <h3>Historique des transactions</h3>
+                    <div class="transaction-table-container">
+                        <table class="transaction-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Type</th>
+                                    <th>Téléphone</th>
+                                    <th>Nom</th>
+                                    <th>Prénom</th>
+                                    <th>Montant</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let transaction of transactions">
+                                    <td>{{ transaction.date | date:'dd/MM/yyyy' }}</td>
+                                    <td>
+                                        <span class="transaction-type" [ngClass]="{'deposit': transaction.type === 'depot', 'withdrawal': transaction.type === 'retrait'}">
+                            {{ transaction.type }}
+                        </span>
+                                    </td>
+                                    <td>{{ transaction.telephone }}</td>
+                                    <td>{{ transaction.nom }}</td>
+                                    <td>{{ transaction.prenom }}</td>
+                                    <td class="amount" [ngClass]="{'deposit-amount': transaction.type === 'depot', 'withdrawal-amount': transaction.type === 'retrait'}">
+                                        {{ transaction.type === 'depot' ? '+' : '-' }}{{ transaction.montant | currency:'FCFA':'symbol' }}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

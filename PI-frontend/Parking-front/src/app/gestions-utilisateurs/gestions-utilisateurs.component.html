@@ -36,6 +36,10 @@
                     <img src="total.png" alt="Parkings" class="nav-icon">
                     <span>Parkings</span>
                 </a>
+                <a class="nav-item" [routerLink]="['/minibank']">
+                    <img src="bank.png" alt="Bank" class="nav-icon">
+                    <span>MiniBank</span>
+                </a>
             </nav>
             <div class="logout-container">
                 <hr class="logout-divider">
@@ -183,10 +187,9 @@
                     Inscription réussie!
                 </div>
                 <div class="button-container">
-                    <button type="submit" [disabled]="loading || !isFormValid()">
-                                <span *ngIf="loading" class="spinner"></span>
-                                S'inscrire
-                            </button>
+                    <button type="submit" [disabled]="!isFormValid()">
+                        S'inscrire
+                    </button>
                 </div>
                 <button class="back-to-home" (click)="closeAddUserModal()">
                     <img src="retour.png" alt="Retour à l'accueil" class="home-icon">
@@ -232,8 +235,8 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label for="role">Rôle<span class="required">*</span></label>
-                        <select id="role" formControlName="role" [ngClass]="{'is-invalid': isFieldInvalid('role')}" (change)="onRoleChange()">
-                        <option value="" disabled>Sélectionner un rôle</option>
+                        <select id="role" formControlName="role" [ngClass]="{'is-invalid': isFieldInvalid('role')}" class="readonly-input" (click)="$event.preventDefault()">
+                            <option value="" disabled>Sélectionner un rôle</option>
                         <option value="utilisateur">Utilisateur</option>
                         <option value="administrateur">Administrateur</option>
                     </select>
@@ -248,10 +251,9 @@
                 <div *ngIf="error" class="alert-error">{{ error }}</div>
                 <div *ngIf="success" class="alert-success">Modification réussie!</div>
                 <div class="button-container">
-                    <button type="submit" [disabled]="loading || !isFormValid()">
-                    <span *ngIf="loading" class="spinner"></span>
-                    Modifier
-                </button>
+                    <button type="submit" [disabled]="!isFormValid()">
+                        Modifier
+                    </button>
                 </div>
                 <button class="back-to-home" (click)="closeEditUserModal()">
                 <img src="retour.png" alt="Retour à l'accueil" class="home-icon">
