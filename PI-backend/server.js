@@ -10,6 +10,9 @@ const placeParkingRoutes = require('./routes/placeParkingRoutes');
 const tarifRoutes = require('./routes/tarifRoutes');
 const reservationRoutes = require('./routes/reservationRoutes');
 const amendeRoutes = require('./routes/amendeRoutes');
+const transferRoutes = require('./routes/transferRoutes'); // Nouveau fichier de routes pour les transactions
+
+
 
 
 
@@ -43,6 +46,7 @@ if (!jwtSecret) {
 
 // Utilisation des routes d'utilisateur et d'authentification
 app.use('/api/v1/users', userRoutes); // Routes pour les utilisateurs
+app.use('/api/v1/transfers', transferRoutes); // Nouvelles routes pour les transactions
 app.use('/api/v1/auth', authRoutes); // Si vous avez des routes d'authentification
 app.use('/api/v1/parkings', parkingRoutes); // Routes pour les parkings
 app.use('/api/v1/place-parking', placeParkingRoutes); //Routes pour les places de parking
@@ -52,9 +56,11 @@ app.use('/api/v1/amendes', amendeRoutes); // Utilisation des routes d'amende
 
 
 
+
+
 // Route de base pour vérifier que le serveur fonctionnePlace 1
 app.get('/', (req, res) => {
-    res.send('API de gestion des utilisateurs et des parkings');
+    res.send('API de gestion des utilisateurs et des parkings')
 });
 
 // Gestion des erreurs non gérées

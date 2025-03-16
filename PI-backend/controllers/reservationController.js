@@ -25,6 +25,11 @@ exports.addReservation = async(req, res) => {
             });
         }
 
+        // Log pour déboguer
+        console.log("Recherche de tarif avec parkingId:", req.body.parkingId);
+        console.log("Type de véhicule passé:", req.body.typeVehicule);
+
+
         const tarif = await TarifStationnement.findOne({
             parkingId: req.body.parkingId,
             typeVehicule: req.body.typeVehicule
@@ -68,7 +73,7 @@ exports.addReservation = async(req, res) => {
 
         // Gestion des durées de 30 jours ou plus
         if (dureeEnMinutes >= 43200) { // 30 jours
-            montant = tarif.tarifDurations.mois; // Montant pour le premier mois
+            montant = tarif.tarifDurations.mois;
             const joursSup = dureeEnJours - 30; // Jours après le premier mois
             if (joursSup > 0) {
                 montant += (tarif.tarifDurations.jour / 1440) * (joursSup * 1440);
@@ -76,7 +81,7 @@ exports.addReservation = async(req, res) => {
         }
         // Gestion des durées de 7 jours ou plus
         else if (dureeEnMinutes >= 10080) { // 7 jours
-            montant = tarif.tarifDurations.semaine; // Montant pour la première semaine
+            montant = tarif.tarifDurations.semaine;
             const joursSup = dureeEnJours - 7; // Jours après la première semaine
             if (joursSup > 0) {
                 montant += (tarif.tarifDurations.jour / 1440) * (joursSup * 1440);
@@ -84,17 +89,16 @@ exports.addReservation = async(req, res) => {
         }
         // Gestion des durées de 24 heures ou plus
         else if (dureeEnMinutes >= 1440) { // 24 heures
-            montant = (tarif.tarifDurations.jour / 1440) * dureeEnMinutes; // Règle de trois pour le tarif journalier
+            montant = tarif.tarifDurations.jour; // Montant pour une journée
         }
         // Gestion des durées d'1 heure ou plus
         else if (dureeEnMinutes >= 60) { // 1 heure
-            montant = (tarif.tarifDurations.heure / 60) * dureeEnMinutes; // Règle de trois pour le tarif horaire
+            montant = tarif.tarifDurations.heure * (dureeEnMinutes / 60); // Règle de trois pour le tarif horaire
         }
         // Gestion des durées de moins d'1 heure
         else { // Moins d'une heure
             montant = (tarif.tarifDurations.heure / 60) * dureeEnMinutes; // Règle de trois pour le tarif horaire
         }
-
 
         const user = await User.findById(req.body.userId);
         if (!user) {
@@ -199,6 +203,8 @@ exports.addReservation = async(req, res) => {
     }
 };
 
+
+
 // Modifier une réservation
 exports.updateReservation = async(req, res) => {
     try {
@@ -233,10 +239,10 @@ exports.updateReservation = async(req, res) => {
             }
 
             const place = await PlaceParking.findById(existingReservation.placeId);
-            if (place.statut === 'reservee' || place.statut === 'occupee') {
+            if (place.statut !== 'reservee') {
                 return res.status(400).json({
                     status: 'fail',
-                    message: 'La place est déjà réservée ou occupée.',
+                    message: 'La réservation ne peut être modifiée que si la place est réservée.',
                 });
             }
 
@@ -251,29 +257,44 @@ exports.updateReservation = async(req, res) => {
             }
 
             const tarif = await TarifStationnement.findById(existingReservation.tarifId);
+            console.log("Tarif récupéré:", tarif);
+            console.log("Durée en minutes:", dureeEnMinutes);
             let montant = 0;
-            if (dureeEnMinutes >= 1440) {
-                montant = tarif.tarifDurations.jour * Math.ceil(dureeEnMinutes / 1440);
-            } else if (dureeEnMinutes >= 60) {
-                montant = tarif.tarifDurations.heure * Math.ceil(dureeEnMinutes / 60);
-            } else {
-                montant = tarif.tarifDurations.heure; // Minimum de 1 heure
+
+            // Calculer le montant basé sur la durée
+            if (dureeEnMinutes >= 43200) { // 30 jours
+                montant = tarif.tarifDurations.mois;
+            } else if (dureeEnMinutes >= 10080) { // 7 jours
+                montant = tarif.tarifDurations.semaine;
+            } else if (dureeEnMinutes >= 1440) { // 24 heures
+                montant = tarif.tarifDurations.jour; // Montant pour une journée
+            } else if (dureeEnMinutes >= 60) { // 1 heure
+                montant = tarif.tarifDurations.heure * (dureeEnMinutes / 60); // Règle de trois pour le tarif horaire
+            } else { // Moins d'une heure
+                montant = (tarif.tarifDurations.heure / 60) * dureeEnMinutes; // Règle de trois pour le tarif horaire
             }
+
+            // Calculer les frais de transaction
+            const fraisTransaction = montant * 0.02; // Par exemple, 2% du montant
+            const montantTotal = montant + fraisTransaction;
 
             // Mettre à jour les données de réservation
             updateData.duree = dureeEnMinutes;
-            updateData.montant = montant;
+            updateData.montant = montantTotal; // Inclure le montant total avec frais
         }
 
-        // Mettre à jour le numéro d'immatriculation et le type de véhicule si fournis
-        if (updateData.immatriculation) {
-            existingReservation.immatriculation = updateData.immatriculation;
+        // Mise à jour des informations si fournies
+        if (updateData.numeroImmatriculation) {
+            existingReservation.numeroImmatriculation = updateData.numeroImmatriculation;
         }
         if (updateData.typeVehicule) {
             existingReservation.typeVehicule = updateData.typeVehicule;
         }
 
-        const updatedReservation = await Reservation.findByIdAndUpdate(id, {...existingReservation, ...updateData }, {
+        const updatedReservation = await Reservation.findByIdAndUpdate(id, {
+            ...existingReservation.toObject(),
+            ...updateData
+        }, {
             new: true,
             runValidators: true,
         });
@@ -285,6 +306,7 @@ exports.updateReservation = async(req, res) => {
             },
         });
     } catch (err) {
+        console.error(err); // Pour le débogage
         res.status(400).json({
             status: 'fail',
             message: err.message,

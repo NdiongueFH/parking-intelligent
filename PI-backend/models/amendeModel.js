@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
 
 const amendeSchema = new mongoose.Schema({
-    reservationId: {
+    parkingId: {
         type: mongoose.Schema.ObjectId,
-        ref: 'Reservation',
-        required: false,
+        ref: 'Parking', // Assurez-vous que le modèle Parking est bien défini
+        required: true, // Rend ce champ obligatoire
     },
     duree: {
         type: String, // Format "HH:mm:ss"
@@ -13,6 +13,7 @@ const amendeSchema = new mongoose.Schema({
     montant: {
         type: Number,
         required: true,
+        min: 0 // Assure que le montant ne soit pas négatif
     },
     typeInfraction: {
         type: String,

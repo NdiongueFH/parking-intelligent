@@ -19,7 +19,10 @@ router.use(verifyToken);
 router.post('/logout', userController.logout);
 
 // Route protégée pour obtenir les informations de l'utilisateur connecté
-router.get('/me', userController.protect, userController.getUser);
+// router.get('/me', userController.protect, userController.getUser);
+
+router.get('/me', userController.protect, userController.getMe); // Route protégée pour obtenir les informations de l'utilisateur
+
 
 // Mettre à jour son propre profil (Nom, Prénom, Téléphone, etc.)
 router.patch('/me', userController.protect, userController.updateMe);

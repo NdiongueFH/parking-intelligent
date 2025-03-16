@@ -36,15 +36,24 @@ exports.addTarifStationnement = async(req, res) => {
             });
         }
 
+        // Vérifier que tous les tarifs sont non négatifs
+        const { heure, jour, semaine, mois } = req.body.tarifDurations;
+        if (heure < 0 || jour < 0 || semaine < 0 || mois < 0) {
+            return res.status(400).json({
+                status: 'fail',
+                message: 'Les tarifs ne peuvent pas être négatifs.'
+            });
+        }
+
         // Créer le tarif
         const tarif = await TarifStationnement.create({
             parkingId: req.body.parkingId,
             typeVehicule: req.body.typeVehicule,
             tarifDurations: {
-                heure: req.body.tarifDurations.heure,
-                jour: req.body.tarifDurations.jour,
-                semaine: req.body.tarifDurations.semaine,
-                mois: req.body.tarifDurations.mois
+                heure,
+                jour,
+                semaine,
+                mois
             }
         });
 
@@ -61,6 +70,57 @@ exports.addTarifStationnement = async(req, res) => {
         });
     }
 };
+
+// Mettre à jour un tarif spécifique
+exports.updateTarif = async(req, res) => {
+    try {
+        // Vérifier si le type de véhicule est valide
+        const typesVehiculesValides = ['voiture', 'moto'];
+        if (req.body.typeVehicule && !typesVehiculesValides.includes(req.body.typeVehicule)) {
+            return res.status(400).json({
+                status: 'fail',
+                message: 'Le type de véhicule doit être "voiture" ou "moto"'
+            });
+        }
+
+        // Vérifier que tous les tarifs sont non négatifs
+        if (req.body.tarifDurations) {
+            const { heure, jour, semaine, mois } = req.body.tarifDurations;
+            if (heure < 0 || jour < 0 || semaine < 0 || mois < 0) {
+                return res.status(400).json({
+                    status: 'fail',
+                    message: 'Les tarifs ne peuvent pas être négatifs.'
+                });
+            }
+        }
+
+        // Mettre à jour le tarif
+        const tarif = await TarifStationnement.findByIdAndUpdate(req.params.id, req.body, {
+            new: true,
+            runValidators: true
+        });
+
+        if (!tarif) {
+            return res.status(404).json({
+                status: 'fail',
+                message: 'Tarif non trouvé'
+            });
+        }
+
+        res.status(200).json({
+            status: 'success',
+            data: {
+                tarif
+            }
+        });
+    } catch (err) {
+        res.status(400).json({
+            status: 'fail',
+            message: err.message
+        });
+    }
+};
+
 
 
 // Récupérer tous les tarifs pour un parking spécifique
@@ -115,44 +175,7 @@ exports.getTarifById = async(req, res) => {
     }
 };
 
-// Mettre à jour un tarif spécifique
-exports.updateTarif = async(req, res) => {
-    try {
-        // Vérifier si le type de véhicule est valide
-        const typesVehiculesValides = ['voiture', 'moto'];
-        if (req.body.typeVehicule && !typesVehiculesValides.includes(req.body.typeVehicule)) {
-            return res.status(400).json({
-                status: 'fail',
-                message: 'Le type de véhicule doit être "voiture" ou "moto"'
-            });
-        }
 
-        // Mettre à jour le tarif
-        const tarif = await TarifStationnement.findByIdAndUpdate(req.params.id, req.body, {
-            new: true,
-            runValidators: true
-        });
-
-        if (!tarif) {
-            return res.status(404).json({
-                status: 'fail',
-                message: 'Tarif non trouvé'
-            });
-        }
-
-        res.status(200).json({
-            status: 'success',
-            data: {
-                tarif
-            }
-        });
-    } catch (err) {
-        res.status(400).json({
-            status: 'fail',
-            message: err.message
-        });
-    }
-};
 
 // Supprimer un tarif spécifique
 exports.deleteTarif = async(req, res) => {

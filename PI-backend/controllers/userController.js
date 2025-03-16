@@ -1,4 +1,6 @@
 const User = require('../models/userModel');
+const Transfer = require('../models/transferModel');
+
 const TokenBlacklist = require('../models/tokenBlacklistModel');
 const jwt = require('jsonwebtoken');
 const { promisify } = require('util');
@@ -38,8 +40,8 @@ exports.signup = async(req, res) => {
         }
 
         // S'assurer qu'un utilisateur normal n'a pas de carte RFID
-        if (req.body.role === 'utilisateur' && req.body.carteRfid) {
-            delete req.body.carteRfid;
+        if (req.body.role === 'utilisateur') {
+            req.body.carteRfid = undefined; // Forcer la valeur à undefined pour éviter les erreurs
         }
 
         // Définir le solde par défaut selon le rôle
@@ -54,7 +56,7 @@ exports.signup = async(req, res) => {
             mot_de_passe: req.body.mot_de_passe,
             adresse: req.body.adresse,
             role: req.body.role,
-            carteRfid: req.body.carteRfid, // La carte RFID est laissée de côté si le rôle est 'utilisateur'
+            carteRfid: req.body.carteRfid, // La carte RFID est undefined si le rôle est 'utilisateur'
             solde // Ajouter le solde
         });
 
@@ -87,6 +89,7 @@ exports.signup = async(req, res) => {
         });
     }
 };
+
 
 
 
@@ -200,6 +203,16 @@ exports.protect = async(req, res, next) => {
             message: 'Token invalide ou expiré'
         });
     }
+};
+
+// Obtenir les informations de l'utilisateur connecté
+exports.getMe = (req, res) => {
+    res.status(200).json({
+        status: 'success',
+        data: {
+            user: req.user // Utilisateur connecté
+        }
+    });
 };
 
 // Middleware de restriction basé sur les rôles
@@ -468,10 +481,11 @@ exports.logout = async(req, res, next) => {
     }
 };
 
-// Méthode pour déposer de l'argent à un utilisateur
+// Méthode de dépôt
 exports.deposit = async(req, res) => {
     const { telephone, montant } = req.body;
 
+    // Validation des données
     if (!telephone || !montant || montant <= 0) {
         return res.status(400).json({
             status: 'fail',
@@ -490,20 +504,32 @@ exports.deposit = async(req, res) => {
         }
 
         const admin = req.user; // L'administrateur effectue l'opération
+        if (admin.role !== 'administrateur') {
+            return res.status(403).json({
+                status: 'fail',
+                message: 'Seul un administrateur peut effectuer un dépôt.'
+            });
+        }
 
-        // Créditez l'utilisateur
+        // Mettre à jour le solde de l'utilisateur
         user.solde += montant;
         await user.save();
 
-        // Débiter l'administrateur et ajouter le bonus
-        admin.solde -= montant;
-        admin.solde += montant * 0.01; // 1% de bonus
-        await admin.save();
+        // Créer un enregistrement de transfert
+        await Transfer.create({
+            type: 'depot',
+            montant,
+            telephone: user.telephone,
+            nom: user.nom,
+            prenom: user.prenom,
+            administrateur: admin._id
+        });
 
         res.status(200).json({
             status: 'success',
             message: 'Dépôt réussi.',
             data: {
+                montant,
                 solde: user.solde
             }
         });
@@ -516,10 +542,11 @@ exports.deposit = async(req, res) => {
     }
 };
 
-// Méthode pour retirer de l'argent d'un utilisateur
+// Méthode de retrait
 exports.withdraw = async(req, res) => {
     const { telephone, montant } = req.body;
 
+    // Validation des données
     if (!telephone || !montant || montant <= 0) {
         return res.status(400).json({
             status: 'fail',
@@ -544,21 +571,33 @@ exports.withdraw = async(req, res) => {
             });
         }
 
-        // Soustraire le montant du solde de l'utilisateur
+        const admin = req.user; // L'administrateur effectue l'opération
+        if (admin.role !== 'administrateur') {
+            return res.status(403).json({
+                status: 'fail',
+                message: 'Seul un administrateur peut effectuer un retrait.'
+            });
+        }
+
+        // Mettre à jour le solde de l'utilisateur
         user.solde -= montant;
         await user.save();
 
-        const admin = req.user; // L'administrateur effectue l'opération
-
-        // Créditer le montant au solde de l'administrateur et ajouter le bonus
-        admin.solde += montant;
-        admin.solde += montant * 0.01; // 1% de bonus
-        await admin.save();
+        // Créer un enregistrement de transfert
+        await Transfer.create({
+            type: 'retrait',
+            montant,
+            telephone: user.telephone,
+            nom: user.nom,
+            prenom: user.prenom,
+            administrateur: admin._id
+        });
 
         res.status(200).json({
             status: 'success',
             message: 'Retrait réussi.',
             data: {
+                montant,
                 solde: user.solde
             }
         });

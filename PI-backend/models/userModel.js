@@ -50,6 +50,7 @@ const userSchema = new mongoose.Schema({
     carteRfid: {
         type: String,
         unique: true,
+        sparse: true, // Permet d'avoir plusieurs documents avec carteRfid: null
         required: function() {
             return this.role === 'administrateur';
         },
@@ -58,13 +59,15 @@ const userSchema = new mongoose.Schema({
                 if (this.role === 'administrateur') {
                     return v && v.length > 0;
                 }
-                return v === undefined || v === null || v === '';
+                return true; // Pas de validation pour les utilisateurs normaux
             },
             message: props =>
+
                 this.role === 'administrateur' ?
                 'La carte RFID est obligatoire pour les administrateurs' : 'Les utilisateurs normaux ne doivent pas avoir de carte RFID'
         }
     },
+
     solde: {
         type: Number,
         default: 0, // La valeur par défaut sera définie lors de la création de l'utilisateur

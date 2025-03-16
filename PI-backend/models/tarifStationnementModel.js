@@ -14,19 +14,23 @@ const tarifStationnementSchema = new mongoose.Schema({
     tarifDurations: {
         heure: {
             type: Number,
-            required: true
+            required: true,
+            min: 0 // Assure que le tarif ne soit pas négatif
         },
         jour: {
             type: Number,
-            required: true
+            required: true,
+            min: 0 // Assure que le tarif ne soit pas négatif
         },
         semaine: {
             type: Number,
-            required: true
+            required: true,
+            min: 0 // Assure que le tarif ne soit pas négatif
         },
         mois: {
             type: Number,
-            required: true
+            required: true,
+            min: 0 // Assure que le tarif ne soit pas négatif
         }
     }
 }, {

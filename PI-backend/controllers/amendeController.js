@@ -2,29 +2,44 @@ const Amende = require('../models/amendeModel');
 const Reservation = require('../models/reservationModel'); // Pour vérifier que la réservation existe
 const Parking = require('../models/parking'); // Si nécessaire pour des vérifications supplémentaires
 
-// Créer une amende (sans assignation immédiate à une réservation)
+// Créer une amende
 exports.createAmende = async(req, res) => {
     try {
-        const { duree, montant, typeInfraction, typeVehicule, reservationId } = req.body;
+        const { duree, montant, typeInfraction, typeVehicule, parkingId } = req.body;
 
-        // Si reservationId est fourni, vérifier que l'amende n'existe pas déjà pour cette réservation et typeVehicule
-        if (reservationId) {
-            const existingAmende = await Amende.findOne({ reservationId, typeVehicule });
-            if (existingAmende) {
-                return res.status(400).json({
-                    status: 'fail',
-                    message: 'Une amende existe déjà pour cette réservation et ce type de véhicule'
-                });
-            }
+        // Vérifier que le parking existe
+        const parking = await Parking.findById(parkingId);
+        if (!parking) {
+            return res.status(404).json({
+                status: 'fail',
+                message: 'Parking non trouvé'
+            });
         }
 
-        // Créer une nouvelle amende sans l'associer à une réservation
+        // Vérifier que le montant n'est pas négatif
+        if (montant < 0) {
+            return res.status(400).json({
+                status: 'fail',
+                message: 'Le montant de l\'amende ne peut pas être négatif.'
+            });
+        }
+
+        // Vérifier l'unicité de la combinaison typeInfraction et typeVehicule
+        const existingAmende = await Amende.findOne({ typeInfraction, typeVehicule });
+        if (existingAmende) {
+            return res.status(400).json({
+                status: 'fail',
+                message: 'Cette combinaison de type d\'infraction et de type de véhicule existe déjà.'
+            });
+        }
+
+        // Créer une nouvelle amende
         const amende = await Amende.create({
             duree,
             montant,
             typeInfraction,
             typeVehicule,
-            reservationId
+            parkingId,
         });
 
         res.status(201).json({
@@ -32,6 +47,49 @@ exports.createAmende = async(req, res) => {
             message: 'Amende créée avec succès',
             data: {
                 amende
+            }
+        });
+
+    } catch (err) {
+        res.status(400).json({
+            status: 'fail',
+            message: err.message
+        });
+    }
+};
+
+// Modifier une amende
+exports.updateAmende = async(req, res) => {
+    try {
+        const { id } = req.params;
+        const { duree, montant, typeInfraction, typeVehicule } = req.body;
+
+        // Vérifier que le montant n'est pas négatif
+        if (montant < 0) {
+            return res.status(400).json({
+                status: 'fail',
+                message: 'Le montant de l\'amende ne peut pas être négatif.'
+            });
+        }
+
+        const updatedAmende = await Amende.findByIdAndUpdate(id, {
+            duree,
+            montant,
+            typeInfraction,
+            typeVehicule
+        }, { new: true, runValidators: true });
+
+        if (!updatedAmende) {
+            return res.status(404).json({
+                status: 'fail',
+                message: 'Amende non trouvée'
+            });
+        }
+
+        res.status(200).json({
+            status: 'success',
+            data: {
+                amende: updatedAmende
             }
         });
 
@@ -67,7 +125,7 @@ exports.assignAmendeToReservation = async(req, res) => {
         }
 
         // Assigner l'amende à la réservation
-        amende.reservationId = reservationId;
+        amende.reservationId = reservationId; // Si vous souhaitez ajouter cette logique
         await amende.save();
 
         res.status(200).json({
@@ -160,41 +218,6 @@ exports.getAmendeById = async(req, res) => {
             status: 'success',
             data: {
                 amende
-            }
-        });
-
-    } catch (err) {
-        res.status(400).json({
-            status: 'fail',
-            message: err.message
-        });
-    }
-};
-
-// Modifier une amende
-exports.updateAmende = async(req, res) => {
-    try {
-        const { id } = req.params;
-        const { duree, montant, typeInfraction, typeVehicule } = req.body;
-
-        const updatedAmende = await Amende.findByIdAndUpdate(id, {
-            duree,
-            montant,
-            typeInfraction,
-            typeVehicule
-        }, { new: true, runValidators: true });
-
-        if (!updatedAmende) {
-            return res.status(404).json({
-                status: 'fail',
-                message: 'Amende non trouvée'
-            });
-        }
-
-        res.status(200).json({
-            status: 'success',
-            data: {
-                amende: updatedAmende
             }
         });
 
