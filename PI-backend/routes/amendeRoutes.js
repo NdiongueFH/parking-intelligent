@@ -14,6 +14,10 @@ router.post('/', protect, restrictTo('administrateur'), amendeController.createA
 // Route pour récupérer toutes les amendes
 router.get('/', protect, amendeController.getAllAmendes); // Cette route récupère toutes les amendes
 
+// Route pour récupérer toutes les amendes d'un parking spécifique
+router.get('/parking/:parkingId', protect, amendeController.getAmendesByParkingId);
+
+
 // Route pour récupérer les amendes par reservationId
 router.get('/reservation/:reservationId', protect, amendeController.getAmendesByReservationId); // Récupérer les amendes par réservation
 

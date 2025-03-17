@@ -511,9 +511,12 @@ exports.deposit = async(req, res) => {
             });
         }
 
-        // Mettre à jour le solde de l'utilisateur
-        user.solde += montant;
+        // Mettre à jour les soldes
+        user.solde += montant; // Créditer l'utilisateur
+        admin.solde -= montant; // Débiter l'administrateur du montant
+
         await user.save();
+        await admin.save();
 
         // Créer un enregistrement de transfert
         await Transfer.create({
@@ -530,7 +533,8 @@ exports.deposit = async(req, res) => {
             message: 'Dépôt réussi.',
             data: {
                 montant,
-                solde: user.solde
+                soldeUtilisateur: user.solde,
+                soldeAdministrateur: admin.solde
             }
         });
     } catch (err) {
@@ -541,8 +545,7 @@ exports.deposit = async(req, res) => {
         });
     }
 };
-
-// Méthode de retrait
+// Méthode de retrait// Méthode de retrait
 exports.withdraw = async(req, res) => {
     const { telephone, montant } = req.body;
 
@@ -579,9 +582,12 @@ exports.withdraw = async(req, res) => {
             });
         }
 
-        // Mettre à jour le solde de l'utilisateur
-        user.solde -= montant;
+        // Mettre à jour les soldes
+        user.solde -= montant; // Débiter l'utilisateur
+        admin.solde += montant; // Créditer l'administrateur du montant
+
         await user.save();
+        await admin.save();
 
         // Créer un enregistrement de transfert
         await Transfer.create({
@@ -598,7 +604,8 @@ exports.withdraw = async(req, res) => {
             message: 'Retrait réussi.',
             data: {
                 montant,
-                solde: user.solde
+                soldeUtilisateur: user.solde,
+                soldeAdministrateur: admin.solde
             }
         });
     } catch (err) {
