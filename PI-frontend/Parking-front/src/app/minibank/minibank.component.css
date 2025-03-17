@@ -538,6 +538,63 @@ body {
     /* Supprimer le contour au focus */
 }
 
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 1rem;
+    font-weight: bold;
+}
+
+.pagination button {
+    background-color: var(--primary-color);
+    /* Couleur de fond bleu */
+    color: var(--user-color);
+    /* Couleur du texte en blanc */
+    border: none;
+    /* Pas de bordure */
+    border-radius: 10px;
+    /* Coins arrondis */
+    padding: 0.5rem 1rem;
+    /* Espacement interne */
+    margin: 0 0.25rem;
+    /* Espace entre les boutons */
+    cursor: pointer;
+    /* Curseur pointer */
+    transition: background-color 0.3s;
+    /* Transition pour le survol */
+}
+
+.pagination button:hover:not(:disabled) {
+    background-color: var(--secondary-color);
+    /* Couleur au survol */
+}
+
+.pagination button:disabled {
+    background-color: var(--gray);
+    /* Couleur pour le bouton désactivé */
+    cursor: not-allowed;
+    /* Change le curseur pour indiquer l'impossibilité */
+}
+
+.pagination .active {
+    font-weight: bold;
+    /* Met le numéro de page active en gras */
+    /* Couleur pour la page active */
+    font-size: 18px;
+    color: #fafbfd;
+    background-color: #0754A1;
+}
+
+.pagination span {
+    margin: 0 0.5rem;
+    /* Espace autour des ellipses */
+    color: var(--gray-dark);
+    /* Couleur des ellipses */
+    font-weight: bold;
+    /* Met les ellipses en gras */
+}
+
 
 /* Media Queries */
 

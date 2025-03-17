@@ -47,7 +47,7 @@
             </nav>
             <div class="logout-container">
                 <hr class="logout-divider">
-                <a class="logout-button">
+                <a class="logout-button" (click)="logout()">
                     <img src="deconnexion.png" alt="Déconnexion" class="logout-icon">
                     <span>Déconnexion</span>
                 </a>
@@ -110,8 +110,6 @@
                             <label for="montant">Montant (FCFA) :</label>
                             <input id="montant" formControlName="montant" placeholder="Entrer le montant" required type="number">
 
-                            <h4>1% de bonus pour chaque transaction</h4>
-
                             <button type="submit">Confirmer</button>
                         </form>
                     </div>
@@ -133,8 +131,6 @@
                             <label for="montant">Montant (FCFA) :</label>
                             <input id="montant" formControlName="montant" placeholder="Entrer le montant" required type="number">
 
-                            <h4>1% de bonus pour chaque transaction</h4>
-
                             <button type="submit">Confirmer</button>
                         </form>
                     </div>
@@ -154,9 +150,11 @@
 
                 <!-- Transaction Chart -->
                 <div class="chart-container">
-                    <canvas id="transactionChart"></canvas>
+                    <canvas id="transactionChart" style="width: 100%; height: 400px;"></canvas>
+                    <!-- Assurez-vous que le canvas a un style défini -->
                 </div>
 
+                <!-- Transaction History Table -->
                 <!-- Transaction History Table -->
                 <div class="transaction-history">
                     <h3>Historique des transactions</h3>
@@ -173,7 +171,8 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr *ngFor="let transaction of transactions">
+                                <tr *ngFor="let transaction of visibleTransactions">
+                                    <!-- Utiliser visibleTransactions -->
                                     <td>{{ transaction.date | date:'dd/MM/yyyy' }}</td>
                                     <td>
                                         <span class="transaction-type" [ngClass]="{'deposit': transaction.type === 'depot', 'withdrawal': transaction.type === 'retrait'}">
@@ -189,6 +188,19 @@
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="pagination" *ngIf="totalPages > 1">
+                        <!-- Afficher si plus d'une page -->
+                        <button (click)="previousPage()" [disabled]="currentPage === 1">Précédent</button>
+                        <div>
+                            <button *ngFor="let page of pageNumbers" (click)="goToPage(page)" [class.active]="currentPage === page">
+                {{ page }}
+            </button>
+                            <span *ngIf="(currentPage > 2 && totalPages > 3)">..</span>
+                        </div>
+                        <button (click)="nextPage()" [disabled]="currentPage === totalPages">Suivant</button>
                     </div>
                 </div>
             </div>

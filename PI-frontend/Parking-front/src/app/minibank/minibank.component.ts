@@ -26,8 +26,16 @@ export class MinibankComponent implements OnInit {
   isDepositModalOpen = false;
   isWithdrawModalOpen = false;
 
+  currentPage: number = 1; // Page actuelle
+itemsPerPage: number = 4; // Nombre d'éléments par page
+totalPages: number = 0; // Total des pages
+pageNumbers: number[] = []; // Numéros de pages
+visibleTransactions: any[] = []; // Propriété pour stocker les transactions visibles
+
   // État de la visibilité du solde
   isBalanceVisible: boolean = true; // Initialement visible
+
+  dailyTransactions: any[] = []; // Propriété pour stocker les transactions de la journée
   
   // Données des transactions
   transactions: any[] = []; // Propriété pour stocker les transactions
@@ -83,40 +91,99 @@ export class MinibankComponent implements OnInit {
       }
     }, 0);
   }
- 
-  fetchTransactions(): void {
-    const token = localStorage.getItem('token'); // Récupération du token
-    this.http.get('http://localhost:3000/api/v1/transfers', {
-        headers: { 'Authorization': `Bearer ${token}` } // Utilisation du token
-    }).subscribe(
-        (response: any) => {
-            this.transactions = response.data.transfers; // Stocker les transactions récupérées
-            
-            // Trier les transactions du plus récent au plus ancien
-            this.transactions.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
-            this.filterWeeklyTransactions(); // Filtrer les transactions de la semaine
-            this.initializeChart(); // Initialiser le graphique après le filtrage
-        },
-        error => {
-            console.error('Erreur lors de la récupération des transactions:', error);
-        }
-    );
+updateVisibleTransactions(): void {
+    const start = (this.currentPage - 1) * this.itemsPerPage;
+    const end = start + this.itemsPerPage;
+    this.visibleTransactions = this.transactions.slice(start, end); // Transactions à afficher
 }
-  filterWeeklyTransactions(): void {
-    const now = new Date();
-    const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay())); // Début de la semaine (dimanche)
-    const endOfWeek = new Date(now.setDate(startOfWeek.getDate() + 6)); // Fin de la semaine (samedi)
 
-    // Filtrer les transactions de la semaine
-    const weeklyTransactions = this.transactions.filter(transaction => {
+goToPage(page: number): void {
+    this.currentPage = page;
+    this.updateVisibleTransactions(); // Mettre à jour les transactions visibles
+}
+
+previousPage(): void {
+    if (this.currentPage > 1) {
+        this.currentPage--;
+        this.updateVisibleTransactions();
+    }
+}
+
+nextPage(): void {
+    if (this.currentPage < this.totalPages) {
+        this.currentPage++;
+        this.updateVisibleTransactions();
+    }
+}
+
+
+fetchTransactions(): void {
+  const token = localStorage.getItem('token');
+  this.http.get('http://localhost:3000/api/v1/transfers', {
+    headers: { 'Authorization': `Bearer ${token}` }
+  }).subscribe(
+    (response: any) => {
+      this.transactions = response.data.transfers;
+      console.log('Transactions récupérées:', this.transactions);
+
+      // Trier les transactions par date décroissante
+      this.transactions.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+      // Mettre à jour les transactions visibles
+      this.totalPages = Math.ceil(this.transactions.length / this.itemsPerPage);
+      this.pageNumbers = Array.from({ length: this.totalPages }, (_, i) => i + 1);
+      this.updateVisibleTransactions();
+
+      // Filtrer les transactions de la journée
+      this.filterDailyTransactions();
+      this.initializeChart();
+    },
+    error => {
+      console.error('Erreur lors de la récupération des transactions:', error);
+    }
+  );
+}
+
+filterDailyTransactions(): void {
+  const now = new Date();
+  const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
+  const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
+
+  this.dailyTransactions = this.transactions.filter(transaction => {
       const transactionDate = new Date(transaction.date);
-      return transactionDate >= startOfWeek && transactionDate <= endOfWeek;
-    });
+      return transactionDate >= startOfDay && transactionDate <= endOfDay;
+  });
 
-    // Préparer les données pour le graphique
-    this.prepareChartData(weeklyTransactions);
-  }
+  console.log('Transactions filtrées pour la journée:', this.dailyTransactions);
+  this.prepareChartData(this.dailyTransactions);
+}
+
+prepareChartData(transactions: any[]): void {
+  const labels: string[] = Array.from({ length: 19 }, (_, i) => (i + 6).toString()); // Heures de 6h à 00h
+  const depositValues: number[] = Array(19).fill(0); // Pour stocker les dépôts par heure
+  const withdrawalValues: number[] = Array(19).fill(0); // Pour stocker les retraits par heure
+
+  transactions.forEach(transaction => {
+    const date = new Date(transaction.date);
+    const hour = date.getHours(); // Obtenir l'heure
+    const amount = transaction.type === 'depot' ? transaction.montant : -transaction.montant;
+
+    // Ajouter le montant au tableau approprié
+    if (hour >= 6 && hour <= 23) { // Vérifier que l'heure est dans la plage 6h à 00h
+      if (transaction.type === 'depot') {
+        depositValues[hour - 6] += transaction.montant;
+      } else {
+        withdrawalValues[hour - 6] += transaction.montant;
+      }
+    }
+  });
+
+  console.log('Données préparées pour le graphique:', { labels, depositValues, withdrawalValues });
+  this.weeklyData = { labels, depositValues, withdrawalValues };
+}
+
+
 
   filterMonthlyTransactions(): void {
     const now = new Date();
@@ -148,101 +215,79 @@ export class MinibankComponent implements OnInit {
     this.prepareChartData(yearlyTransactions);
   }
 
-  prepareChartData(transactions: any[]): void {
-    const labels: string[] = [];
-    const depositValues: number[] = [];
-    const withdrawalValues: number[] = [];
 
-    transactions.forEach(transaction => {
-        const date = new Date(transaction.date);
-        const formattedDate = date.toLocaleDateString('fr-FR', { weekday: 'long' }); // Obtenir le nom du jour ou le mois
-        const amount = transaction.type === 'depot' ? transaction.montant : -transaction.montant;
-
-        // Vérifier si le jour existe déjà dans les labels
-        const index = labels.indexOf(formattedDate);
-        if (index > -1) {
-            if (transaction.type === 'depot') {
-                depositValues[index] += transaction.montant; // Ajouter au montant du dépôt
-            } else {
-                withdrawalValues[index] += transaction.montant; // Ajouter au montant du retrait
-            }
-        } else {
-            labels.push(formattedDate); // Ajouter un nouveau jour
-            depositValues.push(transaction.type === 'depot' ? transaction.montant : 0); // Ajouter le montant du dépôt
-            withdrawalValues.push(transaction.type === 'retrait' ? transaction.montant : 0); // Ajouter le montant du retrait
-        }
-    });
-
-    this.weeklyData = { labels, depositValues, withdrawalValues }; // Stocker les données pour le graphique
-}
-
-initializeChart(): void {
+  initializeChart(): void {
     const ctx = document.getElementById('transactionChart') as HTMLCanvasElement;
-
+  
     if (ctx) {
-        ctx.innerHTML = ''; // Pour éviter le superposition des graphiques
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: this.weeklyData.labels,
-                datasets: [
-                  {
-                    label: 'Dépôts',
-                    data: this.weeklyData.depositValues,
-                    borderColor: '#4CAF50', // Couleur verte pour les dépôts
-                    backgroundColor: 'rgba(76, 175, 80, 0.1)', // Fond clair pour les dépôts
-                    fill: true,
-                    tension: 0.4
-                },
-                {
-                    label: 'Retraits',
-                    data: this.weeklyData.withdrawalValues,
-                    borderColor: '#F44336', // Couleur rouge pour les retraits
-                    backgroundColor: 'rgba(244, 67, 54, 0.1)', // Fond clair pour les retraits
-                    fill: true,
-                    tension: 0.4
-                }
-                ]
+      ctx.innerHTML = ''; // Pour éviter la superposition des graphiques
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: this.weeklyData.labels, // Heures de 6h à 00h
+          datasets: [
+            {
+              label: 'Dépôts',
+              data: this.weeklyData.depositValues, // Montants des dépôts par heure
+              borderColor: '#4CAF50', // Couleur verte pour les dépôts
+              backgroundColor: 'rgba(76, 175, 80, 0.1)', // Fond clair pour les dépôts
+              fill: true,
+              tension: 0.4
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: true
-                    },
-                    tooltip: {
-                        mode: 'index',
-                        intersect: false,
-                        callbacks: {
-                            label: function(context) {
-                                return context.dataset.label + ': ' + context.raw + ' FCFA';
-                            }
-                        }
-                    }
-                },
-                scales: {
-                    x: {
-                        grid: {
-                            display: false
-                        }
-                    },
-                    y: {
-                        beginAtZero: true,
-                        grid: {
-                            color: 'rgba(0, 0, 0, 0.05)'
-                        },
-                        ticks: {
-                            callback: function(value) {
-                                return value + ' FCFA';
-                            }
-                        }
-                    }
-                }
+            {
+              label: 'Retraits',
+              data: this.weeklyData.withdrawalValues, // Montants des retraits par heure
+              borderColor: '#F44336', // Couleur rouge pour les retraits
+              backgroundColor: 'rgba(244, 67, 54, 0.1)', // Fond clair pour les retraits
+              fill: true,
+              tension: 0.4
             }
-        });
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: true // Affiche la légende pour distinguer les courbes
+            },
+            tooltip: {
+              mode: 'index',
+              intersect: false,
+              callbacks: {
+                label: function(context) {
+                  return context.dataset.label + ': ' + context.raw + ' FCFA';
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              title: {
+                display: true,
+                text: 'Heures'
+              },
+              grid: {
+                display: false
+              }
+            },
+            y: {
+              beginAtZero: true,
+              grid: {
+                color: 'rgba(0, 0, 0, 0.05)'
+              },
+              ticks: {
+                callback: function(value) {
+                  return value + ' FCFA';
+                }
+              }
+            }
+          }
+        }
+      });
     }
-}
+  }
+  
 
   // Ouvrir le modal de dépôt
   showDepositModal(): void {
@@ -333,8 +378,8 @@ initializeChart(): void {
   changePeriod(period: string): void {
     console.log('Changement de période:', period);
     // Mettre à jour le graphique en fonction de la période sélectionnée
-    if (period === 'week') {
-      this.filterWeeklyTransactions(); // Filtrer les transactions de la semaine
+    if (period === 'day') {
+      this.filterDailyTransactions(); // Filtrer les transactions de la semaine
     } else if (period === 'month') {
       this.filterMonthlyTransactions(); // Filtrer les transactions du mois
     } else if (period === 'year') {
