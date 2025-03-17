@@ -584,6 +584,151 @@ body {
     /* Assurez-vous que la div prend toute la hauteur disponible */
 }
 
+
+/* Ajoutez ce CSS dans votre fichier dashboard-admin.component.css */
+
+
+/* Position relative pour le conteneur des icônes du header */
+
+.header-icons {
+    position: relative;
+}
+
+
+/* Style du modal des paramètres */
+
+.settings-modal {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 300px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    margin-top: 15px;
+    animation: fadeIn 0.2s ease-out;
+    overflow: hidden;
+}
+
+
+/* Flèche pointant vers le haut */
+
+.settings-modal-arrow {
+    position: absolute;
+    top: -10px;
+    right: 15px;
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid #ffffff;
+}
+
+
+/* Contenu du modal */
+
+.settings-modal-content {
+    padding: 20px;
+}
+
+
+/* Informations utilisateur */
+
+.user-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.user-avatar {
+    margin-right: 15px;
+}
+
+.avatar-img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #3498db;
+}
+
+.user-details h3 {
+    margin: 0 0 5px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+.user-email {
+    margin: 0 0 10px 0;
+    font-size: 14px;
+    color: #666;
+}
+
+.user-balance {
+    background-color: #f8f9fa;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.balance-label {
+    font-weight: 500;
+    color: #555;
+}
+
+.balance-amount {
+    font-weight: 600;
+    color: #3498db;
+    margin-left: 5px;
+}
+
+
+/* Actions du paramétrage */
+
+.settings-actions {
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+}
+
+.settings-action-link {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    color: #555;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.settings-action-link:hover {
+    color: #3498db;
+    background-color: #f5f7fa;
+    padding-left: 5px;
+    border-radius: 4px;
+}
+
+.action-icon {
+    width: 18px;
+    height: 18px;
+    margin-right: 10px;
+}
+
+
+/* Animation */
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 @keyframes spin {
     0% {
         transform: rotate(0deg);

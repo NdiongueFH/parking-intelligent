@@ -4,7 +4,13 @@ import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { HttpClientModule, HttpClient, HttpHeaders } from '@angular/common/http';
 import { ParkingReservationComponent } from '../form-reservation/form-reservation.component';
 
-
+interface UserData {
+  _id: string;
+  nom: string;
+  prenom: string;
+  email: string;
+  solde: number;
+}
 
 @Component({
   selector: 'app-parking',
@@ -40,6 +46,26 @@ export class ParkingComponent implements OnInit {
   successMessage: string = ''; // Variable pour stocker le message de succès
   showSuccessMessage: boolean = false;
 
+  tarifs: any[] = []; // Pour stocker les tarifs
+amendes: any[] = []; // Pour stocker les amendes
+showRatesModal: boolean = false; // État du modal
+
+errorTarifs: string = ''; // Pour les erreurs de tarifs
+errorAmendes: string = ''; // Pour les erreurs d'amendes
+
+// Nouvelles propriétés pour le modal des paramètres
+showSettingsModal: boolean = false;
+userData: UserData = {
+  _id: '',
+  nom: '',
+  prenom: '',
+  email: '',
+  solde: 0
+};
+
+private userApiUrl = 'http://localhost:3000/api/v1/users';
+
+
 
  
   constructor(private router: Router, private http: HttpClient, private route: ActivatedRoute) {}
@@ -53,7 +79,75 @@ export class ParkingComponent implements OnInit {
       }
     });
     this.updatePageNumbers(); // Initialiser les numéros de page
+    this.loadUserData(); // Charger les données de l'utilisateur
+
   }
+
+   // Nouvelle méthode pour charger les données de l'utilisateur
+   loadUserData(): void {
+    const token = localStorage.getItem('token');
+    const userId = localStorage.getItem('userId'); // Récupérer l'ID de l'utilisateur à partir du localStorage
+  
+    if (!token || !userId) {
+        this.router.navigate(['/login']);
+        return;
+    }
+  
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+  
+    this.http.get<{ status: string; data: { user: UserData } }>(`${this.userApiUrl}/${userId}`, { headers }).subscribe(
+        (response) => {
+            if (response.status === 'success') {
+                this.userData = response.data.user; // Accédez à l'objet utilisateur
+            } else {
+                console.error('Erreur lors de la récupération des données utilisateur');
+            }
+        },
+        (error) => {
+            console.error('Erreur lors de la récupération des données utilisateur', error);
+        }
+    );
+  }
+  
+    // Méthode pour afficher/masquer le modal des paramètres
+    toggleSettingsModal(): void {
+      this.showSettingsModal = !this.showSettingsModal;
+      
+      // Si on ferme le modal en cliquant ailleurs sur la page
+      if (this.showSettingsModal) {
+        setTimeout(() => {
+          document.addEventListener('click', this.closeModalOnClickOutside);
+        }, 0);
+      } else {
+        document.removeEventListener('click', this.closeModalOnClickOutside);
+      }
+    }
+    
+    // Fermer le modal en cliquant en dehors
+    closeModalOnClickOutside = (event: MouseEvent) => {
+      const modal = document.querySelector('.settings-modal');
+      const settingsButton = document.querySelector('.settings-button');
+      
+      if (modal && settingsButton && 
+          !modal.contains(event.target as Node) && 
+          !settingsButton.contains(event.target as Node)) {
+        this.showSettingsModal = false;
+        document.removeEventListener('click', this.closeModalOnClickOutside);
+      }
+    };
+    
+    // Navigation vers la page de modification du profil
+    goToEditProfile(): void {
+      this.router.navigate(['/modifier-utilisateur']);
+      this.showSettingsModal = false;
+    }
+    
+    // Navigation vers la page de changement de mot de passe
+    goToChangePassword(): void {
+      this.router.navigate(['/changer-mot-de-passe']);
+      this.showSettingsModal = false;
+    }
+    
 
   updatePageNumbers(): void {
     this.pageNumbers = Array.from({ length: this.totalPages }, (_, i) => i + 1); // Crée un tableau de numéros de page
@@ -184,6 +278,64 @@ export class ParkingComponent implements OnInit {
     setTimeout(() => {
         this.successMessage = ''; // Réinitialiser le message après 3 secondes
     }, 3000);
+}
+
+// Pour l'ouverture du modal
+openRatesModal(): void {
+  const token = localStorage.getItem('token');
+  const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+  // Récupérer les tarifs
+  this.http.get<any>(`http://localhost:3000/api/v1/tarifs/${this.parkingId}`, { headers }).subscribe(
+      (response: any) => {
+          if (response.data && response.data.tarifs) {
+              this.tarifs = response.data.tarifs;
+              this.loadFines(); // Charger les amendes après avoir récupéré les tarifs
+              this.errorTarifs = ''; // Réinitialiser le message d'erreur
+          } else {
+              this.errorTarifs = 'Aucun tarif trouvé.'; // Message d'erreur
+              this.tarifs = []; // Initialiser avec un tableau vide en cas d'erreur
+          }
+      },
+      (error) => {
+          console.error('Erreur lors de la récupération des tarifs:', error);
+          this.errorTarifs = 'Aucun tarif definit pour ce parking'; // Message d'erreur
+          this.tarifs = []; // Initialiser avec un tableau vide
+      }
+  );
+
+  // Afficher le modal
+  this.showRatesModal = true;
+  // Empêcher le défilement du corps de la page
+  document.body.style.overflow = 'hidden';
+}
+
+loadFines(): void {
+  const token = localStorage.getItem('token');
+  const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+  // Récupérer les amendes
+  this.http.get<any>(`http://localhost:3000/api/v1/amendes/parking/${this.parkingId}`, { headers }).subscribe(
+      (response: any) => {
+          if (response.data && response.data.amendes) {
+              this.amendes = response.data.amendes;
+              this.errorAmendes = ''; // Réinitialiser le message d'erreur
+          } else {
+              this.errorAmendes = 'Aucune amende trouvée.'; // Message d'erreur
+              this.amendes = []; // Initialiser avec un tableau vide
+          }
+      },
+      (error) => {
+          console.error('Erreur lors de la récupération des amendes:', error);
+          this.errorAmendes = 'Aucune amende definit pour ce parking'; // Message d'erreur
+          this.amendes = []; // Initialiser avec un tableau vide
+      }
+  );
+}
+closeRatesModal(): void {
+  this.showRatesModal = false;
+  // Rétablir le défilement du corps de la page
+  document.body.style.overflow = 'auto';
 }
 
 

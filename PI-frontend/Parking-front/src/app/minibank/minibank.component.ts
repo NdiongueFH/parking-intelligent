@@ -9,6 +9,15 @@ import { Chart, registerables } from 'chart.js';
 // Enregistrer les composants Chart.js
 Chart.register(...registerables);
 
+interface UserData {
+  _id: string;
+  nom: string;
+  prenom: string;
+  email: string;
+  solde: number;
+  telephone : number
+}
+
 @Component({
   selector: 'app-minibank',
   imports: [CommonModule, ReactiveFormsModule, RouterModule, HttpClientModule],
@@ -31,6 +40,13 @@ itemsPerPage: number = 4; // Nombre d'éléments par page
 totalPages: number = 0; // Total des pages
 pageNumbers: number[] = []; // Numéros de pages
 visibleTransactions: any[] = []; // Propriété pour stocker les transactions visibles
+
+// Nouvelles propriétés pour le modal des paramètres
+showSettingsModal: boolean = false;
+
+
+private userApiUrl = 'http://localhost:3000/api/v1/users';
+
 
   // État de la visibilité du solde
   isBalanceVisible: boolean = true; // Initialement visible
@@ -63,8 +79,75 @@ visibleTransactions: any[] = []; // Propriété pour stocker les transactions vi
     this.setupBalanceToggle();
     this.fetchTransactions(); // Appeler la méthode pour récupérer les transactions
     this.fetchUserData(); // Appeler la méthode pour récupérer les données de l'utilisateur
+    this.loadUserData(); // Charger les données de l'utilisateur
+
 
   }
+
+   // Nouvelle méthode pour charger les données de l'utilisateur
+   loadUserData(): void {
+    const token = localStorage.getItem('token');
+    const userId = localStorage.getItem('userId'); // Récupérer l'ID de l'utilisateur à partir du localStorage
+  
+    if (!token || !userId) {
+        this.router.navigate(['/login']);
+        return;
+    }
+  
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+  
+    this.http.get<{ status: string; data: { user: UserData } }>(`${this.userApiUrl}/${userId}`, { headers }).subscribe(
+        (response) => {
+            if (response.status === 'success') {
+                this.userData = response.data.user; // Accédez à l'objet utilisateur
+            } else {
+                console.error('Erreur lors de la récupération des données utilisateur');
+            }
+        },
+        (error) => {
+            console.error('Erreur lors de la récupération des données utilisateur', error);
+        }
+    );
+  }
+  
+    // Méthode pour afficher/masquer le modal des paramètres
+    toggleSettingsModal(): void {
+      this.showSettingsModal = !this.showSettingsModal;
+      
+      // Si on ferme le modal en cliquant ailleurs sur la page
+      if (this.showSettingsModal) {
+        setTimeout(() => {
+          document.addEventListener('click', this.closeModalOnClickOutside);
+        }, 0);
+      } else {
+        document.removeEventListener('click', this.closeModalOnClickOutside);
+      }
+    }
+    
+    // Fermer le modal en cliquant en dehors
+    closeModalOnClickOutside = (event: MouseEvent) => {
+      const modal = document.querySelector('.settings-modal');
+      const settingsButton = document.querySelector('.settings-button');
+      
+      if (modal && settingsButton && 
+          !modal.contains(event.target as Node) && 
+          !settingsButton.contains(event.target as Node)) {
+        this.showSettingsModal = false;
+        document.removeEventListener('click', this.closeModalOnClickOutside);
+      }
+    };
+    
+    // Navigation vers la page de modification du profil
+    goToEditProfile(): void {
+      this.router.navigate(['/modifier-utilisateur']);
+      this.showSettingsModal = false;
+    }
+    
+    // Navigation vers la page de changement de mot de passe
+    goToChangePassword(): void {
+      this.router.navigate(['/changer-mot-de-passe']);
+      this.showSettingsModal = false;
+    }
 
   setupBalanceToggle(): void {
     // Attendre que le DOM soit complètement chargé
@@ -388,11 +471,8 @@ prepareChartData(transactions: any[]): void {
 
     this.initializeChart(); // Réinitialiser le graphique avec les données filtrées
   }
-
   fetchUserData(): void {
     const token = localStorage.getItem('token');
-    console.log('Token récupéré:', token); // Log du token
-
     if (!token) {
         console.error('Aucun token trouvé, l\'utilisateur n\'est pas authentifié.');
         return;
@@ -402,14 +482,14 @@ prepareChartData(transactions: any[]): void {
         headers: { 'Authorization': `Bearer ${token}` }
     }).subscribe(
         (response: any) => {
-            console.log('Réponse de l\'API:', response); // Log de la réponse de l'API
             if (response && response.data && response.data.user) {
                 this.userData = {
-                    name: response.data.user.prenom,
-                    phone: response.data.user.telephone,
-                    balance: response.data.user.solde
+                    nom: response.data.user.nom,
+                    prenom: response.data.user.prenom,
+                    telephone: response.data.user.telephone,
+                    solde: response.data.user.solde,
+                    email: response.data.user.email // Assurez-vous que tous les champs sont présents
                 };
-                console.log('Données utilisateur assignées:', this.userData); // Log des données assignées
             } else {
                 console.error('Structure de réponse inattendue:', response);
             }

@@ -11,10 +11,39 @@
 
 
         <div class="header-icons">
+            <button class="settings-button" (click)="toggleSettingsModal()">
+        <img src="iconeParametre.jpg" alt="Settings" class="header-icon" />
+    </button>
 
-            <button class="settings-button">
-                <img src="iconeParametre.jpg" alt="Settings" class="header-icon" />
-            </button>
+            <!-- Modal des paramètres -->
+            <div class="settings-modal" *ngIf="showSettingsModal">
+                <div class="settings-modal-content">
+                    <div class="user-info">
+                        <div class="user-avatar">
+                            <img src="user.png" alt="Avatar" class="avatar-img" />
+                        </div>
+                        <div class="user-details">
+                            <h3>{{ userData.nom }} {{ userData.prenom }}</h3>
+                            <p class="user-email">{{ userData.email }}</p>
+                            <div class="user-balance">
+                                <span class="balance-label">Solde :</span>
+                                <span class="balance-amount">{{ userData.solde | currency:'FCFA':'symbol':'1.2-2' }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="settings-actions">
+                        <a class="settings-action-link" (click)="goToEditProfile()">
+                            <img src="modif.png" alt="Éditer" class="action-icon" />
+                            <span>Modifier mes informations</span>
+                        </a>
+                        <a class="settings-action-link" (click)="goToChangePassword()">
+                            <img src="mdp1.png" alt="Password" class="action-icon" />
+                            <span>Changer mon mot de passe</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="settings-modal-arrow"></div>
+            </div>
         </div>
     </header>
 
@@ -65,8 +94,8 @@
             <div class="user-profile-card">
                 <div class="profile-header">
                     <div class="profile-info">
-                        <h2 class="welcome-text">Bienvenue, <span class="user-name">{{ userData.name || 'Chargement...' }}</span></h2>
-                        <p class="user-phone">{{ userData.phone || 'Chargement...' }}</p>
+                        <h2 class="welcome-text">Bienvenue, <span class="user-name">{{ userData.prenom || 'Chargement...' }}</span></h2>
+                        <p class="user-phone">{{ userData.telephone || 'Chargement...' }}</p>
                     </div>
                     <div class="balance-container">
                         <div class="balance-header">
@@ -76,7 +105,7 @@
                             </button>
                         </div>
                         <div class="balance-amount" *ngIf="isBalanceVisible">
-                            <span>{{ userData.balance }} FCFA</span>
+                            <span>{{ userData.solde | currency:'FCFA':'symbol':'1.2-2' }}</span>
                         </div>
                         <div class="balance-hidden" *ngIf="!isBalanceVisible">
                             <span>••••••</span>
@@ -140,7 +169,7 @@
             <!-- Transaction History & Chart Section -->
             <div class="transaction-section">
                 <div class="section-header">
-                    <h3>Aperçu des transactions</h3>
+                    <h3>Aperçu des transactions de la journee</h3>
                     <div class="period-selector">
                         <button class="period-btn active" (click)="changePeriod('week')">Semaine</button>
                         <!-- <button class="period-btn" (click)="changePeriod('month')">Mois</button>

@@ -27,6 +27,14 @@ export interface Place {
  
 }
 
+interface UserData {
+  _id: string;
+  nom: string;
+  prenom: string;
+  email: string;
+  solde: number;
+}
+
 @Component({
   selector: 'app-liste-parking',
   standalone: true,
@@ -79,6 +87,19 @@ export class ListeParkingComponent implements OnInit {
     capaciteTotale: 0
   };
 
+  // Nouvelles propriétés pour le modal des paramètres
+showSettingsModal: boolean = false;
+userData: UserData = {
+  _id: '',
+  nom: '',
+  prenom: '',
+  email: '',
+  solde: 0
+};
+
+private userApiUrl = 'http://localhost:3000/api/v1/users';
+
+
   newAmende = {
     duree: '00:00:00', // Format de durée sous forme de chaîne
     montant: 0,
@@ -119,7 +140,75 @@ selectedAmende: any; // Assurez-vous que cela est initialisé lorsque vous séle
 
   ngOnInit(): void {
     this.loadParkings();
+    this.loadUserData(); // Charger les données de l'utilisateur
+
   }
+
+   // Nouvelle méthode pour charger les données de l'utilisateur
+   loadUserData(): void {
+    const token = localStorage.getItem('token');
+    const userId = localStorage.getItem('userId'); // Récupérer l'ID de l'utilisateur à partir du localStorage
+  
+    if (!token || !userId) {
+        this.router.navigate(['/login']);
+        return;
+    }
+  
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+  
+    this.http.get<{ status: string; data: { user: UserData } }>(`${this.userApiUrl}/${userId}`, { headers }).subscribe(
+        (response) => {
+            if (response.status === 'success') {
+                this.userData = response.data.user; // Accédez à l'objet utilisateur
+            } else {
+                console.error('Erreur lors de la récupération des données utilisateur');
+            }
+        },
+        (error) => {
+            console.error('Erreur lors de la récupération des données utilisateur', error);
+        }
+    );
+  }
+  
+    // Méthode pour afficher/masquer le modal des paramètres
+    toggleSettingsModal(): void {
+      this.showSettingsModal = !this.showSettingsModal;
+      
+      // Si on ferme le modal en cliquant ailleurs sur la page
+      if (this.showSettingsModal) {
+        setTimeout(() => {
+          document.addEventListener('click', this.closeModalOnClickOutside);
+        }, 0);
+      } else {
+        document.removeEventListener('click', this.closeModalOnClickOutside);
+      }
+    }
+    
+    // Fermer le modal en cliquant en dehors
+    closeModalOnClickOutside = (event: MouseEvent) => {
+      const modal = document.querySelector('.settings-modal');
+      const settingsButton = document.querySelector('.settings-button');
+      
+      if (modal && settingsButton && 
+          !modal.contains(event.target as Node) && 
+          !settingsButton.contains(event.target as Node)) {
+        this.showSettingsModal = false;
+        document.removeEventListener('click', this.closeModalOnClickOutside);
+      }
+    };
+    
+    // Navigation vers la page de modification du profil
+    goToEditProfile(): void {
+      this.router.navigate(['/modifier-utilisateur']);
+      this.showSettingsModal = false;
+    }
+    
+    // Navigation vers la page de changement de mot de passe
+    goToChangePassword(): void {
+      this.router.navigate(['/changer-mot-de-passe']);
+      this.showSettingsModal = false;
+    }
+    
 
   logout(): void {
     const token = localStorage.getItem('token');

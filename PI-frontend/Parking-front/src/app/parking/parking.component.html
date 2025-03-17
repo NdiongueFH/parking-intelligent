@@ -10,9 +10,39 @@
         </div>
 
         <div class="header-icons">
-            <button class="settings-button">
-                <img src="iconeParametre.jpg" alt="Settings" class="header-icon" />
-            </button>
+            <button class="settings-button" (click)="toggleSettingsModal()">
+        <img src="iconeParametre.jpg" alt="Settings" class="header-icon" />
+    </button>
+
+            <!-- Modal des paramètres -->
+            <div class="settings-modal" *ngIf="showSettingsModal">
+                <div class="settings-modal-content">
+                    <div class="user-info">
+                        <div class="user-avatar">
+                            <img src="user.png" alt="Avatar" class="avatar-img" />
+                        </div>
+                        <div class="user-details">
+                            <h3>{{ userData.nom }} {{ userData.prenom }}</h3>
+                            <p class="user-email">{{ userData.email }}</p>
+                            <div class="user-balance">
+                                <span class="balance-label">Solde :</span>
+                                <span class="balance-amount">{{ userData.solde | currency:'FCFA':'symbol':'1.2-2' }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="settings-actions">
+                        <a class="settings-action-link" (click)="goToEditProfile()">
+                            <img src="modif.png" alt="Éditer" class="action-icon" />
+                            <span>Modifier mes informations</span>
+                        </a>
+                        <a class="settings-action-link" (click)="goToChangePassword()">
+                            <img src="mdp1.png" alt="Password" class="action-icon" />
+                            <span>Changer mon mot de passe</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="settings-modal-arrow"></div>
+            </div>
         </div>
     </header>
 
@@ -55,6 +85,7 @@
         <div class="main-content">
             <h1>{{ parkingName }}</h1>
 
+
             <!-- Message de succès -->
             <div *ngIf="successMessage" class="success-message">
                 <p>{{ successMessage }}</p>
@@ -90,10 +121,15 @@
                     <div class="stat-number">{{ parkingStats.reservedSpots }}</div>
                     <div class="stat-label">Places réservées</div>
                 </div>
+
             </div>
+
 
             <!-- Parking Map -->
             <div class="parking-map">
+                <!-- Voir Tarifs et Amendes Button -->
+                <button class="view-rates-button" (click)="openRatesModal()">Voir tarifs et amendes</button>
+
                 <div class="map-columns">
                     <ng-container *ngFor="let column of getColumns(parkingPlaces)">
                         <div class="map-column">
@@ -118,6 +154,76 @@
             <app-form-reservation *ngIf="showReservationModal" [isVisible]="showReservationModal" [selectedSpot]="selectedSpot" [parkingId]="parkingId" [placeId]="selectedSpot?.placeId" [parkingName]="parkingName" [parkingAddress]="parkingAddress" (close)="closeReservationModal()"
                 (reservationSuccess)="onReservationSuccess($event)"> >
             </app-form-reservation>
+
+            <!-- Modal pour Tarifs et Amendes -->
+            <div class="modal" [ngClass]="{'show': showRatesModal}" *ngIf="showRatesModal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>Tarifs et Amendes</h2>
+                        <span class="close" (click)="closeRatesModal()">&times;</span>
+                    </div>
+
+                    <div class="rates-section">
+                        <div class="rate-category">
+                            <h3>Tarifs du parking</h3>
+                            <div *ngIf="errorTarifs" class="error-message">{{ errorTarifs }}</div>
+                            <!-- Afficher le message d'erreur des tarifs -->
+                            <table class="rates-table">
+                                <thead>
+                                    <tr>
+                                        <th>Type de véhicule</th>
+                                        <th>Par heure</th>
+                                        <th>Par jour</th>
+                                        <th>Par semaine</th>
+                                        <th>Par mois</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let tarif of tarifs">
+                                        <td>
+                                            <span [ngClass]="{'badge': true, 'badge-car': tarif.typeVehicule === 'voiture', 'badge-moto': tarif.typeVehicule === 'moto'}">
+                                    {{ tarif.typeVehicule }}
+                                </span>
+                                        </td>
+                                        <td><span class="price-tag">{{ tarif.tarifDurations.heure }} FCFA</span></td>
+                                        <td><span class="price-tag">{{ tarif.tarifDurations.jour }} FCFA</span></td>
+                                        <td><span class="price-tag">{{ tarif.tarifDurations.semaine }} FCFA</span></td>
+                                        <td><span class="price-tag">{{ tarif.tarifDurations.mois }} FCFA</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="rate-category">
+                            <h3>Amendes</h3>
+                            <div *ngIf="errorAmendes" class="error-message">{{ errorAmendes }}</div>
+                            <!-- Afficher le message d'erreur des amendes -->
+                            <table class="rates-table">
+                                <thead>
+                                    <tr>
+                                        <th>Type de véhicule</th>
+                                        <th>Type d'infraction</th>
+                                        <th>Durée</th>
+                                        <th>Montant</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let amende of amendes">
+                                        <td>
+                                            <span [ngClass]="{'badge': true, 'badge-car': amende.typeVehicule === 'voiture', 'badge-moto': amende.typeVehicule === 'moto'}">
+                                    {{ amende.typeVehicule }}
+                                </span>
+                                        </td>
+                                        <td><span class="fine-type">{{ amende.typeInfraction }}</span></td>
+                                        <td><span class="fine-duration">{{ amende.duree }} minutes(s)</span></td>
+                                        <td><span class="fine-amount">{{ amende.montant }} FCFA</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <!-- Pagination -->
             <div class="pagination">
