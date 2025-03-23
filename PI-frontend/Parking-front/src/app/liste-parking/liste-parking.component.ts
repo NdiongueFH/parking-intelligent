@@ -203,11 +203,12 @@ selectedAmende: any; // Assurez-vous que cela est initialisé lorsque vous séle
       this.showSettingsModal = false;
     }
     
-    // Navigation vers la page de changement de mot de passe
-    goToChangePassword(): void {
-      this.router.navigate(['/changer-mot-de-passe']);
-      this.showSettingsModal = false;
-    }
+   // Navigation vers la page de changement de mot de passe
+   goToChangePassword(): void {
+    this.router.navigate(['/change-password']);
+    this.showSettingsModal = false;
+  }
+
     
 
   logout(): void {

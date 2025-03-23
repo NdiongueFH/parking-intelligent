@@ -53,6 +53,15 @@ export const routes: Routes = [
     loadComponent: () => import('./modifier-utilisateur/modifier-utilisateur.component').then(m => m.ModificationComponent) 
   },
   { 
+    path: 'change-password', 
+    loadComponent: () => import('./change-password/change-password.component').then(m => m.MotDePasseComponent) 
+  },
+
+  { 
+    path: 'forgot-password', 
+    loadComponent: () => import('./forgot-password/forgot-password.component').then(m => m.ForgotPasswordComponent) 
+  },
+  { 
     path: 'parking', 
     loadComponent: () => import('./parking/parking.component').then(m => m.ParkingComponent) 
   },

@@ -132,11 +132,12 @@ private userApiUrl = 'http://localhost:3000/api/v1/users';
       this.showSettingsModal = false;
     }
     
-    // Navigation vers la page de changement de mot de passe
-    goToChangePassword(): void {
-      this.router.navigate(['/changer-mot-de-passe']);
-      this.showSettingsModal = false;
-    }
+   // Navigation vers la page de changement de mot de passe
+   goToChangePassword(): void {
+    this.router.navigate(['/change-password']);
+    this.showSettingsModal = false;
+  }
+
     
 
   logout(): void {

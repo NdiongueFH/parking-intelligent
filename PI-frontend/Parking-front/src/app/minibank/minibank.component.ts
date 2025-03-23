@@ -144,10 +144,11 @@ private userApiUrl = 'http://localhost:3000/api/v1/users';
     }
     
     // Navigation vers la page de changement de mot de passe
-    goToChangePassword(): void {
-      this.router.navigate(['/changer-mot-de-passe']);
-      this.showSettingsModal = false;
-    }
+  goToChangePassword(): void {
+    this.router.navigate(['/change-password']);
+    this.showSettingsModal = false;
+  }
+
 
   setupBalanceToggle(): void {
     // Attendre que le DOM soit complètement chargé
@@ -239,7 +240,7 @@ filterDailyTransactions(): void {
   });
 
   console.log('Transactions filtrées pour la journée:', this.dailyTransactions);
-  this.prepareChartData(this.dailyTransactions);
+  this.prepareChartData(this.dailyTransactions); // Préparer les données pour le graphique
 }
 
 prepareChartData(transactions: any[]): void {
@@ -394,43 +395,54 @@ prepareChartData(transactions: any[]): void {
     this.withdrawForm.reset();
   }
 
-  // Soumettre le formulaire de dépôt
-  submitDeposit(): void {
-    const depositData = this.depositForm.value;
-    const token = localStorage.getItem('token'); // Récupération du token
+// Soumettre le formulaire de dépôt
+submitDeposit(): void {
+  const depositData = this.depositForm.value;
+  const token = localStorage.getItem('token'); // Récupération du token
 
-    this.http.post('http://localhost:3000/api/v1/users/deposit', depositData, {
+  this.http.post('http://localhost:3000/api/v1/users/deposit', depositData, {
       headers: { 'Authorization': `Bearer ${token}` } // Utilisation du token
-    }).subscribe(
+  }).subscribe(
       response => {
-        console.log('Dépôt réussi:', response);
-        this.closeDepositModal();
-        this.showSuccessMessage('Dépôt effectué avec succès !'); // Afficher le message de succès
+          console.log('Dépôt réussi:', response);
+          this.closeDepositModal();
+          this.showSuccessMessage('Dépôt effectué avec succès !'); // Afficher le message de succès
+          this.fetchTransactions(); // Mettre à jour les transactions
+          this.fetchDailyData(); // Récupérer les données de la journée
       },
       error => {
-        console.error('Erreur lors du dépôt:', error);
+          console.error('Erreur lors du dépôt:', error);
       }
-    );
-  }
+  );
+}
 
-  // Soumettre le formulaire de retrait
-  submitWithdraw(): void {
-    const withdrawData = this.withdrawForm.value;
-    const token = localStorage.getItem('token'); // Récupération du token
+// Soumettre le formulaire de retrait
+submitWithdraw(): void {
+  const withdrawData = this.withdrawForm.value;
+  const token = localStorage.getItem('token'); // Récupération du token
 
-    this.http.post('http://localhost:3000/api/v1/users/withdraw', withdrawData, {
+  this.http.post('http://localhost:3000/api/v1/users/withdraw', withdrawData, {
       headers: { 'Authorization': `Bearer ${token}` } // Utilisation du token
-    }).subscribe(
+  }).subscribe(
       response => {
-        console.log('Retrait réussi:', response);
-        this.closeWithdrawModal();
-        this.showSuccessMessage('Retrait effectué avec succès !'); // Afficher le message de succès
+          console.log('Retrait réussi:', response);
+          this.closeWithdrawModal();
+          this.showSuccessMessage('Retrait effectué avec succès !'); // Afficher le message de succès
+          this.fetchTransactions(); // Mettre à jour les transactions
+          this.fetchDailyData(); // Récupérer les données de la journée
       },
       error => {
-        console.error('Erreur lors du retrait:', error);
+          console.error('Erreur lors du retrait:', error);
       }
-    );
-  }
+  );
+}
+
+// Nouvelle méthode pour récupérer les données de la journée et mettre à jour le graphique
+fetchDailyData(): void {
+  this.filterDailyTransactions(); // Filtrer les transactions de la journée
+  this.initializeChart(); // Initialiser le graphique avec les nouvelles données
+}
+
 
   // Méthode pour afficher le message de succès
   showSuccessMessage(message: string): void {

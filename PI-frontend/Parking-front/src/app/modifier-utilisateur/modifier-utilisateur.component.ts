@@ -1,123 +1,189 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { Router, ActivatedRoute } from '@angular/router';
-import { RouterModule } from '@angular/router'; // Importez Router
+import { HttpClient,HttpClientModule, HttpHeaders } from '@angular/common/http';
+import { Router, RouterModule } from '@angular/router';
 
+interface UserData {
+  _id: string;
+  nom: string;
+  prenom: string;
+  email: string;
+  solde: number;
+  adresse :string,
+  telephone :number
+}
 
 @Component({
   selector: 'app-modification',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, HttpClientModule,RouterModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule,HttpClientModule],
   templateUrl: './modifier-utilisateur.component.html',
   styleUrls: ['./modifier-utilisateur.component.css']
 })
 export class ModificationComponent implements OnInit {
-  modificationForm!: FormGroup;
-  loading = false;
+  modificationForm: FormGroup;
   error: string | null = null;
-  success = false;
-  userId: string = ''; // Stocker l'ID de l'utilisateur à modifier
+  success: boolean = false;
+  token: string | null = localStorage.getItem('token'); // Récupération du token
+
+    // Nouvelles propriétés pour le modal des paramètres
+showSettingsModal: boolean = false;
+userData: UserData = {
+  _id: '',
+  nom: '',
+  prenom: '',
+  email: '',
+  solde: 0,
+  adresse: '',
+  telephone: 0
+};
 
   constructor(
-    private formBuilder: FormBuilder,
+    private fb: FormBuilder,
     private http: HttpClient,
-    private router: Router,
-    private route: ActivatedRoute // Injecter ActivatedRoute
-  ) {}
-
-  ngOnInit(): void {
-    this.userId = this.route.snapshot.paramMap.get('id') || ''; // Récupérer l'ID de l'utilisateur
-    this.initializeForm();
-    this.loadUserData(); // Charger les données de l'utilisateur
-  }
-
-  initializeForm() {
-    this.modificationForm = this.formBuilder.group({
-      nom: ['', [Validators.required, this.noWhitespaceValidator]],
-      prenom: ['', [Validators.required, this.noWhitespaceValidator]],
+    private router: Router
+  ) {
+    this.modificationForm = this.fb.group({
+      nom: ['', Validators.required],
+      prenom: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      telephone: ['', [Validators.required, Validators.pattern(/^\d{9}$/)]],
-      adresse: ['', [Validators.required, this.noWhitespaceValidator]],
-      carteRfid: [''] // Initialiser si le rôle est 'administrateur'
+      telephone: ['', [Validators.required, Validators.pattern('^[0-9]{9}$')]],
+      adresse: ['', Validators.required]
     });
   }
 
-  loadUserData() {
-    this.http.get<any>(`http://localhost:3000/api/v1/users/${this.userId}`).subscribe(
-      user => {
-        this.fillForm(user); // Remplir le formulaire avec les données
+  ngOnInit(): void {
+    console.log('Initialisation du composant ModificationComponent...');
+    this.loadUserData();
+  }
+
+  loadUserData(): void {
+    console.log('Chargement des données de l\'utilisateur...');
+    
+    if (!this.token) {
+      this.error = 'Token non trouvé. Veuillez vous reconnecter.';
+      console.error(this.error);
+      return;
+    }
+
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
+
+    this.http.get('http://localhost:3000/api/v1/auth/me', { headers }).subscribe(
+      (response: any) => {
+        console.log('Données utilisateur récupérées :', response.data.user);
+        const user = response.data.user;
+        this.modificationForm.patchValue({
+          nom: user.nom,
+          prenom: user.prenom,
+          email: user.email,
+          telephone: user.telephone,
+          adresse: user.adresse
+        });
       },
-      error => {
-        console.error('Erreur lors du chargement des données de l’utilisateur', error);
-        this.error = 'Erreur lors du chargement des données';
+      (error) => {
+        this.error = 'Erreur lors du chargement des données de l\'utilisateur.';
+        console.error(this.error, error);
       }
     );
   }
 
-  fillForm(user: any) {
-    this.modificationForm.patchValue({
-      nom: user.nom,
-      prenom: user.prenom,
-      email: user.email,
-      telephone: user.telephone,
-      adresse: user.adresse,
-      carteRfid: user.carteRfid || '' // Assurez-vous que carteRfid est défini
-    });
-
-    // Gérer l'état du champ carteRfid
-    if (user.role === 'utilisateur') {
-      this.modificationForm.get('carteRfid')?.disable(); // Désactiver si rôle est utilisateur
-    } else {
-      this.modificationForm.get('carteRfid')?.enable(); // Activer si rôle est administrateur
-    }
-  }
-
-  noWhitespaceValidator(control: any) {
-    const isWhitespace = (control.value || '').trim().length === 0;
-    return isWhitespace ? { whitespace: true } : null;
-  }
-
-  async updateUser() {
-    try {
-      const response = await this.http.patch(`http://localhost:3000/api/v1/users/update/${this.userId}`, this.modificationForm.value).toPromise();
-      this.success = true;
-      setTimeout(() => {
-        this.router.navigate(['/gestions-utilisateurs']); // Redirection après succès
-      }, 3000);
-    } catch (err: any) {
-      this.error = err.message || 'Une erreur est survenue lors de la modification';
-    } finally {
-      this.loading = false;
-    }
-  }
-
   onSubmit(): void {
+    console.log('Soumission du formulaire de modification...');
+
     if (this.modificationForm.invalid) {
-      Object.keys(this.modificationForm.controls).forEach(key => {
-        const control = this.modificationForm.get(key);
-        control?.markAsTouched();
-      });
-      return;
+        console.warn('Le formulaire est invalide. Vérifiez les champs.');
+        return;
     }
 
-    this.loading = true;
-    this.error = '';
-    this.updateUser();
+    const updatedData = this.modificationForm.value;
+    console.log('Données mises à jour :', updatedData);
+
+    if (!this.token) {
+        this.error = 'Token non trouvé. Veuillez vous reconnecter.';
+        console.error(this.error);
+        return;
+    }
+
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
+
+    this.http.patch('http://localhost:3000/api/v1/auth/me', updatedData, { headers }).subscribe(
+        (response: any) => {
+            this.success = true;
+            this.error = null;
+            console.log('Mise à jour réussie :', response);
+
+            // Vérifiez si l'email a été modifié
+            if (updatedData.email !== this.modificationForm.get('email')?.value) {
+                // Redirigez vers la page de connexion
+                console.log('Email modifié. Redirection vers la page de connexion...');
+                localStorage.removeItem('token'); // Optionnel: Retirez le token
+                setTimeout(() => {
+                    this.router.navigate(['/login']);
+                }, 2000);
+            } else {
+                // Redirigez vers le tableau de bord
+                console.log('Redirection vers le tableau de bord...');
+                setTimeout(() => {
+                    this.router.navigate(['/login']);
+                }, 2000);
+            }
+        },
+        (error) => {
+            this.error = 'Erreur lors de la mise à jour des informations.';
+            this.success = false;
+            console.error(this.error, error);
+        }
+    );
+}
+ // Méthode pour afficher/masquer le modal des paramètres
+ toggleSettingsModal(): void {
+  this.showSettingsModal = !this.showSettingsModal;
+  
+  // Si on ferme le modal en cliquant ailleurs sur la page
+  if (this.showSettingsModal) {
+    setTimeout(() => {
+      document.addEventListener('click', this.closeModalOnClickOutside);
+    }, 0);
+  } else {
+    document.removeEventListener('click', this.closeModalOnClickOutside);
+  }
+}
+
+// Fermer le modal en cliquant en dehors
+closeModalOnClickOutside = (event: MouseEvent) => {
+  const modal = document.querySelector('.settings-modal');
+  const settingsButton = document.querySelector('.settings-button');
+  
+  if (modal && settingsButton && 
+      !modal.contains(event.target as Node) && 
+      !settingsButton.contains(event.target as Node)) {
+    this.showSettingsModal = false;
+    document.removeEventListener('click', this.closeModalOnClickOutside);
+  }
+};
+
+    
+    // Navigation vers la page de modification du profil
+    goToEditProfile(): void {
+      this.router.navigate(['/modifier-utilisateur']);
+      this.showSettingsModal = false;
+    }
+    
+    // Navigation vers la page de changement de mot de passe
+  goToChangePassword(): void {
+    this.router.navigate(['/change-password']);
+    this.showSettingsModal = false;
   }
 
-  isFieldInvalid(fieldName: string): boolean {
-    const control = this.modificationForm.get(fieldName);
-    return !!control && (control.invalid && (control.dirty || control.touched));
-  }
 
-  isFormValid(): boolean {
-    return this.modificationForm.valid; // Assurez-vous que cela retourne un boolean
-  }
+  isFieldInvalid(field: string): boolean {
+    const fieldControl = this.modificationForm.get(field);
+    const invalid = fieldControl ? fieldControl.invalid && fieldControl.touched : false;
 
-  isCarteRfidDisabled(): boolean {
-    const control = this.modificationForm.get('carteRfid');
-    return control ? control.disabled : true; // Retourne true si le champ est désactivé
+    if (invalid) {
+      console.warn(`Champ invalide : ${field}`);
+    }
+    return invalid;
   }
 }
