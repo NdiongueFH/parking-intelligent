@@ -29,7 +29,7 @@ const amendeSchema = new mongoose.Schema({
 });
 
 // Ajouter une contrainte d'unicité sur `typeInfraction` et `typeVehicule` uniquement
-amendeSchema.index({ typeInfraction: 1, typeVehicule: 1 }, { unique: true });
+amendeSchema.index({ parkingId: 1, typeInfraction: 1, typeVehicule: 1 }, { unique: true });
 
 // Création du modèle Amende
 const Amende = mongoose.model('Amende', amendeSchema);

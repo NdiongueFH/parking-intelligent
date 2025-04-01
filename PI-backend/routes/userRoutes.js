@@ -13,7 +13,11 @@ router.use(userController.protect); // Toutes les routes ci-dessous nécessitent
 router.get('/', userController.restrictTo('administrateur'), userController.getAllUsers);
 
 // Obtenir un utilisateur spécifique par son ID
-router.get('/:id', userController.restrictTo('administrateur'), userController.getUser);
+router.get('/:id', userController.getUser); // Retirer la restriction d'administrateur
+
+// Rechercher un utilisateur par téléphone (réservé à l'administrateur)
+router.get('/telephone/:telephone', userController.restrictTo('administrateur'), userController.getUserByTelephone);
+
 
 // Mettre à jour un utilisateur par son ID (réservé à l'administrateur)
 router.patch('/:id', userController.restrictTo('administrateur'), userController.updateUser);

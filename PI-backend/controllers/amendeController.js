@@ -24,12 +24,12 @@ exports.createAmende = async(req, res) => {
             });
         }
 
-        // Vérifier l'unicité de la combinaison typeInfraction et typeVehicule
-        const existingAmende = await Amende.findOne({ typeInfraction, typeVehicule });
+        // Vérifier l'unicité de la combinaison typeInfraction, typeVehicule et parkingId
+        const existingAmende = await Amende.findOne({ typeInfraction, typeVehicule, parkingId });
         if (existingAmende) {
             return res.status(400).json({
                 status: 'fail',
-                message: 'Cette combinaison de type d\'infraction et de type de véhicule existe déjà.'
+                message: 'Cette combinaison de type d\'infraction et de type de véhicule existe déjà pour ce parking.'
             });
         }
 

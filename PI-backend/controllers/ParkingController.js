@@ -125,12 +125,15 @@ exports.addParking = async(req, res) => {
         // Créer des places de parking si la capacité totale est supérieure à 0
         if (capaciteTotale > 0) {
             const places = [];
+            // Calculer les numéros de capteurs de manière incrémentale
+            let capteurId = await PlaceParking.countDocuments(); // Nombre de places existantes dans la base de données (pour reprendre la numérotation)
             for (let i = 1; i <= capaciteTotale; i++) {
                 places.push({
                     parkingId: newParking._id,
                     nomPlace: `P ${i}`,
                     statut: 'libre',
-                    typeVehicule: 'voiture' // Vous pouvez ajuster cela selon vos besoins
+                    typeVehicule: 'voiture', // Tu peux ajuster cela selon tes besoins
+                    capteurId: capteurId + i // Incrémentation du capteur pour chaque place
                 });
             }
             await PlaceParking.insertMany(places); // Insérer toutes les places en une fois
@@ -141,6 +144,7 @@ exports.addParking = async(req, res) => {
         res.status(400).json({ message: error.message });
     }
 };
+
 
 // Modifier un parking existant
 exports.updateParking = async(req, res) => {

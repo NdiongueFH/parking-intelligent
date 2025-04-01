@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-// Définir le schéma pour PlaceParking
+// Schéma pour PlaceParking
 const placeParkingSchema = new mongoose.Schema({
     parkingId: {
         type: mongoose.Schema.Types.ObjectId, // Référence à la collection parkings
@@ -20,6 +20,13 @@ const placeParkingSchema = new mongoose.Schema({
         type: String,
         enum: ['voiture', 'moto'],
         required: true
+    },
+    capteurId: {
+        type: Number, // Le numéro du capteur (par exemple, Capteur 1, Capteur 2, ...)
+    },
+    dateMiseAJour: {
+        type: Date,
+        default: Date.now
     }
 }, { timestamps: true });
 

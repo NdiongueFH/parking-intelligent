@@ -92,11 +92,6 @@ exports.signup = async(req, res) => {
 
 
 
-
-
-
-// Connexion utilisateur par email/mot de passe
-
 // Connexion utilisateur par email/mot de passe
 exports.login = async(req, res) => {
     try {
@@ -289,6 +284,44 @@ exports.getUser = async(req, res) => {
         res.status(404).json({
             status: 'fail',
             message: err.message
+        });
+    }
+};
+
+// Rechercher un utilisateur par téléphone
+exports.getUserByTelephone = async(req, res) => {
+    try {
+        const { telephone } = req.params; // Récupère le numéro de téléphone depuis les paramètres de la requête
+
+        // Vérifie si le téléphone est fourni
+        if (!telephone) {
+            return res.status(400).json({
+                status: 'fail',
+                message: 'Veuillez fournir un numéro de téléphone.'
+            });
+        }
+
+        // Recherche l'utilisateur par téléphone
+        const user = await User.findOne({ telephone });
+
+        if (!user) {
+            return res.status(404).json({
+                status: 'fail',
+                message: 'Aucun utilisateur trouvé avec ce numéro de téléphone.'
+            });
+        }
+
+        res.status(200).json({
+            status: 'success',
+            data: {
+                user
+            }
+        });
+    } catch (err) {
+        res.status(500).json({
+            status: 'fail',
+            message: 'Erreur lors de la recherche de l\'utilisateur.',
+            error: err.message
         });
     }
 };
@@ -615,4 +648,138 @@ exports.withdraw = async(req, res) => {
             error: err.message
         });
     }
+};
+
+
+const crypto = require('crypto');
+const nodemailer = require('nodemailer');
+
+// Configuration de Nodemailer
+const transporter = nodemailer.createTransport({
+    service: 'gmail', // Par exemple, Gmail
+    auth: {
+        user: process.env.EMAIL_USER, // Votre email
+        pass: process.env.EMAIL_PASS // Votre mot de passe d'application
+    }
+});
+
+// Demande de réinitialisation du mot de passe
+exports.forgotPassword = async(req, res) => {
+    try {
+        const { email } = req.body;
+
+        // Vérifier si l'email existe
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({
+                status: 'fail',
+                message: 'Aucun utilisateur trouvé avec cet email.'
+            });
+        }
+
+        // Générer un token de réinitialisation
+        const resetToken = crypto.randomBytes(32).toString('hex');
+        user.resetToken = resetToken;
+        user.resetTokenExpires = Date.now() + 3600000; // 1 heure d'expiration
+        await user.save();
+
+        // Envoyer l'email avec le token
+        const resetUrl = `http://localhost:3000/api/v1/auth/reset-password?token=${resetToken}&email=${email}`;
+
+        await transporter.sendMail({
+            to: email,
+            subject: 'Réinitialisation du mot de passe',
+            text: `Cliquez sur le lien pour réinitialiser votre mot de passe: ${resetUrl}`
+        });
+
+        res.status(200).json({
+            status: 'success',
+            message: 'Un email a été envoyé pour réinitialiser votre mot de passe.'
+        });
+    } catch (err) {
+        res.status(500).json({
+            status: 'fail',
+            message: 'Erreur lors de l\'envoi de l\'email de réinitialisation.',
+            error: err.message
+        });
+    }
+};
+
+// Vérification du code de réinitialisation
+exports.verifyResetCode = async(req, res) => {
+    const { email, code } = req.body;
+
+    // Vérifier si l'email existe et si le code est valide
+    const user = await User.findOne({ email, resetToken: code, resetTokenExpires: { $gt: Date.now() } });
+
+    if (!user) {
+        return res.status(400).json({
+            status: 'fail',
+            message: 'Code de vérification invalide ou expiré.'
+        });
+    }
+
+    res.status(200).json({
+        status: 'success',
+        resetToken: user.resetToken // Utiliser le token de réinitialisation pour la prochaine étape
+    });
+};
+
+// Réinitialisation du mot de passe
+exports.resetPassword = async(req, res) => {
+    const { email, resetToken, newPassword } = req.body;
+
+    // Vérifier si le token est valide
+    const user = await User.findOne({ email, resetToken, resetTokenExpires: { $gt: Date.now() } });
+    if (!user) {
+        return res.status(400).json({
+            status: 'fail',
+            message: 'Token de réinitialisation invalide ou expiré.'
+        });
+    }
+
+    // Hacher le nouveau mot de passe avant de le sauvegarder
+    user.mot_de_passe = newPassword; // Remplacez ceci par votre fonction de hachage
+    user.resetToken = undefined; // Réinitialiser le token
+    user.resetTokenExpires = undefined; // Réinitialiser l'expiration
+    await user.save();
+
+    res.status(200).json({
+        status: 'success',
+        message: 'Mot de passe réinitialisé avec succès.'
+    });
+};
+
+// Renvoyer le code de vérification
+exports.resendCode = async(req, res) => {
+    const { email } = req.body;
+
+    // Vérifier si l'email existe
+    const user = await User.findOne({ email });
+    if (!user) {
+        return res.status(404).json({
+            status: 'fail',
+            message: 'Aucun utilisateur trouvé avec cet email.'
+        });
+    }
+
+    // Renvoyer le code
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    user.resetToken = resetToken;
+    user.resetTokenExpires = Date.now() + 3600000; // 1 heure d'expiration
+    await user.save();
+
+    // Envoyer l'email avec le nouveau token
+    const resetUrl = `http://localhost:3000/api/v1/auth/eset-password?token=${resetToken}&email=${email}`;
+
+    await transporter.sendMail({
+        to: email,
+        subject: 'Renvoyer le code de réinitialisation',
+        text: `Cliquez sur le lien pour réinitialiser votre mot de passe: ${resetUrl}`
+    });
+
+    res.status(200).json({
+        status: 'success',
+        message: 'Un nouveau code a été envoyé à votre email.'
+    });
 };

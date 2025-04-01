@@ -4,6 +4,10 @@ const { protect } = require('../controllers/userController'); // Authentificatio
 
 const router = express.Router();
 
+// Route pour vérifier le code numérique
+router.get('/verifierCode/:codeNumerique', reservationController.verifyCode);
+
+
 // Vérification du token pour toutes les routes
 router.use(protect); // Assurez-vous que cela protège toutes les routes
 
@@ -21,5 +25,7 @@ router.get('/', reservationController.getAllReservations); // Assurez-vous que c
 
 // Route pour lister toutes les réservations d'un utilisateur spécifique
 router.get('/user/:userId', reservationController.getReservationsByUser);
+
+
 
 module.exports = router;

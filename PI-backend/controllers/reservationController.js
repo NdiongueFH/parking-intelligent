@@ -387,7 +387,10 @@ exports.cancelReservation = async(req, res) => {
 exports.getReservationsByUser = async(req, res) => {
     try {
         const { userId } = req.params;
-        const reservations = await Reservation.find({ userId });
+        const reservations = await Reservation.find({ userId })
+            .populate('parkingId', 'nom_du_parking adresse') // Peupler les informations du parking
+            .populate('userId', 'nom prenom telephone') // Peupler les informations de l'utilisateur
+            .populate('placeId', 'nomPlace statut'); // Peupler les informations de la place, si nécessaire
 
         if (!reservations || reservations.length === 0) {
             return res.status(404).json({
@@ -438,6 +441,51 @@ exports.getAllReservations = async(req, res) => {
         });
     }
 };
+
+// Vérifier le code numérique d'une réservation
+exports.verifyCode = async(req, res) => {
+    try {
+        const { codeNumerique } = req.params; // Récupérer le code numérique à vérifier
+
+        // Rechercher une réservation correspondant au code numérique
+        const reservation = await Reservation.findOne({ codeNumerique });
+
+        // Vérifier si la réservation existe
+        if (!reservation) {
+            return res.status(404).json({
+                status: 'fail',
+                message: 'Code numérique invalide',
+            });
+        }
+
+        // Vérifier si l'heure actuelle est supérieure à l'heure de départ
+        const maintenant = new Date();
+        const heureDepart = new Date(reservation.heureDepart);
+
+        if (maintenant > heureDepart) {
+            reservation.codeNumerique = null; // Invalider le code numérique
+            await reservation.save();
+            return res.status(400).json({
+                status: 'fail',
+                message: 'Le code numérique est invalide car l\'heure de départ est déjà passée.',
+            });
+        }
+
+        // Retourner les informations si le code numérique est trouvé et valide
+        res.status(200).json({
+            status: 'success',
+            message: 'Code numérique valide',
+            data: reservation, // Retourne les informations de la réservation si nécessaire
+        });
+    } catch (err) {
+        res.status(400).json({
+            status: 'fail',
+            message: err.message,
+        });
+    }
+};
+
+
 
 
 
