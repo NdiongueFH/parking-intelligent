@@ -62,11 +62,10 @@ interface ApiReservation {
   numeroImmatriculation: string;
 }
 @Component({
-  selector: 'app-historiques-reservations',
-  standalone: true,
-  imports: [CommonModule, RouterModule, HttpClientModule, FormsModule,ReactiveFormsModule],
-  templateUrl: './historiques-reservations.component.html',
-  styleUrls: ['./historiques-reservations.component.css']
+    selector: 'app-historiques-reservations',
+    imports: [CommonModule, RouterModule, HttpClientModule, FormsModule, ReactiveFormsModule],
+    templateUrl: './historiques-reservations.component.html',
+    styleUrls: ['./historiques-reservations.component.css']
 })
 export class HistoriquesReservationsComponent implements OnInit, AfterViewInit {
   @ViewChild('occupancyChart') occupancyChartRef!: ElementRef;
@@ -151,16 +150,22 @@ private userApiUrl = 'http://localhost:3000/api/v1/users';
 
    // Nouvelle méthode pour charger les données de l'utilisateur
    loadUserData(): void {
+    // Vérifiez si nous sommes dans un environnement de navigateur
+    if (typeof window === 'undefined') {
+        console.error('localStorage non disponible');
+        return;
+    }
+
     const token = localStorage.getItem('token');
     const userId = localStorage.getItem('userId'); // Récupérer l'ID de l'utilisateur à partir du localStorage
-  
+
     if (!token || !userId) {
         this.router.navigate(['/login']);
         return;
     }
-  
+
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-  
+
     this.http.get<{ status: string; data: { user: UserData } }>(`${this.userApiUrl}/${userId}`, { headers }).subscribe(
         (response) => {
             if (response.status === 'success') {
@@ -173,7 +178,7 @@ private userApiUrl = 'http://localhost:3000/api/v1/users';
             console.error('Erreur lors de la récupération des données utilisateur', error);
         }
     );
-  }
+}
   
     // Méthode pour afficher/masquer le modal des paramètres
     toggleSettingsModal(): void {

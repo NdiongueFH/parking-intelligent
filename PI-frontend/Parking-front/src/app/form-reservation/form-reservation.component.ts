@@ -21,7 +21,6 @@ export interface Place {
 
 @Component({
     selector: 'app-form-reservation',
-    standalone: true,
     imports: [CommonModule, ReactiveFormsModule],
     templateUrl: './form-reservation.component.html',
     styleUrls: ['./form-reservation.component.css']

@@ -3,6 +3,8 @@ import { Component, OnInit } from '@angular/core';
 import { RouterModule, Router } from '@angular/router'; // Importez Router
 import { HttpClientModule, HttpClient, HttpHeaders } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
+import { io, Socket } from 'socket.io-client'; // Importer Socket.IO
+
 
 interface UserData {
   _id: string;
@@ -13,11 +15,10 @@ interface UserData {
 }
 
 @Component({
-  selector: 'app-gestions-utilisateurs',
-  standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, HttpClientModule, ReactiveFormsModule],
-  templateUrl: './gestions-utilisateurs.component.html',
-  styleUrls: ['./gestions-utilisateurs.component.css']
+    selector: 'app-gestions-utilisateurs',
+    imports: [CommonModule, RouterModule, FormsModule, HttpClientModule, ReactiveFormsModule],
+    templateUrl: './gestions-utilisateurs.component.html',
+    styleUrls: ['./gestions-utilisateurs.component.css']
 })
 export class GestionsUtilisateursComponent implements OnInit {
   utilisateurs: any[] = [];
@@ -39,6 +40,7 @@ export class GestionsUtilisateursComponent implements OnInit {
   userToDelete: number | null = null; // ID de l'utilisateur à supprimer
   userToEdit: any = null; // Utilisateur à modifier
   successMessage: string | null = null; // Message de succès pour la suppression
+  private socket: any;
 
   // Nouvelles propriétés pour le modal des paramètres
 showSettingsModal: boolean = false;
@@ -51,6 +53,7 @@ userData: UserData = {
 };
 
 private userApiUrl = 'http://localhost:3000/api/v1/users';
+
 
 
   constructor(private http: HttpClient, private formBuilder: FormBuilder, private router: Router) {
@@ -70,6 +73,15 @@ private userApiUrl = 'http://localhost:3000/api/v1/users';
     this.loadUsers();
     this.onRoleChange(); // Initialiser la validation de la carte RFID
     this.loadUserData(); // Charger les données de l'utilisateur
+
+     // Initialiser Socket.IO
+     this.socket = io('http://localhost:3000'); // Connexion au serveur
+
+     // Écouter l'événement 'rfidScanned'
+     this.socket.on('rfidScanned', (uid: string) => {
+       console.log('UID de la carte RFID reçu:', uid);
+       this.inscriptionForm.patchValue({ carteRfid: uid }); // Mettre à jour le champ carteRfid
+     });
 
   }
 
@@ -301,6 +313,11 @@ private userApiUrl = 'http://localhost:3000/api/v1/users';
                     this.error = null; // Réinitialiser l'erreur
                     this.closeAddUserModal(); // Fermer le modal
                     this.loadUsers(); // Recharger la liste des utilisateurs
+
+                     // Masquer le message après 3 secondes
+          setTimeout(() => {
+            this.successMessage = null;
+        }, 4000);
                 },
                 (error) => {
                     this.error = error.error.message || 'Une erreur est survenue lors de l\'inscription.';
@@ -412,5 +429,40 @@ private userApiUrl = 'http://localhost:3000/api/v1/users';
     this.userToDelete = null; // Réinitialiser l'ID de l'utilisateur
   }
 
+  searchUser(): void {
+    if (this.searchTerm.trim() === '') {
+      this.loadUsers(); // Recharge tous les utilisateurs si le champ est vide
+      return;
+    }
+  
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+  
+    console.log('Terme de recherche:', this.searchTerm);
+  
+    this.http.get<any>(`${this.userApiUrl}/telephone/${this.searchTerm}`, { headers }).subscribe(
+      (response) => {
+        console.log('Résultats de la recherche:', response);
+  
+        // Vérifiez si la réponse contient un utilisateur unique
+        if (response.data.user) {
+          this.utilisateurs = [response.data.user]; // Convertir en tableau
+        } else {
+          this.utilisateurs = response.data.users || []; // Utiliser un tableau vide si aucun utilisateur trouvé
+        }
+  
+        // Mettez à jour les utilisateurs paginés
+        this.totalUsers = this.utilisateurs.length;
+        this.totalPages = Math.ceil(this.totalUsers / this.itemsPerPage);
+        this.generatePagination();
+        this.updatePaginatedItems();
+      },
+      (error) => {
+        console.error('Erreur lors de la recherche d\'utilisateurs', error);
+      }
+    );
+  }
+  
+  
   
 }

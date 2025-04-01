@@ -135,7 +135,7 @@ body {
 }
 
 .header-icon {
-    width: 40px;
+    width: 60px;
     /* Ajustez la taille selon vos besoins */
     height: auto;
     /* Maintient le ratio de l'image */
@@ -199,7 +199,7 @@ body {
 }
 
 .logo {
-    width: 80%;
+    width: 110%;
     height: auto;
     box-shadow: 0 8px 8px rgba(0, 0, 0, 0.2);
     border-radius: 50%;
@@ -359,9 +359,9 @@ body {
 }
 
 .reservation .actions .user-info {
-    margin-bottom: 10px;
+    margin-bottom: 20px;
     /* Espace en bas entre le nom de l'utilisateur et le bouton de facture */
-    margin-top: 30px;
+    margin-top: 10px;
 }
 
 .reservation .actions button {
@@ -381,6 +381,7 @@ body {
     padding: 10px;
     border-radius: 5px;
     cursor: pointer;
+    margin-top: 2px;
 }
 
 .reservation .user-info span {
@@ -596,7 +597,7 @@ body {
     border: none;
     border-radius: 10px;
     padding: 0.5rem 1rem;
-    margin: 0 0.25rem;
+    margin: 0 0.01rem;
     /* Espace entre les boutons */
     cursor: pointer;
     transition: background-color 0.3s;
@@ -672,25 +673,6 @@ body {
     /* Supprime la marge par défaut */
     color: var(--primary-color);
     /* Couleur du titre */
-}
-
-.close-button {
-    background: none;
-    /* Pas de fond */
-    border: none;
-    /* Pas de bordure */
-    font-size: 1.5rem;
-    /* Taille du texte */
-    cursor: pointer;
-    /* Curseur pointer */
-    color: var(--primary-color);
-    /* Couleur du bouton de fermeture */
-    position: absolute;
-    /* Position absolue pour le bouton de fermeture */
-    top: 10px;
-    /* Espacement du haut */
-    right: 10px;
-    /* Espacement de droite */
 }
 
 .stats-modal-body {
@@ -953,28 +935,6 @@ h1 {
     text-align: center;
 }
 
-.close-button {
-    background: none;
-    border: none;
-    font-size: 24px;
-    /* Taille de la croix */
-    color: #333;
-    /* Couleur de la croix */
-    cursor: pointer;
-    /* Curseur pour indiquer qu'il est cliquable */
-    position: absolute;
-    /* Positionnement absolu */
-    right: 20px;
-    /* Distance du bord droit */
-    top: 20px;
-    /* Distance du bord supérieur */
-}
-
-.close-button:hover {
-    color: #f44336;
-    /* Change la couleur au survol */
-}
-
 .logo-image {
     height: 40px;
     /* Ajustez la taille de l'image selon vos besoins */
@@ -1010,6 +970,14 @@ h1 {
     animation: fadeIn 0.3s;
     text-align: center;
     /* Centrer le texte */
+}
+
+.no-reservations-message {
+    color: #ff0000;
+    /* Rouge pour attirer l'attention */
+    font-weight: bold;
+    text-align: center;
+    margin: 20px 0;
 }
 
 @keyframes fadeIn {
@@ -1066,12 +1034,379 @@ button:hover {
     background-color: #45a049;
 }
 
-.no-reservations-message {
-    color: #ff0000;
-    /* Rouge pour attirer l'attention */
-    font-weight: bold;
+.download-invoice {
+    background-color: #4CAF50;
+    /* Couleur de fond */
+    color: white;
+    /* Couleur du texte */
+    border: none;
+    /* Pas de bordure */
+    padding: 10px 20px;
+    /* Espacement intérieur */
     text-align: center;
-    margin: 20px 0;
+    /* Centrer le texte */
+    text-decoration: none;
+    /* Pas de soulignement */
+    display: inline-block;
+    /* Pour que le padding fonctionne */
+    font-size: 16px;
+    /* Taille de la police */
+    margin-top: 20px;
+    /* Espacement au-dessus */
+    cursor: pointer;
+    /* Curseur en forme de main */
+    border-radius: 5px;
+    /* Coins arrondis */
+    transition: background-color 0.3s;
+    /* Transition pour l'effet au survol */
+}
+
+.download-invoice:hover {
+    background-color: #45a049;
+    /* Couleur de fond au survol */
+}
+
+.btn-oui {
+    background-color: #4CAF50;
+    /* Vert */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin-right: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.btn-oui:hover {
+    background-color: #74f57b;
+    /* Couleur plus foncée au survol */
+}
+
+.btn-non {
+    background-color: #f44336;
+    /* Rouge */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.btn-non:hover {
+    background-color: #e53935;
+    /* Couleur plus foncée au survol */
+}
+
+.button-container {
+    display: flex;
+    /* Utiliser Flexbox */
+    justify-content: space-between;
+    /* Espacement entre les boutons */
+    margin-top: 20px;
+    /* Optionnel : marge au-dessus des boutons */
+}
+
+.btn-oui,
+.btn-non {
+    margin-right: 10px;
+    /* Espace entre les boutons */
+}
+
+.btn-non {
+    margin-right: 0;
+    /* Pas de marge à droite pour le dernier bouton */
+}
+
+
+/* Ajoutez ce CSS dans votre fichier dashboard-admin.component.css */
+
+
+/* Position relative pour le conteneur des icônes du header */
+
+.header-icons {
+    position: relative;
+}
+
+
+/* Style du modal des paramètres */
+
+.settings-modal {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 300px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    margin-top: 15px;
+    animation: fadeIn 0.2s ease-out;
+    overflow: hidden;
+}
+
+
+/* Flèche pointant vers le haut */
+
+.settings-modal-arrow {
+    position: absolute;
+    top: -10px;
+    right: 15px;
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid #ffffff;
+}
+
+
+/* Contenu du modal */
+
+.settings-modal-content {
+    padding: 20px;
+}
+
+
+/* Informations utilisateur */
+
+.user-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.user-avatar {
+    margin-right: 15px;
+}
+
+.avatar-img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #3498db;
+}
+
+.user-details h3 {
+    margin: 0 0 5px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+.user-email {
+    margin: 0 0 10px 0;
+    font-size: 14px;
+    color: #666;
+}
+
+.user-balance {
+    background-color: #f8f9fa;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.balance-label {
+    font-weight: 500;
+    color: #555;
+}
+
+.balance-amount {
+    font-weight: 600;
+    color: #3498db;
+    margin-left: 5px;
+}
+
+
+/* Actions du paramétrage */
+
+.settings-actions {
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+}
+
+.settings-action-link {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    color: #555;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.settings-action-link:hover {
+    color: #3498db;
+    background-color: #f5f7fa;
+    padding-left: 5px;
+    border-radius: 4px;
+}
+
+.action-icon {
+    width: 18px;
+    height: 18px;
+    margin-right: 10px;
+}
+
+
+/* Ajoutez ce CSS dans votre fichier dashboard-admin.component.css */
+
+
+/* Position relative pour le conteneur des icônes du header */
+
+.header-icons {
+    position: relative;
+}
+
+
+/* Style du modal des paramètres */
+
+.settings-modal {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 300px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    margin-top: 15px;
+    animation: fadeIn 0.2s ease-out;
+    overflow: hidden;
+}
+
+
+/* Flèche pointant vers le haut */
+
+.settings-modal-arrow {
+    position: absolute;
+    top: -10px;
+    right: 15px;
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid #ffffff;
+}
+
+
+/* Contenu du modal */
+
+.settings-modal-content {
+    padding: 20px;
+}
+
+
+/* Informations utilisateur */
+
+.user-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.user-avatar {
+    margin-right: 15px;
+}
+
+.avatar-img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #3498db;
+}
+
+.user-details h3 {
+    margin: 0 0 5px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+.user-email {
+    margin: 0 0 10px 0;
+    font-size: 14px;
+    color: #666;
+}
+
+.user-balance {
+    background-color: #f8f9fa;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.balance-label {
+    font-weight: 500;
+    color: #555;
+}
+
+.balance-amount {
+    font-weight: 600;
+    color: #3498db;
+    margin-left: 5px;
+}
+
+
+/* Actions du paramétrage */
+
+.settings-actions {
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+}
+
+.settings-action-link {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    color: #555;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.settings-action-link:hover {
+    color: #3498db;
+    background-color: #f5f7fa;
+    padding-left: 5px;
+    border-radius: 4px;
+}
+
+.action-icon {
+    width: 18px;
+    height: 18px;
+    margin-right: 10px;
+}
+
+
+/* Animation */
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* Animation */
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 

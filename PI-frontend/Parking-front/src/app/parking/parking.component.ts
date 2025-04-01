@@ -1,8 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
-import { HttpClientModule, HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClientModule, HttpClient, HttpHeaders,provideHttpClient, withFetch} from '@angular/common/http';
 import { ParkingReservationComponent } from '../form-reservation/form-reservation.component';
+import { io, Socket } from 'socket.io-client'; // Import de Socket.io
+import { ChangeDetectorRef } from '@angular/core'; // Importer ChangeDetectorRef
+
+
 
 interface UserData {
   _id: string;
@@ -13,17 +17,17 @@ interface UserData {
 }
 
 @Component({
-  selector: 'app-parking',
-  standalone: true,
-  imports: [CommonModule, RouterModule, ParkingReservationComponent, HttpClientModule],
-  templateUrl: './parking.component.html',
-  styleUrls: ['./parking.component.css']
+    selector: 'app-parking',
+    imports: [CommonModule, RouterModule, ParkingReservationComponent, HttpClientModule],
+    templateUrl: './parking.component.html',
+    styleUrls: ['./parking.component.css']
 })
 export class ParkingComponent implements OnInit {
   parkingId: string = ''; // Initialiser parkingId comme une chaîne vide
   placeId: string = ''; // Initialiser parkingId comme une chaîne vide
   parkingName: string = ''; // Nom du parking à afficher
   parkingAddress: string = ''; // Adresse du parking
+
 
   // Statistiques de parking
   parkingStats = {
@@ -65,50 +69,78 @@ userData: UserData = {
 
 private userApiUrl = 'http://localhost:3000/api/v1/users';
 
+private socket: Socket; // Instance de Socket.io
 
+constructor(private router: Router, private http: HttpClient, private route: ActivatedRoute, private cdr: ChangeDetectorRef) {
+  // Crée une instance Socket.io
+  this.socket = io('http://localhost:3000'); // Remplacer par l'URL de ton serveur backend
+}
+
+ngOnInit(): void {
+  this.route.queryParams.subscribe(params => {
+    this.parkingId = params['parkingId'];
+    if (this.parkingId) {
+      this.loadParkingDetails();
+      this.loadParkingPlaces();
+    }
+  });
+  this.updatePageNumbers(); // Initialiser les numéros de page
+  this.loadUserData(); // Charger les données de l'utilisateur
+
+  // Écoute de l'événement 'majEtatParking' émis par le serveur via WebSocket
+  this.socket.on('majEtatParking', (data) => {
+    console.log('Mise à jour en temps réel reçue:', data);
+
+    // Mettre à jour la place de parking correspondante avec les données reçues
+    const updatedPlace = this.parkingPlaces.find(place => place._id === data.placeId);
+    if (updatedPlace) {
+      updatedPlace.statut = data.statut; // Met à jour le statut de la place
+      console.log(`Place ${updatedPlace.nomPlace} mise à jour avec le statut ${updatedPlace.statut}`);
+      this.updateParkingStats(); // Réactualiser les statistiques de parking
+
+      // Forcer Angular à détecter les changements et mettre à jour la vue
+      this.cdr.detectChanges();
+    }
+  });
+}
+
+ngOnDestroy(): void {
+  // Déconnexion de Socket.io lorsque le composant est détruit
+  if (this.socket) {
+    this.socket.disconnect();
+    console.log('Déconnecté de Socket.io');
+  }
+}
 
  
-  constructor(private router: Router, private http: HttpClient, private route: ActivatedRoute) {}
-
-  ngOnInit(): void {
-    this.route.queryParams.subscribe(params => {
-      this.parkingId = params['parkingId'];
-      if (this.parkingId) {
-        this.loadParkingDetails();
-        this.loadParkingPlaces();
-      }
-    });
-    this.updatePageNumbers(); // Initialiser les numéros de page
-    this.loadUserData(); // Charger les données de l'utilisateur
-
-  }
 
    // Nouvelle méthode pour charger les données de l'utilisateur
-   loadUserData(): void {
+loadUserData(): void {
+  if (typeof window !== 'undefined') { // Vérification pour s'assurer que nous sommes dans un environnement de navigateur
     const token = localStorage.getItem('token');
     const userId = localStorage.getItem('userId'); // Récupérer l'ID de l'utilisateur à partir du localStorage
-  
+
     if (!token || !userId) {
-        this.router.navigate(['/login']);
-        return;
+      this.router.navigate(['/login']);
+      return;
     }
-  
+
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-  
+
     this.http.get<{ status: string; data: { user: UserData } }>(`${this.userApiUrl}/${userId}`, { headers }).subscribe(
-        (response) => {
-            if (response.status === 'success') {
-                this.userData = response.data.user; // Accédez à l'objet utilisateur
-            } else {
-                console.error('Erreur lors de la récupération des données utilisateur');
-            }
-        },
-        (error) => {
-            console.error('Erreur lors de la récupération des données utilisateur', error);
+      (response) => {
+        if (response.status === 'success') {
+          this.userData = response.data.user; // Accédez à l'objet utilisateur
+        } else {
+          console.error('Erreur lors de la récupération des données utilisateur');
         }
+      },
+      (error) => {
+        console.error('Erreur lors de la récupération des données utilisateur', error);
+      }
     );
   }
-  
+}
     // Méthode pour afficher/masquer le modal des paramètres
     toggleSettingsModal(): void {
       this.showSettingsModal = !this.showSettingsModal;
@@ -170,39 +202,41 @@ private userApiUrl = 'http://localhost:3000/api/v1/users';
   }
 
   loadParkingDetails(): void {
-    const token = localStorage.getItem('token');
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-
-    // Récupérer les détails du parking, y compris le nom et l'adresse
-    this.http.get<any>(`http://localhost:3000/api/v1/parkings/${this.parkingId}`, { headers }).subscribe(
-      (data) => {
-        console.log('Détails du parking récupérés:', data); // Log des détails du parking
-        this.parkingName = data.nom_du_parking; // Mettez à jour le nom du parking
-        this.parkingAddress = data.adresse; // Mettez à jour l'adresse du parking
-      },
-      (error) => {
-        console.error('Erreur lors de la récupération des détails du parking:', error);
-        alert('Erreur lors de la récupération des détails du parking. Vérifiez la console pour plus d\'informations.');
-      }
-    );
+    if (typeof window !== 'undefined') { // Vérification pour s'assurer que nous sommes dans un environnement de navigateur
+      const token = localStorage.getItem('token');
+      const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+  
+      // Récupérer les détails du parking, y compris le nom et l'adresse
+      this.http.get<any>(`http://localhost:3000/api/v1/parkings/${this.parkingId}`, { headers }).subscribe(
+        (data) => {
+          console.log('Détails du parking récupérés:', data); // Log des détails du parking
+          this.parkingName = data.nom_du_parking; // Mettez à jour le nom du parking
+          this.parkingAddress = data.adresse; // Mettez à jour l'adresse du parking
+        },
+        (error) => {
+          console.error('Erreur lors de la récupération des détails du parking:', error);
+          alert('Erreur lors de la récupération des détails du parking. Vérifiez la console pour plus d\'informations.');
+        }
+      );
+    }
   }
 
   loadParkingPlaces(): void {
-    const token = localStorage.getItem('token');
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-
-    this.http.get<any[]>(`http://localhost:3000/api/v1/place-parking/parking/${this.parkingId}`, { headers }).subscribe(
-      (data) => {
-        this.parkingPlaces = data; // Stocker les données récupérées
-        this.totalPlaces = data.length; // Met à jour le total
-        this.updateParkingStats(); // Mettre à jour les statistiques
-        this.updatePageNumbers(); // Met à jour les numéros de page ici
-      },
-      (error) => {
-        console.error('Erreur lors de la récupération des places de parking:', error);
-        alert('Erreur lors de la récupération des places de parking. Vérifiez la console pour plus d\'informations.');
-      }
-    );
+    if (typeof window !== 'undefined') { // Vérification pour s'assurer que nous sommes dans un environnement de navigateur
+      const token = localStorage.getItem('token');
+      const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+  
+      this.http.get<any[]>(`http://localhost:3000/api/v1/place-parking/parking/${this.parkingId}`, { headers }).subscribe(
+        (data) => {
+          this.parkingPlaces = data; // Stocker les données récupérées
+          this.updateParkingStats(); // Mettre à jour les statistiques
+        },
+        (error) => {
+          console.error('Erreur lors de la récupération des places de parking:', error);
+          alert('Erreur lors de la récupération des places de parking. Vérifiez la console pour plus d\'informations.');
+        }
+      );
+    }
   }
 
   changePage(page: number): void {
@@ -355,4 +389,6 @@ closeRatesModal(): void {
       }
     );
   }
+
+ 
 }

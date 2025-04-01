@@ -21,11 +21,10 @@ interface ReservationData {
 }
 
 @Component({
-  selector: 'app-facture',
-  standalone: true,
-  imports: [CommonModule],
-  templateUrl: './facture.component.html',
-  styleUrls: ['./facture.component.css']
+    selector: 'app-facture',
+    imports: [CommonModule],
+    templateUrl: './facture.component.html',
+    styleUrls: ['./facture.component.css']
 })
 export class FactureComponent {
   reservationData: ReservationData;

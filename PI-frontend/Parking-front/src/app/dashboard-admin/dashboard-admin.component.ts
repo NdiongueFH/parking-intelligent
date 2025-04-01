@@ -9,6 +9,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 
 
+
 interface Parking {
   _id: string; 
   nom_du_parking: string;
@@ -26,11 +27,10 @@ interface UserData {
 }
 
 @Component({
-  selector: 'app-admin-dashboard',
-  standalone: true,
-  imports: [CommonModule, RouterModule, LeafletModule, HttpClientModule,FormsModule,ReactiveFormsModule],
-  templateUrl: './dashboard-admin.component.html',
-  styleUrls: ['./dashboard-admin.component.css']
+    selector: 'app-admin-dashboard',
+    imports: [CommonModule, RouterModule, LeafletModule, HttpClientModule, FormsModule, ReactiveFormsModule],
+    templateUrl: './dashboard-admin.component.html',
+    styleUrls: ['./dashboard-admin.component.css']
 })
 export class AdminDashboardComponent implements OnInit {
   nearbyParkings: Parking[] = [];
@@ -40,7 +40,6 @@ export class AdminDashboardComponent implements OnInit {
   userPosition: L.LatLng | null = null;
   map: Map | null = null;
   isLoading: boolean = true;
-  searchQuery: string = ''; 
 
   currentPage: number = 1; // Page actuelle
   itemsPerPage: number = 4; // Nombre d'éléments par page
@@ -49,6 +48,11 @@ export class AdminDashboardComponent implements OnInit {
 
   mapError: boolean = false; // Nouvelle propriété pour gérer l'erreur de chargement de la carte
   geoError: boolean = false; // Nouvelle propriété pour gérer l'erreur de géolocalisation
+
+  searchTerm: string = '';
+
+
+
 
 // Nouvelles propriétés pour le modal des paramètres
 showSettingsModal: boolean = false;
@@ -208,10 +212,11 @@ userData: UserData = {
     this.currentPage = page;
     this.limitDisplayedParkings();
   }
+  
   getUserLocation(): void {
     const options = { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 };
     this.isLoading = true;
-
+  
     navigator.geolocation.watchPosition(
       (position) => {
         const userLat = position.coords.latitude;
@@ -219,18 +224,51 @@ userData: UserData = {
         this.userPosition = latLng(userLat, userLng);
         this.updateUserMarker();
         this.updateParkingDistances();
+  
         if (!this.map) this.initMap();
         else this.map.setView(this.userPosition, this.map.getZoom(), { animate: true });
+  
         this.isLoading = false;
         this.geoError = false; // Réinitialiser l'erreur si la géolocalisation réussit
-
       },
       (error) => {
         console.error('Erreur de géolocalisation:', error);
-        alert('Veuillez activer la géolocalisation.');
+  
+        // Jouer un son de notification
+        const notificationSound = new Audio();
+        notificationSound.src = 'data:audio/wav;base64,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';
+  
+        // Jouer le son pendant 3 secondes
+        notificationSound.play().catch(e => console.warn('Impossible de jouer le son de notification:', e));
+        setTimeout(() => {
+          notificationSound.pause(); // Arrêter le son
+          notificationSound.currentTime = 0; // Réinitialiser le son
+        }, 3000); // 3000 ms = 3 secondes
+  
+        // Créer et afficher une notification stylisée directement dans le DOM
+        const notification = document.createElement('div');
+        notification.innerHTML = `
+          <div style="position: fixed; top: 20px; right: 20px; max-width: 400px; 
+                      background-color:rgb(250, 143, 139); border-left: 4px solid #ffc107; 
+                      box-shadow: 0 4px 8px rgba(0,0,0,0.1); padding: 16px; 
+                      z-index: 9999; border-radius: 4px; font-family: sans-serif;">
+            <div style="font-weight: bold; margin-bottom: 8px; color: #212529;">
+              Localisation requise
+            </div>
+            <div style="color: #495057; font-size: 14px;">
+              Pour utiliser cette fonctionnalité, veuillez autoriser l'accès à votre position dans les paramètres de votre navigateur.
+            </div>
+          </div>
+        `;
+        document.body.appendChild(notification);
+  
+        // Supprimer la notification après 5 secondes
+        setTimeout(() => {
+          document.body.removeChild(notification);
+        }, 5000);
+  
         this.isLoading = false;
         this.geoError = true; // Définir l'erreur de géolocalisation
-
       },
       options
     );
@@ -323,42 +361,6 @@ reserveParking(parking: Parking): void {
     this.router.navigate(['/modifier-utilisateur']);
   }
 
-  searchParking(): void {
-    const token = localStorage.getItem('token');
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-
-    // Vérifiez si le champ de recherche est vide
-    if (!this.searchQuery.trim()) {
-        this.displayedParkings = [...this.nearbyParkings]; // Réinitialiser avec tous les parkings
-        this.updateParkingDistances(); // Mettre à jour les distances si nécessaire
-        this.addMarkers(); // Ajouter les marqueurs pour tous les parkings
-        return; // Sortir de la méthode si le champ est vide
-    }
-
-    // Appel à l'API pour rechercher un parking par nom
-    this.http.get<Parking[]>(`http://localhost:3000/api/v1/parkings/nom/${this.searchQuery}`, { headers })
-        .subscribe(
-            (data) => {
-                if (data.length > 0) {
-                    this.displayedParkings = data; // Afficher les parkings trouvés
-                    const parkingFound = data[0]; // Supposons que le premier soit celui que nous voulons
-                    if (this.map) { // Vérifiez si this.map n'est pas null
-                        this.map.setView(latLng(parkingFound.latitude, parkingFound.longitude), 15);
-                        this.addRouteToParking(parkingFound); // Tracer l'itinéraire
-                    } else {
-                        console.error("La carte n'est pas initialisée.");
-                    }
-                } else {
-                    alert('Aucun parking trouvé avec ce nom.');
-                    this.displayedParkings = []; // Réinitialiser l'affichage
-                }
-            },
-            (error) => {
-                console.error("Erreur lors de la recherche du parking", error);
-                alert('Erreur lors de la recherche du parking.');
-            }
-        );
-}
 
 addRouteToParking(parking: Parking): void {
   if (!this.userPosition) {
@@ -392,6 +394,39 @@ addRouteToParking(parking: Parking): void {
       console.error("Erreur lors de la récupération de l'itinéraire", error);
       alert('Erreur lors de la récupération de l\'itinéraire');
   });
+}
+
+
+searchParking(): void {
+  if (this.searchTerm.trim() === '') {
+    this.loadNearbyParkings(); // Recharge tous les parkings si le champ est vide
+    return;
+  }
+
+  const token = localStorage.getItem('token');
+  const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+  console.log('Terme de recherche:', this.searchTerm);
+
+  this.http.get<any>(`${this.apiUrl}/nom/${this.searchTerm}`, { headers }).subscribe(
+    (response) => {
+      console.log('Résultats de la recherche:', response);
+
+      // Vérifiez si la réponse est un tableau ou un objet
+      if (Array.isArray(response)) {
+        this.nearbyParkings = response;
+      } else {
+        this.nearbyParkings = [response]; // Convertir en tableau si c'est un objet unique
+      }
+
+      this.updateParkingDistances();
+      this.calculateTotalPages();
+      this.limitDisplayedParkings();
+    },
+    (error) => {
+      console.error('Erreur lors de la recherche de parkings', error);
+    }
+  );
 }
 
 }

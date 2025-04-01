@@ -17,10 +17,10 @@ interface UserData {
 @Component({
     selector: 'app-motDePasse',
     imports: [CommonModule, ReactiveFormsModule, RouterModule, HttpClientModule],
-    templateUrl: './change-password.component.html',
-    styleUrls: ['./change-password.component.css']
+    templateUrl: './update-son-mdp-user.component.html',
+    styleUrls: ['./update-son-mdp-user.component.css']
 })
-export class MotDePasseComponent implements OnInit {
+export class UpdateSonMDPUserComponent implements OnInit {
   token: string | null = localStorage.getItem('token');
   showSettingsModal: boolean = false;
   userData: UserData = {

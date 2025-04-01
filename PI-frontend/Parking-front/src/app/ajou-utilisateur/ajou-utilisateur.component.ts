@@ -5,11 +5,10 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-inscription',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, HttpClientModule],
-  templateUrl: './ajou-utilisateur.component.html',
-  styleUrls: ['./ajou-utilisateur.component.css']
+    selector: 'app-inscription',
+    imports: [CommonModule, ReactiveFormsModule, HttpClientModule],
+    templateUrl: './ajou-utilisateur.component.html',
+    styleUrls: ['./ajou-utilisateur.component.css']
 })
 export class InscriptionComponent implements OnInit {
   inscriptionForm!: FormGroup;
@@ -31,7 +30,8 @@ export class InscriptionComponent implements OnInit {
       telephone: ['', [Validators.required, Validators.pattern(/^\d{9}$/)]],
       mot_de_passe: ['', [Validators.required, Validators.minLength(8)]],
       adresse: ['', [Validators.required, this.noWhitespaceValidator]],
-      role: ['utilisateur'] // Valeur par défaut
+      role: ['utilisateur'], // Valeur par défaut
+      
     });
   }
 

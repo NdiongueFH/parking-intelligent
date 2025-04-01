@@ -4,11 +4,10 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
 @Component({
-  selector: 'app-home',
-  standalone: true,
-  imports: [CommonModule, RouterModule],
-  templateUrl: './page-acceuil.component.html',
-  styleUrls: ['./page-acceuil.component.css']
+    selector: 'app-home',
+    imports: [CommonModule, RouterModule],
+    templateUrl: './page-acceuil.component.html',
+    styleUrls: ['./page-acceuil.component.css']
 })
 export class HomeComponent {
   features = [

@@ -5,11 +5,10 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-inscription',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, HttpClientModule],
-  templateUrl: './inscription.component.html',
-  styleUrls: ['./inscription.component.css']
+    selector: 'app-inscription',
+    imports: [CommonModule, ReactiveFormsModule, HttpClientModule],
+    templateUrl: './inscription.component.html',
+    styleUrls: ['./inscription.component.css']
 })
 export class InscriptionComponent implements OnInit {
   inscriptionForm!: FormGroup;

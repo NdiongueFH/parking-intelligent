@@ -4,11 +4,10 @@ import { CommonModule } from '@angular/common';
 
 
 @Component({
-  selector: 'app-notification-modal',
-  standalone: true,
-  imports : [FormsModule,CommonModule],
-  templateUrl: './notification-modal.component.html',
-  styleUrls: ['./notification-modal.component.css']
+    selector: 'app-notification-modal',
+    imports: [FormsModule, CommonModule],
+    templateUrl: './notification-modal.component.html',
+    styleUrls: ['./notification-modal.component.css']
 })
 export class NotificationModalComponent {
   @Input() message: string = '';

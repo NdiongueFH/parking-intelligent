@@ -7,11 +7,10 @@ import { interval, Subscription } from 'rxjs';
 import { takeWhile } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-forgot-password',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, HttpClientModule, RouterModule],
-  templateUrl: './forgot-password.component.html',
-  styleUrls: ['./forgot-password.component.css']
+    selector: 'app-forgot-password',
+    imports: [CommonModule, ReactiveFormsModule, HttpClientModule, RouterModule],
+    templateUrl: './forgot-password.component.html',
+    styleUrls: ['./forgot-password.component.css']
 })
 export class ForgotPasswordComponent implements OnInit {
   currentStep = 1;

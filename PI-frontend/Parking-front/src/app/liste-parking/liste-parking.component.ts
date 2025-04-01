@@ -36,11 +36,10 @@ interface UserData {
 }
 
 @Component({
-  selector: 'app-liste-parking',
-  standalone: true,
-  imports: [CommonModule, RouterModule, HttpClientModule, FormsModule, LeafletModule],
-  templateUrl: './liste-parking.component.html',
-  styleUrls: ['./liste-parking.component.css']
+    selector: 'app-liste-parking',
+    imports: [CommonModule, RouterModule, HttpClientModule, FormsModule, LeafletModule],
+    templateUrl: './liste-parking.component.html',
+    styleUrls: ['./liste-parking.component.css']
 })
 export class ListeParkingComponent implements OnInit {
   parkings: Parking[] = [];
@@ -602,6 +601,47 @@ saveAmende() {
           // Ajoutez ici la gestion du message d'erreur
           this.errorMessage = error.error.message || 'Une erreur s\'est produite lors de l\'ajout de l\'amende.';
       }
+  );
+}
+
+
+onSearchInputChange() {
+  if (this.searchTerm.trim() === '') {
+    this.loadParkings(); // Recharge tous les parkings si le champ est vide
+  }
+}
+
+searchParking() {
+  if (this.searchTerm.trim() === '') {
+    this.loadParkings(); // Recharge tous les parkings si le champ est vide
+    return;
+  }
+
+  const token = localStorage.getItem('token');
+  const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+  console.log('Terme de recherche:', this.searchTerm);
+  console.log('Token:', token);
+
+  this.http.get<any>(`http://localhost:3000/api/v1/parkings/nom/${this.searchTerm}`, { headers }).subscribe(
+    (response) => {
+      console.log('Résultats de la recherche:', response);
+
+      // Vérifiez si la réponse est un tableau ou un objet
+      if (Array.isArray(response)) {
+        this.parkings = response;
+      } else {
+        this.parkings = [response]; // Convertir en tableau si c'est un objet unique
+      }
+
+      this.totalParkings = this.parkings.length;
+      this.totalPages = Math.ceil(this.totalParkings / this.itemsPerPage);
+      this.generatePagination();
+      this.updatePaginatedItems();
+    },
+    (error) => {
+      console.error('Erreur lors de la recherche de parkings', error);
+    }
   );
 }
 

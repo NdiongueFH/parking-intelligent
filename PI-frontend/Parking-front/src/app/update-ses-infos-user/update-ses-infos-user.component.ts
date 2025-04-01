@@ -17,10 +17,10 @@ interface UserData {
 @Component({
     selector: 'app-modification',
     imports: [CommonModule, ReactiveFormsModule, RouterModule, HttpClientModule],
-    templateUrl: './modifier-utilisateur.component.html',
-    styleUrls: ['./modifier-utilisateur.component.css']
+    templateUrl: './update-ses-infos-user.component.html',
+    styleUrls: ['./update-ses-infos-user.component.css']
 })
-export class ModificationComponent implements OnInit {
+export class UpdateSesInfosUserComponent implements OnInit {
   modificationForm: FormGroup;
   error: string | null = null;
   success: boolean = false;
@@ -52,8 +52,17 @@ userData: UserData = {
     });
   }
 
+
   ngOnInit(): void {
     console.log('Initialisation du composant ModificationComponent...');
+    
+    // Accéder à localStorage avec try-catch
+    try {
+      this.token = localStorage.getItem('token');
+    } catch (error) {
+      console.error('Erreur lors de l\'accès à localStorage:', error);
+    }
+
     this.loadUserData();
   }
 
