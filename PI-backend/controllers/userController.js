@@ -783,3 +783,37 @@ exports.resendCode = async(req, res) => {
         message: 'Un nouveau code a été envoyé à votre email.'
     });
 };
+
+// Obtenir le total des utilisateurs
+exports.getTotalUsers = async(req, res) => {
+    try {
+        const totalUsers = await User.countDocuments({ role: 'utilisateur' });
+        res.status(200).json({
+            status: 'success',
+            totalUsers
+        });
+    } catch (err) {
+        res.status(500).json({
+            status: 'fail',
+            message: 'Erreur lors de la récupération du total des utilisateurs.',
+            error: err.message
+        });
+    }
+};
+
+// Obtenir le total des administrateurs
+exports.getTotalAdmins = async(req, res) => {
+    try {
+        const totalAdmins = await User.countDocuments({ role: 'administrateur' });
+        res.status(200).json({
+            status: 'success',
+            totalAdmins
+        });
+    } catch (err) {
+        res.status(500).json({
+            status: 'fail',
+            message: 'Erreur lors de la récupération du total des administrateurs.',
+            error: err.message
+        });
+    }
+};

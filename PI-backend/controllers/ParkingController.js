@@ -178,9 +178,13 @@ exports.deleteParking = async(req, res) => {
             return res.status(404).json({ message: 'Parking non trouvé' });
         }
 
-        // Utiliser findByIdAndDelete pour supprimer le parking
+        // Supprimer toutes les places de parking associées
+        await PlaceParking.deleteMany({ parkingId: parking._id });
+
+        // Supprimer le parking
         await Parking.findByIdAndDelete(req.params.id);
-        res.status(200).json({ message: 'Parking supprimé avec succès' });
+
+        res.status(200).json({ message: 'Parking et places associées supprimés avec succès' });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
@@ -209,4 +213,21 @@ exports.protectParkingRoutes = (router) => {
     router.post('/', userController.restrictTo('administrateur'), exports.addParking); // Ajouter un parking
     router.put('/:id', userController.restrictTo('administrateur'), exports.updateParking); // Modifier un parking
     router.delete('/:id', userController.restrictTo('administrateur'), exports.deleteParking); // Supprimer un parking
+};
+
+// Récupérer le total des parkings
+exports.getTotalParkings = async(req, res) => {
+    try {
+        const totalParkings = await Parking.countDocuments();
+        res.status(200).json({
+            status: 'success',
+            totalParkings
+        });
+    } catch (err) {
+        res.status(500).json({
+            status: 'fail',
+            message: 'Erreur lors de la récupération du total des parkings.',
+            error: err.message
+        });
+    }
 };

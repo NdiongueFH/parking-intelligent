@@ -12,6 +12,12 @@ router.use(userController.protect); // Toutes les routes ci-dessous nécessitent
 // Obtenir tous les utilisateurs (réservé à l'administrateur)
 router.get('/', userController.restrictTo('administrateur'), userController.getAllUsers);
 
+// Obtenir le total des utilisateurs
+router.get('/total-users', userController.restrictTo('administrateur'), userController.getTotalUsers);
+
+// Obtenir le total des administrateurs
+router.get('/total-admins', userController.restrictTo('administrateur'), userController.getTotalAdmins);
+
 // Obtenir un utilisateur spécifique par son ID
 router.get('/:id', userController.getUser); // Retirer la restriction d'administrateur
 

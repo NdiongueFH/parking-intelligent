@@ -31,7 +31,7 @@ const server = http.createServer(app); // Créer une instance de serveur HTTP av
 const io = socketIo(server, {
     cors: {
         origin: "http://localhost:4200", // Autoriser votre application Angular
-        methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+        methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
         allowedHeaders: ["Content-Type"],
         credentials: true,
     }
@@ -42,7 +42,7 @@ const io = socketIo(server, {
 // Middleware CORS
 app.use(cors({
     origin: "http://localhost:4200", // Autoriser votre application Angular
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     credentials: true,
 }));
 
@@ -97,96 +97,135 @@ app.use((err, req, res, next) => {
     });
 });
 
-// Configuration du port série pour récupérer les données de l'Arduino
+// Configuration du port série
 const portName = process.env.SERIAL_PORT || '/dev/ttyACM0'; // Le port série
-const port = new SerialPort({
-    path: portName,
-    baudRate: 9600,
-});
+let port;
 
-// Utilisation de la nouvelle syntaxe pour le parser
-const parser = port.pipe(new ReadlineParser({ delimiter: '\n' }));
-
-// Émettre les données via Socket.io dès qu'elles sont reçues
-parser.on('data', async(data) => {
-    console.log('Données reçues de l\'Arduino :', data.trim());
-
-    // Exemple de correspondance pour l'UID de la carte RFID
-    const matchRfid = data.trim().match(/UID de la carte: (\w+)/);
-    if (matchRfid) {
-        const rfidUid = matchRfid[1]; // Capture l'UID
-
-        // Émettre l'UID via Socket.IO
-        io.emit('rfidScanned', rfidUid);
-        console.log('UID émis:', rfidUid);
+// Vérifier l'état de la connexion série
+function checkSerialConnection() {
+    if (port && port.isOpen) {
+        io.emit('serialStatus', 'Port série connecté');
+        console.log('Port série connecté');
+    } else {
+        io.emit('serialStatus', 'Port série non connecté');
+        console.log('Port série non connecté');
     }
+}
 
-    // Gestion des données de capteurs (votre code existant)
-    const matchCapteur = data.trim().match(/Capteur (\d+): Statut de la place: (\w+)/);
-    if (matchCapteur) {
-        const capteurId = parseInt(matchCapteur[1], 10);
-        const statut = matchCapteur[2];
+// Essayer d'ouvrir le port série
+function setupSerialPort() {
+    port = new SerialPort({
+        path: portName,
+        baudRate: 9600,
+    });
 
-        try {
-            const place = await PlaceParking.findOne({ capteurId });
-            if (place) {
-                place.statut = statut;
-                await place.save();
+    // Utilisation de la nouvelle syntaxe pour le parser
+    const parser = port.pipe(new ReadlineParser({ delimiter: '\n' }));
 
-                io.emit('majEtatParking', {
-                    placeId: place._id,
-                    statut: place.statut,
-                    nomPlace: place.nomPlace,
-                });
-            }
-        } catch (err) {
-            console.error('Erreur lors de la mise à jour de la place:', err);
+    // Émettre les données via Socket.io dès qu'elles sont reçues
+    parser.on('data', async(data) => {
+        console.log('Données reçues de l\'Arduino :', data.trim());
+
+        // Exemple de correspondance pour l'UID de la carte RFID
+        const matchRfid = data.trim().match(/UID de la carte: (\w+)/);
+        if (matchRfid) {
+            const rfidUid = matchRfid[1]; // Capture l'UID
+
+            // Émettre l'UID via Socket.IO
+            io.emit('rfidScanned', rfidUid);
+            console.log('UID émis:', rfidUid);
         }
-    }
 
-    // Nouvelle logique de validation de code
-    const matchCode = data.trim().match(/^CODE:(\d{5})$/); // Modifier la longueur si nécessaire
-    if (matchCode) {
-        const code = matchCode[1];
+        // Gestion des données de capteurs (votre code existant)
+        const matchCapteur = data.trim().match(/Capteur (\d+): Statut de la place: (\w+)/);
+        if (matchCapteur) {
+            const capteurId = parseInt(matchCapteur[1], 10);
+            const statut = matchCapteur[2];
 
-        try {
-            // Rechercher une réservation avec l'état 'En cours' et le codeNumerique correspondant
-            const reservation = await Reservation.findOne({
-                codeNumerique: code,
-                etat: 'En cours'
-            });
+            try {
+                const place = await PlaceParking.findOne({ capteurId });
+                if (place) {
+                    place.statut = statut;
+                    await place.save();
 
-            if (reservation) {
-                // Code valide
-                console.log('Réservation trouvée pour le code:', code);
-                port.write('VALIDE\n', (err) => {
-                    if (err) {
-                        console.error('Erreur lors de l\'envoi de la réponse VALIDE:', err);
-                    }
+                    io.emit('majEtatParking', {
+                        placeId: place._id,
+                        statut: place.statut,
+                        nomPlace: place.nomPlace,
+                    });
+                }
+            } catch (err) {
+                console.error('Erreur lors de la mise à jour de la place:', err);
+            }
+        }
+
+        // Nouvelle logique de validation de code
+        const matchCode = data.trim().match(/^CODE:(\d{5})$/); // Modifier la longueur si nécessaire
+        if (matchCode) {
+            const code = matchCode[1];
+
+            try {
+                // Rechercher une réservation avec l'état 'En cours' et le codeNumerique correspondant
+                const reservation = await Reservation.findOne({
+                    codeNumerique: code,
+                    etat: 'En cours'
                 });
-                // Mettre à jour le statut de la place...
-            } else {
-                // Code invalide
-                console.log('Aucune réservation valide trouvée pour le code:', code);
+
+                if (reservation) {
+                    // Code valide
+                    console.log('Réservation trouvée pour le code:', code);
+                    port.write('VALIDE\n', (err) => {
+                        if (err) {
+                            console.error('Erreur lors de l\'envoi de la réponse VALIDE:', err);
+                        }
+                    });
+                    // Mettre à jour le statut de la place...
+                } else {
+                    // Code invalide
+                    console.log('Aucune réservation valide trouvée pour le code:', code);
+                    port.write('INVALIDE\n', (err) => {
+                        if (err) {
+                            console.error('Erreur lors de l\'envoi de la réponse INVALIDE:', err);
+                        }
+                    });
+                }
+            } catch (err) {
+                console.error('Erreur lors de la validation du code:', err);
                 port.write('INVALIDE\n', (err) => {
                     if (err) {
                         console.error('Erreur lors de l\'envoi de la réponse INVALIDE:', err);
                     }
                 });
             }
-        } catch (err) {
-            console.error('Erreur lors de la validation du code:', err);
-            port.write('INVALIDE\n', (err) => {
-                if (err) {
-                    console.error('Erreur lors de l\'envoi de la réponse INVALIDE:', err);
-                }
-            });
         }
-    }
-});
 
-// Démarrer le serveur sur le port spécifié
+        // Détection d'une alerte de flamme
+        const matchFlamme = data.trim().match(/URGENCE : Flamme détectée !/);
+        if (matchFlamme) {
+            console.log('Alerte de flamme détectée !');
+            io.emit('flameAlert', 'URGENCE : Flamme détectée !'); // Émettre l'alerte
+        }
+    });
+
+    port.on('open', () => {
+        console.log('Port série ouvert');
+        checkSerialConnection();
+    });
+
+    port.on('close', () => {
+        console.log('Port série fermé');
+        checkSerialConnection();
+    });
+
+    port.on('error', (err) => {
+        console.error('Erreur du port série:', err);
+        checkSerialConnection();
+    });
+}
+
 const portHttp = process.env.PORT || 3000;
 server.listen(portHttp, () => {
     console.log(`Serveur en écoute sur le port ${portHttp}`);
+    setupSerialPort(); // Configurer le port série après le démarrage du serveur
+    checkSerialConnection(); // Vérifiez l'état initial de la connexion série
 });

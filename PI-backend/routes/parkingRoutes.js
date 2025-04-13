@@ -14,6 +14,11 @@ router.use(userController.protect); // L'utilisateur doit être authentifié
 // Route pour récupérer tous les parkings (accessible à tout utilisateur connecté)
 router.get('/', userController.protect, parkingController.getAllParkings);
 
+
+// Route pour obtenir le total des parkings
+router.get('/total', parkingController.restrictTo('administrateur'), parkingController.getTotalParkings);
+
+
 // Route pour récupérer un parking par ID (accessible à tout utilisateur connecté)
 router.get('/:id', userController.protect, parkingController.getParkingById);
 
