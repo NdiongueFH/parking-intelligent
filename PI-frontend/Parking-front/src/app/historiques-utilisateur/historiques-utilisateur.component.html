@@ -57,6 +57,10 @@
                     <img src="file.png" alt="Historiques" class="nav-icon">
                     <span>Historiques</span>
                 </a>
+                <a class="nav-item " [routerLink]="[ '/historiques-utilisateur'] ">
+                    <img src="bank.png " alt="Transactions " class="nav-icon ">
+                    <span>Transactions</span>
+                </a>
 
             </nav>
             <div class="logout-container">
@@ -96,10 +100,10 @@
                     <option value="Tous les parkings">Tous les parkings</option>
                     <option *ngFor="let parking of parkingOptions" [value]="parking">{{ parking }}</option>
                 </select>
-                <select [(ngModel)]="selectedStatsParking" (change)="openStatsModal()">
+                <!-- <select [(ngModel)]="selectedStatsParking" (change)="openStatsModal()">
                     <option value="">Voir statistiques</option>
                     <option *ngFor="let parking of parkingOptions" [value]="parking">{{ parking }}</option>
-                </select>
+                </select> -->
             </div>
             <div class="reservations-container">
                 <h2>Historique des Réservations</h2>
@@ -153,7 +157,7 @@
     </div>
 
     <!-- Modal pour les statistiques -->
-    <div class="stats-modal" *ngIf="showStatsModal" (click)="handleOutsideClick($event)">
+    <!-- <div class="stats-modal" *ngIf="showStatsModal" (click)="handleOutsideClick($event)">
         <div class="stats-modal-content" (click)="$event.stopPropagation()">
             <div class="stats-container">
                 <div class="header">
@@ -174,7 +178,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
 
     <!-- Modal pour la facture -->
     <div class="invoice-modal" *ngIf="showInvoiceModal" (click)="closeIfOutside($event)">

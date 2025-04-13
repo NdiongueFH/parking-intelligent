@@ -56,7 +56,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="price">Prix/heure</label>
+                        <label for="price">Prix/heure voiture</label>
                         <input type="text" id="price" formControlName="price" placeholder="0 FCFA" readonly>
                     </div>
                 </div>
@@ -67,7 +67,7 @@
                 {{ errorMessage }}
             </div>
             <div class="form-section">
-                <h3>Payer ici</h3>
+                <h3>Cliquez sur le bouton pour valider le paiement</h3>
                 <div class="form-row payment-options">
                     <div class="form-group payment-option" [ngClass]="{'payment-initiated': isPaymentInitiated}">
                         <label class="custom-radio">

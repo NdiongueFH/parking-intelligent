@@ -299,12 +299,24 @@ selectedAmende: any; // Assurez-vous que cela est initialisé lorsque vous séle
         this.totalParkings = this.parkings.length;
         this.totalPages = Math.ceil(this.totalParkings / this.itemsPerPage);
         this.generatePagination();
+        this.limitDisplayedParkings();
+
         this.updatePaginatedItems();
       },
       (error) => {
         console.error('Erreur lors de la récupération des parkings', error);
       }
     );
+  }
+
+  limitDisplayedParkings(): void {
+    const start = (this.currentPage - 1) * this.itemsPerPage;
+    const end = start + this.itemsPerPage;
+    this.paginatedParkings = this.parkings.slice(start, end);
+  }
+
+  calculateTotalPages(): void {
+    this.totalPages = Math.ceil(this.parkings.length / this.itemsPerPage);
   }
 
   generatePagination() {
@@ -557,9 +569,13 @@ selectParking(parking: Parking) {
             }, 2000);
         },
         (error) => {
-            console.error('Erreur lors de l\'enregistrement des tarifs:', error);
-            // Ajoutez ici la gestion du message d'erreur
-            this.errorMessage = error.error.message || 'Une erreur s\'est produite lors de l\'enregistrement des tarifs.';
+          console.error('Erreur lors de l\'enregistrement des tarifs:', error);
+          this.errorMessage = error.error.message || 'Une erreur s\'est produite lors de l\'enregistrement des tarifs.';
+  
+          // Faire disparaître le message d'erreur après 3 secondes
+          setTimeout(() => {
+              this.errorMessage = ''; // Réinitialiser le message d'erreur
+          }, 3000);
         }
     );
 }
@@ -597,9 +613,13 @@ saveAmende() {
           }, 2000);
       },
       (error) => {
-          console.error('Erreur lors de l\'ajout de l\'amende:', error);
-          // Ajoutez ici la gestion du message d'erreur
-          this.errorMessage = error.error.message || 'Une erreur s\'est produite lors de l\'ajout de l\'amende.';
+        console.error('Erreur lors de l\'enregistrement des tarifs:', error);
+        this.errorMessage = error.error.message || 'Une erreur s\'est produite lors de l\'enregistrement des tarifs.';
+
+        // Faire disparaître le message d'erreur après 3 secondes
+        setTimeout(() => {
+            this.errorMessage = ''; // Réinitialiser le message d'erreur
+        }, 3000);
       }
   );
 }
@@ -611,7 +631,7 @@ onSearchInputChange() {
   }
 }
 
-searchParking() {
+searchParking(): void {
   if (this.searchTerm.trim() === '') {
     this.loadParkings(); // Recharge tous les parkings si le champ est vide
     return;
@@ -621,23 +641,20 @@ searchParking() {
   const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
   console.log('Terme de recherche:', this.searchTerm);
-  console.log('Token:', token);
 
-  this.http.get<any>(`http://localhost:3000/api/v1/parkings/nom/${this.searchTerm}`, { headers }).subscribe(
+  this.http.get<any>(`${this.apiUrl}/nom/${this.searchTerm}`, { headers }).subscribe(
     (response) => {
       console.log('Résultats de la recherche:', response);
 
-      // Vérifiez si la réponse est un tableau ou un objet
+      // Vérifiez si la réponse est un tableau
       if (Array.isArray(response)) {
-        this.parkings = response;
+        this.parkings = response; // Utiliser le tableau directement
       } else {
-        this.parkings = [response]; // Convertir en tableau si c'est un objet unique
+        this.parkings = [response]; // Convertir l'objet en tableau
       }
 
-      this.totalParkings = this.parkings.length;
-      this.totalPages = Math.ceil(this.totalParkings / this.itemsPerPage);
-      this.generatePagination();
-      this.updatePaginatedItems();
+      this.calculateTotalPages();
+      this.limitDisplayedParkings();
     },
     (error) => {
       console.error('Erreur lors de la recherche de parkings', error);

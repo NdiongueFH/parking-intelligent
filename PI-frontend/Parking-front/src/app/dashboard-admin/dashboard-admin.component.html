@@ -86,7 +86,46 @@
             </div>
         </div>
 
+
+
+
+
         <div class="map-container ">
+
+            <!-- Stats Block -->
+            <div class="stats-block">
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <img src="totalUsers.png" alt="Users" class="stat-img">
+                        </div>
+                        <div class="stat-info">
+                            <h3 class="stat-title">Total Utilisateurs</h3>
+                            <p class="stat-value">{{ totalUsers }}</p>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <img src="totalAdmin-removebg-preview.png" alt="Admins" class="stat-img">
+                        </div>
+                        <div class="stat-info">
+                            <h3 class="stat-title">Total Administrateurs</h3>
+                            <p class="stat-value">{{ totalAdmins }}</p>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <img src="totalParkings.png" alt="Parkings" class="stat-img">
+                        </div>
+                        <div class="stat-info">
+                            <h3 class="stat-title">Total Parkings</h3>
+                            <p class="stat-value">{{ totalParkings }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div *ngIf="isLoading " class="loading-indicator ">
                 <svg xmlns="http://www.w3.org/2000/svg " viewBox="0 0 400 400 " width="500 " height="500 ">
                     <!-- Fond circulaire -->
@@ -101,24 +140,24 @@
                     <circle cx="200 " cy="200 " r="7 " fill="#ffffff "/>
                     
                     <!-- Ondes de recherche (pulsations) -->
-                    <circle cx="200 " cy="200 " r="40 " fill="none " stroke="#e74c3c " stroke-width="3 " opacity="0.8 ">
-                        <animate attributeName="r " from="25 " to="80 " dur="1.5s " begin="0s " repeatCount="indefinite "/>
-                        <animate attributeName="opacity " from="0.8 " to="0 " dur="1.5s " begin="0s " repeatCount="indefinite "/>
+                    <circle cx="200 " cy="200 " r="40 " fill="none " stroke="#e74c3c " stroke-width="3 " opacity="0.8">
+                        <animate attributeName="r" from="25" to="80" dur="1.5s" begin="0s" repeatCount="indefinite"/>
+                        <animate attributeName="opacity " from="0.8" to="0 " dur="1.5s " begin="0s " repeatCount="indefinite "/>
                     </circle>
-                    <circle cx="200 " cy="200 " r="40 " fill="none " stroke="#e74c3c " stroke-width="2 " opacity="0.6 ">
-                        <animate attributeName="r " from="25 " to="80 " dur="1.5s " begin="0.5s " repeatCount="indefinite "/>
-                        <animate attributeName="opacity " from="0.6 " to="0 " dur="1.5s " begin="0.5s " repeatCount="indefinite "/>
+                    <circle cx="200 " cy="200 " r="40 " fill="none" stroke="#e74c3c " stroke-width="2 " opacity="0.6 ">
+                        <animate attributeName="r" from="25" to="80" dur="1.5s " begin="0.5s " repeatCount="indefinite "/>
+                        <animate attributeName="opacity " from="0.6" to="0 " dur="1.5s " begin="0.5s " repeatCount="indefinite "/>
                     </circle>
-                    <circle cx="200 " cy="200 " r="40 " fill="none " stroke="#e74c3c " stroke-width="1 " opacity="0.4 ">
-                        <animate attributeName="r " from="25 " to="80 " dur="1.5s " begin="1s " repeatCount="indefinite "/>
-                        <animate attributeName="opacity " from="0.4 " to="0 " dur="1.5s " begin="1s " repeatCount="indefinite "/>
+                    <circle cx="200 " cy="200 " r="40 " fill="none" stroke="#e74c3c " stroke-width="1 " opacity="0.4 ">
+                        <animate attributeName="r" from="25" to="80" dur="1.5s " begin="1s " repeatCount="indefinite "/>
+                        <animate attributeName="opacity " from="0.4" to="0 " dur="1.5s " begin="1s " repeatCount="indefinite "/>
                     </circle>
                     
                     <!-- Routes stylisées -->
-                    <path d="M50 200 L150 200 " stroke="#3498db " stroke-width="6 " stroke-linecap="round "/>
-                    <path d="M250 200 L350 200 " stroke="#3498db " stroke-width="6 " stroke-linecap="round "/>
-                    <path d="M200 50 L200 150 " stroke="#3498db " stroke-width="6 " stroke-linecap="round "/>
-                    <path d="M200 250 L200 350 " stroke="#3498db " stroke-width="6 " stroke-linecap="round "/>
+                    <path d="M50 200 L150 200" stroke="#3498db" stroke-width="6" stroke-linecap="round"/>
+                    <path d="M250 200 L350 200" stroke="#3498db" stroke-width="6" stroke-linecap="round"/>
+                    <path d="M200 50 L200 150" stroke="#3498db" stroke-width="6" stroke-linecap="round"/>
+                    <path d="M200 250 L200 350" stroke="#3498db" stroke-width="6" stroke-linecap="round"/>
                 </svg>
                 <p>Chargement de la carte Map...</p>
             </div>
@@ -161,13 +200,14 @@
         <div class="main-content ">
             <div class="parkings-list ">
                 <h2>Parkings à proximité</h2>
-                <div class="parking-cards ">
-                    <div class="parking-card " *ngFor="let parking of displayedParkings ">
-                        <h3>{{ parking.nom_du_parking }}</h3>
-                        <div class="parking-info ">
-                            <span>{{ parking.distanceKm }} km</span>
-                        </div>
-                        <button class="reserve-button " (click)="reserveParking(parking) ">Réserver maintenant</button>
+                <div class="parking-card" *ngFor="let parking of displayedParkings">
+                    <h3>{{ parking.nom_du_parking }}</h3>
+                    <div class="parking-info">
+                        <span>{{ parking.distanceKm }} km</span>
+                    </div>
+                    <div class="button-group">
+                        <button class="route-button" (click)="addRouteToParking(parking)">Voir l'itinéraire</button>
+                        <button class="reserve-button" (click)="reserveParking(parking)">Réserver maintenant</button>
                     </div>
                 </div>
 
@@ -182,6 +222,28 @@
                     </div>
                     <button (click)="nextPage()" [disabled]="currentPage === totalPages">Suivant</button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal d'alerte d'incendie -->
+    <div class="fire-alert-modal" *ngIf="showFireAlert">
+        <div class="fire-alert-content">
+            <div class="fire-alert-header">
+                <div class="fire-alert-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28">
+                    <path fill="#ffffff" d="M12,23c-4.1,0-7.5-3.1-7.5-7c0-2.5,0.9-4.8,2.4-6.5c1.4-1.6,2-3.9,1.5-6.1l0.6-0.6 C11.1,7.2,11.1,14,14.3,14c1.6,0,1.9-2,1.9-2.5H17c0,3.9-2.2,5.5-4.3,5.5c-0.7,0-1.4-0.2-2-0.5C9.9,16.9,9.5,17.8,9.5,19c0,1.4,1.1,2.5,2.5,2.5 s2.5-1.1,2.5-2.5H16c0,2.2-1.8,4-4,4z"/>
+                </svg>
+                </div>
+                <div class="fire-alert-title">ALERTE INCENDIE</div>
+                <button class="fire-alert-close" (click)="closeFireAlert()">×</button>
+            </div>
+            <div class="fire-alert-body">
+                <p>{{ fireAlertMessage }}</p>
+            </div>
+            <div class="fire-alert-footer">
+                <button class="fire-alert-button" (click)="acknowledgeFireAlert()">Confirmer la réception</button>
+                <button class="fire-alert-button secondary" (click)="closeFireAlert()">Fermer</button>
             </div>
         </div>
     </div>

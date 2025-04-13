@@ -44,7 +44,7 @@ export class ParkingUtilisateurComponent implements OnInit {
   pageNumbers: number[] = []; // Pour stocker les numéros de pages
 
   currentPage: number = 1; // Page actuelle
-  itemsPerPage: number = 12; // Nombre total d'items par page (3 colonnes de 4 places)
+  itemsPerPage: number = 9; // Nombre total d'items par page (3 colonnes de 3 places)
   totalPlaces: number = 0; // Total des places de parking
 
   successMessage: string = ''; // Variable pour stocker le message de succès
@@ -230,6 +230,8 @@ loadUserData(): void {
         (data) => {
           this.parkingPlaces = data; // Stocker les données récupérées
           this.updateParkingStats(); // Mettre à jour les statistiques
+          this.updatePageNumbers(); // Mettre à jour les numéros de page ici
+
         },
         (error) => {
           console.error('Erreur lors de la récupération des places de parking:', error);
@@ -297,15 +299,15 @@ loadUserData(): void {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     const paginatedPlaces = places.slice(startIndex, startIndex + this.itemsPerPage);
     const columns = [];
-    for (let i = 0; i < paginatedPlaces.length; i += 4) {
-      columns.push(paginatedPlaces.slice(i, i + 4));
+    for (let i = 0; i < paginatedPlaces.length; i += 3) { // 3 places par colonne
+        columns.push(paginatedPlaces.slice(i, i + 3));
     }
     return columns;
-  }
+}
 
-  get totalPages(): number {
-    return Math.ceil(this.totalPlaces / this.itemsPerPage);
-  }
+get totalPages(): number {
+  return Math.ceil(this.parkingPlaces.length / this.itemsPerPage); // Utiliser le nombre total de places
+}
 
   onReservationSuccess(message: string): void {
     this.successMessage = message; // Définir le message de succès

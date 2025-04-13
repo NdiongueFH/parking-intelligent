@@ -110,7 +110,7 @@ select:focus {
     flex: 1;
     /* Permet aux options de paiement de prendre de l'espace équitablement */
     background: white;
-    border: 1px solid #ddd;
+    border: 1px solid #807f7f;
     border-radius: 5px;
     padding: 10px 15px;
 }
@@ -145,9 +145,9 @@ select:focus {
 }
 
 .custom-radio input:checked+.radio-button {
-    background-color: #4caf50;
+    background-color: #1606f7;
     /* Couleur verte lorsque sélectionné */
-    border-color: #4caf50;
+    border-color: #f7b603;
     /* Bordure verte lorsque sélectionné */
 }
 

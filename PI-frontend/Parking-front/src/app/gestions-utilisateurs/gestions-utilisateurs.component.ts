@@ -221,18 +221,25 @@ private userApiUrl = 'http://localhost:3000/api/v1/users';
     const filteredUsers = this.utilisateurs.filter(user => {
       const roleMatch = this.selectedRole ? user.role === this.selectedRole : true;
       const searchMatch = user.nom.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-                          user.prenom.toLowerCase().includes(this.searchTerm.toLowerCase());
+                          user.prenom.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+                          user.telephone.toString().includes(this.searchTerm); // Ajoutez cette condition pour le téléphone
       return roleMatch && searchMatch;
     });
-
+  
+    console.log('Utilisateurs filtrés:', filteredUsers); // Ajoutez ce log pour vérifier les utilisateurs filtrés
+  
     this.totalUsers = filteredUsers.length;
     this.totalPages = Math.ceil(this.totalUsers / this.itemsPerPage);
     this.generatePagination();
-
+  
     const start = (this.currentPage - 1) * this.itemsPerPage;
     const end = start + this.itemsPerPage;
     this.paginatedUsers = filteredUsers.slice(start, end);
+  
+    console.log('Utilisateurs paginés:', this.paginatedUsers); // Ajoutez ce log pour vérifier les utilisateurs paginés
   }
+  
+  
 
   filterUsers() {
     this.currentPage = 1;
@@ -428,7 +435,6 @@ private userApiUrl = 'http://localhost:3000/api/v1/users';
     this.showDeleteModal = false; // Fermer le modal sans supprimer
     this.userToDelete = null; // Réinitialiser l'ID de l'utilisateur
   }
-
   searchUser(): void {
     if (this.searchTerm.trim() === '') {
       this.loadUsers(); // Recharge tous les utilisateurs si le champ est vide
@@ -451,11 +457,12 @@ private userApiUrl = 'http://localhost:3000/api/v1/users';
           this.utilisateurs = response.data.users || []; // Utiliser un tableau vide si aucun utilisateur trouvé
         }
   
-        // Mettez à jour les utilisateurs paginés
-        this.totalUsers = this.utilisateurs.length;
-        this.totalPages = Math.ceil(this.totalUsers / this.itemsPerPage);
-        this.generatePagination();
-        this.updatePaginatedItems();
+        console.log('Utilisateurs après recherche:', this.utilisateurs); // Ajoutez ce log pour vérifier les utilisateurs
+  
+        this.totalUsers = this.utilisateurs.length; // Mettre à jour le total d'utilisateurs
+        this.totalPages = Math.ceil(this.totalUsers / this.itemsPerPage); // Calculer le total de pages
+        this.generatePagination(); // Générer la pagination
+        this.updatePaginatedItems(); // Mettre à jour les utilisateurs paginés
       },
       (error) => {
         console.error('Erreur lors de la recherche d\'utilisateurs', error);

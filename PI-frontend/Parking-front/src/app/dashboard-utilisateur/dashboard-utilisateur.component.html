@@ -64,6 +64,10 @@
                     <img src="file.png " alt="Historiques " class="nav-icon ">
                     <span>Historiques</span>
                 </a>
+                <a class="nav-item " [routerLink]="[ '/historiques-utilisateur'] ">
+                    <img src="bank.png " alt="Transactions " class="nav-icon ">
+                    <span>Transactions</span>
+                </a>
 
             </nav>
             <div class="logout-container ">
@@ -90,41 +94,41 @@
                     <circle cx="200 " cy="200 " r="7 " fill="#ffffff "/>
                     
                     <!-- Ondes de recherche (pulsations) -->
-                    <circle cx="200 " cy="200 " r="40 " fill="none " stroke="#e74c3c " stroke-width="3 " opacity="0.8 ">
-                        <animate attributeName="r " from="25 " to="80 " dur="1.5s " begin="0s " repeatCount="indefinite "/>
+                    <circle cx="200 " cy="200 " r="40" fill="none " stroke="#e74c3c " stroke-width="3 " opacity="0.8 ">
+                        <animate attributeName="r" from="25 " to="80 " dur="1.5s " begin="0s " repeatCount="indefinite "/>
                         <animate attributeName="opacity " from="0.8 " to="0 " dur="1.5s " begin="0s " repeatCount="indefinite "/>
                     </circle>
-                    <circle cx="200 " cy="200 " r="40 " fill="none " stroke="#e74c3c " stroke-width="2 " opacity="0.6 ">
-                        <animate attributeName="r " from="25 " to="80 " dur="1.5s " begin="0.5s " repeatCount="indefinite "/>
+                    <circle cx="200 " cy="200 " r="40" fill="none " stroke="#e74c3c " stroke-width="2 " opacity="0.6 ">
+                        <animate attributeName="r" from="25 " to="80 " dur="1.5s " begin="0.5s " repeatCount="indefinite "/>
                         <animate attributeName="opacity " from="0.6 " to="0 " dur="1.5s " begin="0.5s " repeatCount="indefinite "/>
                     </circle>
-                    <circle cx="200 " cy="200 " r="40 " fill="none " stroke="#e74c3c " stroke-width="1 " opacity="0.4 ">
-                        <animate attributeName="r " from="25 " to="80 " dur="1.5s " begin="1s " repeatCount="indefinite "/>
+                    <circle cx="200 " cy="200 " r="40" fill="none " stroke="#e74c3c " stroke-width="1 " opacity="0.4 ">
+                        <animate attributeName="r" from="25 " to="80 " dur="1.5s " begin="1s " repeatCount="indefinite "/>
                         <animate attributeName="opacity " from="0.4 " to="0 " dur="1.5s " begin="1s " repeatCount="indefinite "/>
                     </circle>
                     
                     <!-- Routes stylisées -->
-                    <path d="M50 200 L150 200 " stroke="#3498db " stroke-width="6 " stroke-linecap="round "/>
-                    <path d="M250 200 L350 200 " stroke="#3498db " stroke-width="6 " stroke-linecap="round "/>
-                    <path d="M200 50 L200 150 " stroke="#3498db " stroke-width="6 " stroke-linecap="round "/>
-                    <path d="M200 250 L200 350 " stroke="#3498db " stroke-width="6 " stroke-linecap="round "/>
+                    <path d="M50 200 L150 200" stroke="#3498db" stroke-width="6" stroke-linecap="round"/>
+                    <path d="M250 200 L350 200" stroke="#3498db" stroke-width="6" stroke-linecap="round"/>
+                    <path d="M200 50 L200 150" stroke="#3498db" stroke-width="6" stroke-linecap="round"/>
+                    <path d="M200 250 L200 350" stroke="#3498db" stroke-width="6" stroke-linecap="round"/>
                 </svg>
                 <p>Chargement de la carte Map...</p>
             </div>
             <div *ngIf="geoError " class="geo-error-indicator ">
                 <svg xmlns="http://www.w3.org/2000/svg " viewBox="0 0 400 400 " width="500 " height="500 ">
                     <!-- Fond circulaire -->
-                    <circle cx="200 " cy="200 " r="180 " fill="#f5f7fa " stroke="#e1e8ed " stroke-width="2 "/>
+                    <circle cx="200" cy="200" r="180" fill="#f5f7fa" stroke="#e1e8ed" stroke-width="2"/>
                     
                     <!-- Symbole de carte stylisé -->
                     <rect x="100 " y="120 " width="200 " height="160 " rx="15 " fill="#ecf0f1 " stroke="#bdc3c7 " stroke-width="3 "/>
                     
                     <!-- Éléments de carte stylisés -->
-                    <path d="M125 145 C180 145, 220 180, 275 180 " stroke="#bdc3c7 " stroke-width="3 " fill="none "/>
-                    <path d="M125 200 C160 200, 180 220, 240 220 " stroke="#bdc3c7 " stroke-width="3 " fill="none "/>
-                    <path d="M200 145 L200 250 " stroke="#bdc3c7 " stroke-width="3 " fill="none "/>
-                    <circle cx="160 " cy="180 " r="8 " fill="#bdc3c7 "/>
-                    <circle cx="230 " cy="200 " r="8 " fill="#bdc3c7 "/>
+                    <path d="M125 145 C180 145, 220 180, 275 180" stroke="#bdc3c7" stroke-width="3 " fill="none "/>
+                    <path d="M125 200 C160 200, 180 220, 240 220" stroke="#bdc3c7" stroke-width="3 " fill="none "/>
+                    <path d="M200 145 L200 250 " stroke="#bdc3c7" stroke-width="3" fill="none "/>
+                    <circle cx="160" cy="180" r="8" fill="#bdc3c7"/>
+                    <circle cx="230" cy="200" r="8" fill="#bdc3c7"/>
                     
                     <!-- Symbole P de parking intégré à la carte -->
                     <circle cx="200 " cy="180 " r="25 " fill="#3498db " stroke="#2980b9 " stroke-width="2 "/>
@@ -135,10 +139,10 @@
                 110, 205 90, 220 90 Z " fill="#95afc0 " opacity="0.7 "/>
                     
                     <!-- Petits signaux de connexion (faibles) -->
-                    <path d="M160 300 L160 320 M175 290 L175 320 M190 280 L190 320 M205 270 L205 320 " stroke="#bdc3c7 " stroke-width="4 " stroke-linecap="round "/>
-                    <path d="M220 300 L220 320 " stroke="#3498db " stroke-width="4 " stroke-linecap="round "/>
-                    <path d="M235 290 L235 320 " stroke="#3498db " stroke-width="4 " stroke-linecap="round " opacity="0.5 "/>
-                    <path d="M250 280 L250 320 " stroke="#3498db " stroke-width="4 " stroke-linecap="round " opacity="0.3 "/>
+                    <path d="M160 300 L160 320 M175 290 L175 320 M190 280 L190 320 M205 270 L205 320" stroke="#bdc3c7" stroke-width="4" stroke-linecap="round"/>
+                    <path d="M220 300 L220 320" stroke="#3498db" stroke-width="4" stroke-linecap="round"/>
+                    <path d="M235 290 L235 320" stroke="#3498db" stroke-width="4" stroke-linecap="round" opacity="0.5"/>
+                    <path d="M250 280 L250 320" stroke="#3498db" stroke-width="4" stroke-linecap="round" opacity="0.3"/>
                 </svg>
                 <p>Oups! Erreur de géolocalisation.</p>
             </div>
@@ -150,13 +154,14 @@
         <div class="main-content ">
             <div class="parkings-list ">
                 <h2>Parkings à proximité</h2>
-                <div class="parking-cards ">
-                    <div class="parking-card " *ngFor="let parking of displayedParkings ">
-                        <h3>{{ parking.nom_du_parking }}</h3>
-                        <div class="parking-info ">
-                            <span>{{ parking.distanceKm }} km</span>
-                        </div>
-                        <button class="reserve-button " (click)="reserveParking(parking) ">Réserver maintenant</button>
+                <div class="parking-card" *ngFor="let parking of displayedParkings">
+                    <h3>{{ parking.nom_du_parking }}</h3>
+                    <div class="parking-info">
+                        <span>{{ parking.distanceKm }} km</span>
+                    </div>
+                    <div class="button-group">
+                        <button class="route-button" (click)="addRouteToParking(parking)">Voir l'itinéraire</button>
+                        <button class="reserve-button" (click)="reserveParking(parking)">Réserver maintenant</button>
                     </div>
                 </div>
 

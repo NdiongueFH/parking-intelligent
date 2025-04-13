@@ -39,6 +39,7 @@ export class UtilisateurDashboardComponent implements OnInit {
   userPosition: L.LatLng | null = null;
   map: Map | null = null;
   isLoading: boolean = true;
+  
 
   currentPage: number = 1; // Page actuelle
   itemsPerPage: number = 4; // Nombre d'éléments par page
@@ -49,6 +50,14 @@ export class UtilisateurDashboardComponent implements OnInit {
   geoError: boolean = false; // Nouvelle propriété pour gérer l'erreur de géolocalisation
 
   searchTerm: string = '';
+
+  // Propriété pour stocker l'itinéraire actuel
+  currentRoute: L.Polyline | null = null;
+  
+  // Propriété pour stocker l'ID du parking sélectionné
+  selectedParkingId: string | null = null;
+  
+  
 
 
 
@@ -234,15 +243,15 @@ userData: UserData = {
         console.error('Erreur de géolocalisation:', error);
   
         // Jouer un son de notification
-        const notificationSound = new Audio();
-        notificationSound.src = 'data:audio/wav;base64,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';
+        // const notificationSound = new Audio();
+        // notificationSound.src = 'data:audio/wav;base64,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';
   
         // Jouer le son pendant 3 secondes
-        notificationSound.play().catch(e => console.warn('Impossible de jouer le son de notification:', e));
-        setTimeout(() => {
-          notificationSound.pause(); // Arrêter le son
-          notificationSound.currentTime = 0; // Réinitialiser le son
-        }, 3000); // 3000 ms = 3 secondes
+        // notificationSound.play().catch(e => console.warn('Impossible de jouer le son de notification:', e));
+        // setTimeout(() => {
+        //   notificationSound.pause(); // Arrêter le son
+        //   notificationSound.currentTime = 0; // Réinitialiser le son
+        // }, 3000); // 3000 ms = 3 secondes
   
         // Créer et afficher une notification stylisée directement dans le DOM
         const notification = document.createElement('div');
@@ -360,71 +369,157 @@ reserveParking(parking: Parking): void {
   }
 
 
-addRouteToParking(parking: Parking): void {
-  if (!this.userPosition) {
-      console.error("La position de l'utilisateur n'est pas disponible.");
-      return;
-  }
+  addRouteToParking(parking: Parking): void {
 
-  if (!this.map) {
-      console.error("La carte n'est pas initialisée.");
-      return; // Empêcher l'exécution si la carte n'est pas encore prête
-  }
+    // Mettre en évidence le parking sélectionné
+    this.highlightParking(parking._id);
 
-  const start = `${this.userPosition.lng},${this.userPosition.lat}`;
-  const end = `${parking.longitude},${parking.latitude}`;
-  const url = `https://router.project-osrm.org/route/v1/driving/${start};${end}?overview=false`;
+    if (!this.userPosition) {
+        console.error("La position de l'utilisateur n'est pas disponible.");
+        alert("Veuillez activer votre géolocalisation pour afficher l'itinéraire.");
+        return;
+    }
 
-  console.log(`URL de l'itinéraire: ${url}`); // Log de l'URL de l'API
+    if (!this.map) {
+        console.error("La carte n'est pas initialisée.");
+        return;
+    }
 
-  this.http.get<any>(url).subscribe(response => {
-      if (response.routes && response.routes.length > 0) {
-          const route = response.routes[0];
-          const latLngs = route.geometry.coordinates.map((coord: number[]) => latLng(coord[1], coord[0]));
+    // Effacer l'itinéraire précédent s'il existe
+    if (this.currentRoute) {
+        this.map.removeLayer(this.currentRoute);
+        this.currentRoute = null;
+    }
 
-          const polyline = L.polyline(latLngs, { color: 'red' }).addTo(this.map!);
-          this.map!.fitBounds(polyline.getBounds());
-      } else {
-          console.error('Aucune route trouvée.');
-          alert('Aucune route trouvée.');
+    const start = `${this.userPosition.lng},${this.userPosition.lat}`;
+    const end = `${parking.longitude},${parking.latitude}`;
+    const url = `https://router.project-osrm.org/route/v1/driving/${start};${end}?overview=full&geometries=geojson`;
+
+    // Afficher un indicateur de chargement
+    const loadingMessage = document.createElement('div');
+    loadingMessage.className = 'route-loading-message';
+    loadingMessage.textContent = 'Calcul de l\'itinéraire en cours...';
+    document.body.appendChild(loadingMessage);
+
+    this.http.get<any>(url).subscribe(
+        response => {
+            document.body.removeChild(loadingMessage);
+            
+            if (response.routes && response.routes.length > 0) {
+                const route = response.routes[0];
+                const coordinates = route.geometry.coordinates;
+                
+                // Transformer les coordonnées [lng, lat] en [lat, lng] pour Leaflet
+                const latLngs = coordinates.map((coord: number[]) => latLng(coord[1], coord[0]));
+                
+                // Créer la polyline avec des options de style améliorées
+                this.currentRoute = L.polyline(latLngs, {
+                    color: '#3388ff',
+                    weight: 5,
+                    opacity: 0.7,
+                    dashArray: '10, 10',
+                    lineCap: 'round'
+                }).addTo(this.map!);
+                
+                // Ajuster la vue de la carte pour montrer l'itinéraire complet
+                this.map!.fitBounds(this.currentRoute.getBounds(), {
+                    padding: [50, 50] // Ajouter un peu d'espace autour de l'itinéraire
+                });
+                
+                // Afficher la distance et le temps estimé
+                const distance = (route.distance / 1000).toFixed(1); // km
+                const minutes = Math.ceil(route.duration / 60); // minutes
+                
+                // Créer un popup d'information pour l'itinéraire
+                L.popup()
+                    .setLatLng(latLngs[Math.floor(latLngs.length / 2)]) // Milieu de l'itinéraire
+                    .setContent(`<b>Distance:</b> ${distance} km<br><b>Temps estimé:</b> ${minutes} min`)
+                    .openOn(this.map!);
+            } else {
+                console.error('Aucune route trouvée.');
+                alert('Aucun itinéraire disponible pour ce parking.');
+            }
+        },
+        error => {
+            document.body.removeChild(loadingMessage);
+            console.error("Erreur lors de la récupération de l'itinéraire", error);
+            alert('Erreur lors de la récupération de l\'itinéraire. Veuillez réessayer.');
+        }
+    );
+}
+
+// Méthode pour mettre en évidence un parking
+highlightParking(parkingId: string): void {
+  this.selectedParkingId = parkingId;
+  
+  // Mettre à jour les marqueurs pour refléter la sélection
+  this.markers.forEach(marker => {
+      if (marker instanceof L.Marker) {
+          const popup = marker.getPopup();
+          if (popup) {
+              const content = popup.getContent();
+              if (typeof content === 'string' && content.includes(parkingId)) {
+                  // Changer l'icône du marqueur sélectionné
+                  const selectedIcon = icon({ 
+                      iconUrl: 'imagelogoParking-highlight.png', // Créez une version mise en évidence de votre icône
+                      iconSize: [40, 40],
+                      iconAnchor: [20, 20], 
+                      popupAnchor: [0, -20] 
+                  });
+                  marker.setIcon(selectedIcon);
+                  marker.openPopup();
+              } else if (content !== 'Votre position actuelle') {
+                  // Restaurer l'icône par défaut pour les autres parkings
+                  const defaultIcon = icon({ 
+                      iconUrl: 'imagelogoParking.png', 
+                      iconSize: [32, 32], 
+                      iconAnchor: [16, 16], 
+                      popupAnchor: [0, -16] 
+                  });
+                  marker.setIcon(defaultIcon);
+                  marker.closePopup();
+              }
+          }
       }
-  }, error => {
-      console.error("Erreur lors de la récupération de l'itinéraire", error);
-      alert('Erreur lors de la récupération de l\'itinéraire');
   });
 }
 
 
+
 searchParking(): void {
   if (this.searchTerm.trim() === '') {
-    this.loadNearbyParkings(); // Recharge tous les parkings si le champ est vide
-    return;
+      this.loadNearbyParkings(); // Recharge tous les parkings si le champ est vide
+      return;
   }
 
   const token = localStorage.getItem('token');
   const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
-  console.log('Terme de recherche:', this.searchTerm);
-
   this.http.get<any>(`${this.apiUrl}/nom/${this.searchTerm}`, { headers }).subscribe(
-    (response) => {
-      console.log('Résultats de la recherche:', response);
+      (response) => {
+          // Vérifiez si la réponse est un tableau ou un objet
+          if (Array.isArray(response)) {
+              this.nearbyParkings = response;
+          } else {
+              this.nearbyParkings = [response]; // Convertir en tableau si c'est un objet unique
+          }
 
-      // Vérifiez si la réponse est un tableau ou un objet
-      if (Array.isArray(response)) {
-        this.nearbyParkings = response;
-      } else {
-        this.nearbyParkings = [response]; // Convertir en tableau si c'est un objet unique
+          this.updateParkingDistances();
+          this.calculateTotalPages();
+          this.limitDisplayedParkings();
+          
+          // Si un seul parking est trouvé, afficher automatiquement l'itinéraire
+          if (this.nearbyParkings.length === 1) {
+              setTimeout(() => {
+                  this.addRouteToParking(this.nearbyParkings[0]);
+              }, 500); // Petit délai pour s'assurer que la carte est prête
+          }
+      },
+      (error) => {
+          console.error('Erreur lors de la recherche de parkings', error);
       }
-
-      this.updateParkingDistances();
-      this.calculateTotalPages();
-      this.limitDisplayedParkings();
-    },
-    (error) => {
-      console.error('Erreur lors de la recherche de parkings', error);
-    }
   );
 }
+
 
 }
