@@ -656,12 +656,31 @@ const nodemailer = require('nodemailer');
 
 // Configuration de Nodemailer
 const transporter = nodemailer.createTransport({
-    service: 'gmail', // Par exemple, Gmail
+    service: 'gmail',
     auth: {
         user: process.env.EMAIL_USER, // Votre email
         pass: process.env.EMAIL_PASS // Votre mot de passe d'application
     }
 });
+
+
+async function testEmail() {
+    try {
+        await transporter.sendMail({
+            from: process.env.EMAIL_USER,
+            to: 'mouhammadaminen@gmail.com',
+            subject: 'Test Email',
+            text: 'Ceci est un test d\'envoi d\'email.'
+        });
+        console.log('Email envoyé avec succès !');
+    } catch (error) {
+        console.error('Erreur lors de l\'envoi de l\'email:', error);
+    }
+}
+
+// Appeler la fonction de test
+testEmail();
+
 
 // Demande de réinitialisation du mot de passe
 exports.forgotPassword = async(req, res) => {
@@ -677,26 +696,31 @@ exports.forgotPassword = async(req, res) => {
             });
         }
 
-        // Générer un token de réinitialisation
-        const resetToken = crypto.randomBytes(32).toString('hex');
-        user.resetToken = resetToken;
-        user.resetTokenExpires = Date.now() + 3600000; // 1 heure d'expiration
+        // Générer un code de vérification à 6 chiffres
+        const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+        // Stocker le code avec une date d'expiration
+        user.resetCode = verificationCode;
+        user.resetCodeExpires = Date.now() + 3600000; // 1 heure d'expiration
         await user.save();
 
-        // Envoyer l'email avec le token
-        const resetUrl = `http://localhost:3000/api/v1/auth/reset-password?token=${resetToken}&email=${email}`;
-
+        // Envoyer l'email avec le code
         await transporter.sendMail({
             to: email,
-            subject: 'Réinitialisation du mot de passe',
-            text: `Cliquez sur le lien pour réinitialiser votre mot de passe: ${resetUrl}`
+            subject: 'Code de réinitialisation de mot de passe',
+            html: `
+                <h1>Réinitialisation de mot de passe</h1>
+                <p>Votre code de vérification est : <strong>${verificationCode}</strong></p>
+                <p>Ce code expirera dans 1 heure.</p>
+            `
         });
 
         res.status(200).json({
             status: 'success',
-            message: 'Un email a été envoyé pour réinitialiser votre mot de passe.'
+            message: 'Un code de vérification a été envoyé à votre adresse email.'
         });
     } catch (err) {
+        console.error('Erreur de réinitialisation :', err);
         res.status(500).json({
             status: 'fail',
             message: 'Erreur lors de l\'envoi de l\'email de réinitialisation.',
@@ -707,81 +731,122 @@ exports.forgotPassword = async(req, res) => {
 
 // Vérification du code de réinitialisation
 exports.verifyResetCode = async(req, res) => {
-    const { email, code } = req.body;
+    try {
+        const { email, code } = req.body;
 
-    // Vérifier si l'email existe et si le code est valide
-    const user = await User.findOne({ email, resetToken: code, resetTokenExpires: { $gt: Date.now() } });
+        const user = await User.findOne({
+            email,
+            resetCode: code,
+            resetCodeExpires: { $gt: Date.now() }
+        });
 
-    if (!user) {
-        return res.status(400).json({
+        if (!user) {
+            return res.status(400).json({
+                status: 'fail',
+                message: 'Code invalide ou expiré.'
+            });
+        }
+
+        // Générer un token pour la réinitialisation finale du mot de passe
+        const resetToken = crypto.randomBytes(32).toString('hex');
+        user.resetToken = resetToken;
+        user.resetTokenExpires = Date.now() + 3600000; // 1 heure supplémentaire
+        await user.save();
+
+        res.status(200).json({
+            status: 'success',
+            resetToken
+        });
+    } catch (err) {
+        res.status(500).json({
             status: 'fail',
-            message: 'Code de vérification invalide ou expiré.'
+            message: 'Erreur lors de la vérification du code.',
+            error: err.message
         });
     }
-
-    res.status(200).json({
-        status: 'success',
-        resetToken: user.resetToken // Utiliser le token de réinitialisation pour la prochaine étape
-    });
 };
 
 // Réinitialisation du mot de passe
 exports.resetPassword = async(req, res) => {
-    const { email, resetToken, newPassword } = req.body;
+    try {
+        const { email, resetToken, newPassword } = req.body;
 
-    // Vérifier si le token est valide
-    const user = await User.findOne({ email, resetToken, resetTokenExpires: { $gt: Date.now() } });
-    if (!user) {
-        return res.status(400).json({
+        const user = await User.findOne({
+            email,
+            resetToken,
+            resetTokenExpires: { $gt: Date.now() }
+        });
+
+        if (!user) {
+            return res.status(400).json({
+                status: 'fail',
+                message: 'Token invalide ou expiré.'
+            });
+        }
+
+        // Mise à jour du mot de passe
+        user.mot_de_passe = newPassword;
+        user.resetToken = undefined;
+        user.resetTokenExpires = undefined;
+        user.resetCode = undefined;
+        user.resetCodeExpires = undefined;
+        await user.save();
+
+        res.status(200).json({
+            status: 'success',
+            message: 'Votre mot de passe a été réinitialisé avec succès.'
+        });
+    } catch (err) {
+        res.status(500).json({
             status: 'fail',
-            message: 'Token de réinitialisation invalide ou expiré.'
+            message: 'Erreur lors de la réinitialisation du mot de passe.',
+            error: err.message
         });
     }
-
-    // Hacher le nouveau mot de passe avant de le sauvegarder
-    user.mot_de_passe = newPassword; // Remplacez ceci par votre fonction de hachage
-    user.resetToken = undefined; // Réinitialiser le token
-    user.resetTokenExpires = undefined; // Réinitialiser l'expiration
-    await user.save();
-
-    res.status(200).json({
-        status: 'success',
-        message: 'Mot de passe réinitialisé avec succès.'
-    });
 };
 
 // Renvoyer le code de vérification
 exports.resendCode = async(req, res) => {
-    const { email } = req.body;
+    try {
+        const { email } = req.body;
 
-    // Vérifier si l'email existe
-    const user = await User.findOne({ email });
-    if (!user) {
-        return res.status(404).json({
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({
+                status: 'fail',
+                message: 'Aucun utilisateur trouvé avec cet email.'
+            });
+        }
+
+        // Générer un nouveau code
+        const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+        user.resetCode = verificationCode;
+        user.resetCodeExpires = Date.now() + 3600000; // 1 heure d'expiration
+        await user.save();
+
+        // Envoyer l'email avec le code
+        await transporter.sendMail({
+            to: email,
+            subject: 'Nouveau code de réinitialisation de mot de passe',
+            html: `
+                <h1>Réinitialisation de mot de passe</h1>
+                <p>Votre nouveau code de vérification est : <strong>${verificationCode}</strong></p>
+                <p>Ce code expirera dans 1 heure.</p>
+            `
+        });
+
+        res.status(200).json({
+            status: 'success',
+            message: 'Un nouveau code de vérification a été envoyé à votre adresse email.'
+        });
+    } catch (err) {
+        res.status(500).json({
             status: 'fail',
-            message: 'Aucun utilisateur trouvé avec cet email.'
+            message: 'Erreur lors de l\'envoi du nouveau code.',
+            error: err.message
         });
     }
-
-    // Renvoyer le code
-    const resetToken = crypto.randomBytes(32).toString('hex');
-    user.resetToken = resetToken;
-    user.resetTokenExpires = Date.now() + 3600000; // 1 heure d'expiration
-    await user.save();
-
-    // Envoyer l'email avec le nouveau token
-    const resetUrl = `http://localhost:3000/api/v1/auth/eset-password?token=${resetToken}&email=${email}`;
-
-    await transporter.sendMail({
-        to: email,
-        subject: 'Renvoyer le code de réinitialisation',
-        text: `Cliquez sur le lien pour réinitialiser votre mot de passe: ${resetUrl}`
-    });
-
-    res.status(200).json({
-        status: 'success',
-        message: 'Un nouveau code a été envoyé à votre email.'
-    });
 };
 
 // Obtenir le total des utilisateurs
