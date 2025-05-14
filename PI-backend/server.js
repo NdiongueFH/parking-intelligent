@@ -17,7 +17,6 @@ const transferRoutes = require('./routes/transferRoutes');
 const PlaceParking = require('./models/placeParking');
 const Parking = require('./models/parking');
 const Reservation = require('./models/reservationModel');
-const nodemailer = require('nodemailer'); // Importer Nodemailer
 
 
 
@@ -79,18 +78,7 @@ app.use('/api/v1/tarifs', tarifRoutes);
 app.use('/api/v1/reservations', reservationRoutes);
 app.use('/api/v1/amendes', amendeRoutes);
 
-// Route pour réinitialiser le mot de passe
-app.post('/api/v1/auth/forgot-password', async(req, res) => {
-    const { email } = req.body;
-    // Logique pour vérifier si l'email existe dans la base de données...
 
-    try {
-        await sendResetPasswordEmail(email);
-        res.status(200).send('E-mail de réinitialisation envoyé.');
-    } catch (error) {
-        res.status(500).send('Erreur lors de l\'envoi de l\'e-mail.');
-    }
-});
 
 // Route de base pour vérifier que le serveur fonctionne
 app.get('/', (req, res) => {

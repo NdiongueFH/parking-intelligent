@@ -664,22 +664,7 @@ const transporter = nodemailer.createTransport({
 });
 
 
-async function testEmail() {
-    try {
-        await transporter.sendMail({
-            from: process.env.EMAIL_USER,
-            to: 'mouhammadaminen@gmail.com',
-            subject: 'Test Email',
-            text: 'Ceci est un test d\'envoi d\'email.'
-        });
-        console.log('Email envoyé avec succès !');
-    } catch (error) {
-        console.error('Erreur lors de l\'envoi de l\'email:', error);
-    }
-}
 
-// Appeler la fonction de test
-testEmail();
 
 
 // Demande de réinitialisation du mot de passe
