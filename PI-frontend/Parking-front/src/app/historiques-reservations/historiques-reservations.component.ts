@@ -209,15 +209,11 @@ private userApiUrl = 'http://localhost:3000/api/v1/users';
     
     // Navigation vers la page de modification du profil
     goToEditProfile(): void {
-      this.router.navigate(['/modifier-utilisateur']);
+      this.router.navigate(['/mon-compte']);
       this.showSettingsModal = false;
     }
     
-    // Navigation vers la page de changement de mot de passe
-  goToChangePassword(): void {
-    this.router.navigate(['/change-password']);
-    this.showSettingsModal = false;
-  }
+ 
 
     
 

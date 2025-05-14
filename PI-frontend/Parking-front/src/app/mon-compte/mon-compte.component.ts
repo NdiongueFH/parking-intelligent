@@ -296,14 +296,11 @@ switchTab(tabName: string): void {
   };
 
   goToEditProfile(): void {
-    this.router.navigate(['/modifier-utilisateur']);
+    this.router.navigate(['/mon-compte']);
     this.showSettingsModal = false;
   }
 
-  goToChangePassword(): void {
-    this.router.navigate(['/change-password']);
-    this.showSettingsModal = false;
-  }
+
 
    // Méthode pour changer l'onglet actif
    showTab(tab: 'info' | 'password'): void {
