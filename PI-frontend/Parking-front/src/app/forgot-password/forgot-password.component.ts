@@ -8,6 +8,7 @@ import { takeWhile } from 'rxjs/operators';
 
 @Component({
     selector: 'app-forgot-password',
+    standalone: true,
     imports: [CommonModule, ReactiveFormsModule, HttpClientModule, RouterModule],
     templateUrl: './forgot-password.component.html',
     styleUrls: ['./forgot-password.component.css']
@@ -99,78 +100,77 @@ export class ForgotPasswordComponent implements OnInit {
   // Gestion des formulaires
   submitEmail(): void {
     if (this.emailForm.valid) {
-      this.loading = true;
-      this.error = '';
-      
-      this.http.post('http://localhost:3000/api/v1/auth/forgot-password', {
-        email: this.emailForm.value.email
-      }).subscribe({
-        next: (response: any) => {
-          this.loading = false;
-          this.userEmail = this.emailForm.value.email;
-          this.nextStep();
-          this.startResendCountdown();
-        },
-        error: (err) => {
-          this.loading = false;
-          this.error = err.error.message || 'Adresse email non trouvée. Veuillez vérifier et réessayer.';
-        }
-      });
+        this.loading = true;
+        this.error = '';
+
+        this.http.post('http://localhost:3000/api/v1/auth/forgot-password', {
+            email: this.emailForm.value.email
+        }).subscribe({
+            next: (response: any) => {
+                this.loading = false;
+                this.userEmail = this.emailForm.value.email;
+                this.nextStep(); // Passer à l'étape suivante
+                this.startResendCountdown();
+            },
+            error: (err) => {
+                this.loading = false;
+                this.error = err.error?.message || 'Erreur lors de l\'envoi de l\'email.';
+            }
+        });
     } else {
-      this.emailForm.markAllAsTouched();
+        this.emailForm.markAllAsTouched();
     }
-  }
-  
-  submitVerification(): void {
+}
+
+submitVerification(): void {
     if (this.verificationForm.valid) {
-      this.loading = true;
-      this.error = '';
-      
-      // Récupération du code complet
-      const code = this.getFullVerificationCode();
-      
-      this.http.post('http://localhost:3000/api/v1/auth/verify-reset-code', {
-        email: this.userEmail,
-        code: code
-      }).subscribe({
-        next: (response: any) => {
-          this.loading = false;
-          this.resetToken = response.resetToken; // Stocker le token pour la réinitialisation
-          this.nextStep();
-        },
-        error: (err) => {
-          this.loading = false;
-          this.error = err.error.message || 'Code de vérification incorrect. Veuillez réessayer.';
-        }
-      });
+        this.loading = true;
+        this.error = '';
+
+        const code = this.getFullVerificationCode();
+
+        this.http.post('http://localhost:3000/api/v1/auth/verify-reset-code', {
+            email: this.userEmail,
+            code: code
+        }).subscribe({
+            next: (response: any) => {
+                this.loading = false;
+                this.resetToken = response.resetToken; // Stocker le token
+                this.nextStep(); // Passer à l'étape suivante pour le nouveau mot de passe
+            },
+            error: (err) => {
+                this.loading = false;
+                this.error = err.error.message || 'Code de vérification incorrect.';
+            }
+        });
     } else {
-      this.verificationForm.markAllAsTouched();
+        this.verificationForm.markAllAsTouched();
     }
-  }
-  
-  submitNewPassword(): void {
+}
+
+submitNewPassword(): void {
     if (this.passwordForm.valid) {
-      this.loading = true;
-      this.error = '';
-      
-      this.http.post('http://localhost:3000/api/v1/auth/reset-password', {
-        email: this.userEmail,
-        resetToken: this.resetToken,
-        newPassword: this.passwordForm.value.new_password
-      }).subscribe({
-        next: (response: any) => {
-          this.loading = false;
-          this.resetSuccess = true;
-        },
-        error: (err) => {
-          this.loading = false;
-          this.error = err.error.message || 'Une erreur est survenue lors de la réinitialisation du mot de passe.';
-        }
-      });
+        this.loading = true;
+        this.error = '';
+
+        this.http.post('http://localhost:3000/api/v1/auth/reset-password', {
+            email: this.userEmail,
+            resetToken: this.resetToken,
+            newPassword: this.passwordForm.value.new_password
+        }).subscribe({
+            next: (response: any) => {
+                this.loading = false;
+                this.resetSuccess = true; // Indiquer le succès
+            },
+            error: (err) => {
+                this.loading = false;
+                this.error = err.error.message || 'Erreur lors de la réinitialisation du mot de passe.';
+            }
+        });
     } else {
-      this.passwordForm.markAllAsTouched();
+        this.passwordForm.markAllAsTouched();
     }
-  }
+}
   
   // Fonctions pour le code de vérification
   getVerificationControls(): any[] {

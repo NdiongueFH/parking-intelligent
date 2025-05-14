@@ -5,6 +5,10 @@ import { HttpClient, HttpClientModule, HttpHeaders } from '@angular/common/http'
 import { Router } from '@angular/router';
 import { RouterModule } from '@angular/router';
 import { Chart, registerables } from 'chart.js';
+import { OnDestroy } from '@angular/core';
+import { Subscription } from 'rxjs';
+
+
 
 // Enregistrer les composants Chart.js
 Chart.register(...registerables);
@@ -15,7 +19,7 @@ interface UserData {
   prenom: string;
   email: string;
   solde: number;
-  telephone : number
+  telephone: string;
 }
 
 @Component({
@@ -24,8 +28,8 @@ interface UserData {
   templateUrl: './minibank.component.html',
   styleUrls: ['./minibank.component.css']
 })
-export class MinibankComponent implements OnInit {
-  // Données de l'utilisateur
+export class MinibankComponent implements OnInit, OnDestroy {
+    // Données de l'utilisateur
   userData: any = {}; // Initialiser comme un objet vide
 
 
@@ -43,6 +47,7 @@ visibleTransactions: any[] = []; // Propriété pour stocker les transactions vi
 
 // Nouvelles propriétés pour le modal des paramètres
 showSettingsModal: boolean = false;
+
 
 
 private userApiUrl = 'http://localhost:3000/api/v1/users';
@@ -75,12 +80,20 @@ private userApiUrl = 'http://localhost:3000/api/v1/users';
     });
   }
 
+  subscriptions: Subscription[] = [];
+
+
   ngOnInit(): void {
     this.setupBalanceToggle();
     this.fetchTransactions(); // Appeler la méthode pour récupérer les transactions
     this.fetchUserData(); // Appeler la méthode pour récupérer les données de l'utilisateur
     this.loadUserData(); // Charger les données de l'utilisateur
 
+
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(sub => sub.unsubscribe());
 
   }
 
@@ -219,9 +232,7 @@ fetchTransactions(): void {
       this.pageNumbers = Array.from({ length: this.totalPages }, (_, i) => i + 1);
       this.updateVisibleTransactions();
 
-      // Filtrer les transactions de la journée
-      this.filterDailyTransactions();
-      this.initializeChart();
+      
     },
     error => {
       console.error('Erreur lors de la récupération des transactions:', error);
@@ -229,149 +240,9 @@ fetchTransactions(): void {
   );
 }
 
-filterDailyTransactions(): void {
-  const now = new Date();
-  const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
-  const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
-
-  this.dailyTransactions = this.transactions.filter(transaction => {
-      const transactionDate = new Date(transaction.date);
-      return transactionDate >= startOfDay && transactionDate <= endOfDay;
-  });
-
-  console.log('Transactions filtrées pour la journée:', this.dailyTransactions);
-  this.prepareChartData(this.dailyTransactions); // Préparer les données pour le graphique
-}
-
-prepareChartData(transactions: any[]): void {
-  const labels: string[] = Array.from({ length: 19 }, (_, i) => (i + 6).toString()); // Heures de 6h à 00h
-  const depositValues: number[] = Array(19).fill(0); // Pour stocker les dépôts par heure
-  const withdrawalValues: number[] = Array(19).fill(0); // Pour stocker les retraits par heure
-
-  transactions.forEach(transaction => {
-    const date = new Date(transaction.date);
-    const hour = date.getHours(); // Obtenir l'heure
-    const amount = transaction.type === 'depot' ? transaction.montant : -transaction.montant;
-
-    // Ajouter le montant au tableau approprié
-    if (hour >= 6 && hour <= 23) { // Vérifier que l'heure est dans la plage 6h à 00h
-      if (transaction.type === 'depot') {
-        depositValues[hour - 6] += transaction.montant;
-      } else {
-        withdrawalValues[hour - 6] += transaction.montant;
-      }
-    }
-  });
-
-  console.log('Données préparées pour le graphique:', { labels, depositValues, withdrawalValues });
-  this.weeklyData = { labels, depositValues, withdrawalValues };
-}
 
 
-
-  filterMonthlyTransactions(): void {
-    const now = new Date();
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1); // Début du mois
-    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0); // Fin du mois
-
-    // Filtrer les transactions du mois
-    const monthlyTransactions = this.transactions.filter(transaction => {
-      const transactionDate = new Date(transaction.date);
-      return transactionDate >= startOfMonth && transactionDate <= endOfMonth;
-    });
-
-    // Préparer les données pour le graphique
-    this.prepareChartData(monthlyTransactions);
-  }
-
-  filterYearlyTransactions(): void {
-    const now = new Date();
-    const startOfYear = new Date(now.getFullYear(), 0, 1); // Début de l'année
-    const endOfYear = new Date(now.getFullYear(), 11, 31); // Fin de l'année
-
-    // Filtrer les transactions de l'année
-    const yearlyTransactions = this.transactions.filter(transaction => {
-      const transactionDate = new Date(transaction.date);
-      return transactionDate >= startOfYear && transactionDate <= endOfYear;
-    });
-
-    // Préparer les données pour le graphique
-    this.prepareChartData(yearlyTransactions);
-  }
-
-
-  initializeChart(): void {
-    const ctx = document.getElementById('transactionChart') as HTMLCanvasElement;
-  
-    if (ctx) {
-      ctx.innerHTML = ''; // Pour éviter la superposition des graphiques
-      new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: this.weeklyData.labels, // Heures de 6h à 00h
-          datasets: [
-            {
-              label: 'Dépôts',
-              data: this.weeklyData.depositValues, // Montants des dépôts par heure
-              borderColor: '#4CAF50', // Couleur verte pour les dépôts
-              backgroundColor: 'rgba(76, 175, 80, 0.1)', // Fond clair pour les dépôts
-              fill: true,
-              tension: 0.4
-            },
-            {
-              label: 'Retraits',
-              data: this.weeklyData.withdrawalValues, // Montants des retraits par heure
-              borderColor: '#F44336', // Couleur rouge pour les retraits
-              backgroundColor: 'rgba(244, 67, 54, 0.1)', // Fond clair pour les retraits
-              fill: true,
-              tension: 0.4
-            }
-          ]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              display: true // Affiche la légende pour distinguer les courbes
-            },
-            tooltip: {
-              mode: 'index',
-              intersect: false,
-              callbacks: {
-                label: function(context) {
-                  return context.dataset.label + ': ' + context.raw + ' FCFA';
-                }
-              }
-            }
-          },
-          scales: {
-            x: {
-              title: {
-                display: true,
-                text: 'Heures'
-              },
-              grid: {
-                display: false
-              }
-            },
-            y: {
-              beginAtZero: true,
-              grid: {
-                color: 'rgba(0, 0, 0, 0.05)'
-              },
-              ticks: {
-                callback: function(value) {
-                  return value + ' FCFA';
-                }
-              }
-            }
-          }
-        }
-      });
-    }
-  }
-  
+ 
 
   // Ouvrir le modal de dépôt
   showDepositModal(): void {
@@ -408,7 +279,6 @@ submitDeposit(): void {
           this.closeDepositModal();
           this.showSuccessMessage('Dépôt effectué avec succès !'); // Afficher le message de succès
           this.fetchTransactions(); // Mettre à jour les transactions
-          this.fetchDailyData(); // Récupérer les données de la journée
       },
       error => {
           console.error('Erreur lors du dépôt:', error);
@@ -429,7 +299,6 @@ submitWithdraw(): void {
           this.closeWithdrawModal();
           this.showSuccessMessage('Retrait effectué avec succès !'); // Afficher le message de succès
           this.fetchTransactions(); // Mettre à jour les transactions
-          this.fetchDailyData(); // Récupérer les données de la journée
       },
       error => {
           console.error('Erreur lors du retrait:', error);
@@ -437,11 +306,7 @@ submitWithdraw(): void {
   );
 }
 
-// Nouvelle méthode pour récupérer les données de la journée et mettre à jour le graphique
-fetchDailyData(): void {
-  this.filterDailyTransactions(); // Filtrer les transactions de la journée
-  this.initializeChart(); // Initialiser le graphique avec les nouvelles données
-}
+
 
 
   // Méthode pour afficher le message de succès
@@ -470,19 +335,7 @@ fetchDailyData(): void {
     );
   }
 
-  changePeriod(period: string): void {
-    console.log('Changement de période:', period);
-    // Mettre à jour le graphique en fonction de la période sélectionnée
-    if (period === 'day') {
-      this.filterDailyTransactions(); // Filtrer les transactions de la semaine
-    } else if (period === 'month') {
-      this.filterMonthlyTransactions(); // Filtrer les transactions du mois
-    } else if (period === 'year') {
-      this.filterYearlyTransactions(); // Filtrer les transactions de l'année
-    }
-
-    this.initializeChart(); // Réinitialiser le graphique avec les données filtrées
-  }
+  
   fetchUserData(): void {
     const token = localStorage.getItem('token');
     if (!token) {

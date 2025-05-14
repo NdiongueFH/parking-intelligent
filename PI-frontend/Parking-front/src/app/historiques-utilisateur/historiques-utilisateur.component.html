@@ -31,12 +31,9 @@
                     <div class="settings-actions">
                         <a class="settings-action-link" (click)="goToEditProfile()">
                             <img src="modif.png" alt="Éditer" class="action-icon" />
-                            <span>Modifier mes informations</span>
+                            <span>Mes informations</span>
                         </a>
-                        <a class="settings-action-link" (click)="goToChangePassword()">
-                            <img src="mdp1.png" alt="Password" class="action-icon" />
-                            <span>Changer mon mot de passe</span>
-                        </a>
+                       
                     </div>
                 </div>
                 <div class="settings-modal-arrow"></div>
@@ -57,9 +54,13 @@
                     <img src="file.png" alt="Historiques" class="nav-icon">
                     <span>Historiques</span>
                 </a>
-                <a class="nav-item " [routerLink]="[ '/historiques-utilisateur'] ">
+                <a class="nav-item " [routerLink]="[ '/mes-transactions'] ">
                     <img src="bank.png " alt="Transactions " class="nav-icon ">
                     <span>Transactions</span>
+                </a>
+                <a class="nav-item " [routerLink]="[ '/mon-compte-utilisateur'] ">
+                    <img src="parametres.png" alt="Transactions " class="nav-icon ">
+                    <span>Mon compte</span>
                 </a>
 
             </nav>

@@ -142,16 +142,11 @@ userData: UserData = {
   
   // Navigation vers la page de modification du profil
   goToEditProfile(): void {
-    this.router.navigate(['/update-ses-infos-user']);
+    this.router.navigate(['/mon-compte-utilisateur']);
     this.showSettingsModal = false;
   }
   
-  // Navigation vers la page de changement de mot de passe
-  goToChangePassword(): void {
-    this.router.navigate(['/update-son-mdp-user']);
-    this.showSettingsModal = false;
-  }
-
+ 
 
   
 
@@ -225,71 +220,43 @@ userData: UserData = {
     const options = { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 };
     this.isLoading = true;
   
-    navigator.geolocation.watchPosition(
+    navigator.geolocation.getCurrentPosition(
       (position) => {
         const userLat = position.coords.latitude;
         const userLng = position.coords.longitude;
         this.userPosition = latLng(userLat, userLng);
         this.updateUserMarker();
-        this.updateParkingDistances();
   
         if (!this.map) this.initMap();
         else this.map.setView(this.userPosition, this.map.getZoom(), { animate: true });
   
+        this.loadNearbyParkings(); // <-- Appelle ici une fois la position connue
         this.isLoading = false;
-        this.geoError = false; // Réinitialiser l'erreur si la géolocalisation réussit
+        this.geoError = false;
       },
       (error) => {
         console.error('Erreur de géolocalisation:', error);
-  
-        // Jouer un son de notification
-        // const notificationSound = new Audio();
-        // notificationSound.src = 'data:audio/wav;base64,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';
-  
-        // Jouer le son pendant 3 secondes
-        // notificationSound.play().catch(e => console.warn('Impossible de jouer le son de notification:', e));
-        // setTimeout(() => {
-        //   notificationSound.pause(); // Arrêter le son
-        //   notificationSound.currentTime = 0; // Réinitialiser le son
-        // }, 3000); // 3000 ms = 3 secondes
-  
-        // Créer et afficher une notification stylisée directement dans le DOM
-        const notification = document.createElement('div');
-        notification.innerHTML = `
-          <div style="position: fixed; top: 20px; right: 20px; max-width: 400px; 
-                      background-color:rgb(250, 143, 139); border-left: 4px solid #ffc107; 
-                      box-shadow: 0 4px 8px rgba(0,0,0,0.1); padding: 16px; 
-                      z-index: 9999; border-radius: 4px; font-family: sans-serif;">
-            <div style="font-weight: bold; margin-bottom: 8px; color: #212529;">
-              Localisation requise
-            </div>
-            <div style="color: #495057; font-size: 14px;">
-              Pour utiliser cette fonctionnalité, veuillez autoriser l'accès à votre position dans les paramètres de votre navigateur.
-            </div>
-          </div>
-        `;
-        document.body.appendChild(notification);
-  
-        // Supprimer la notification après 5 secondes
-        setTimeout(() => {
-          document.body.removeChild(notification);
-        }, 5000);
-  
+        this.geoError = true;
         this.isLoading = false;
-        this.geoError = true; // Définir l'erreur de géolocalisation
       },
       options
     );
   }
+  
   initMap(): void {
     if (!this.userPosition) return;
     this.mapOptions = {
-      layers: [tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap contributors' })],
-      zoom: 15,
-      center: this.userPosition,
-      zoomControl: true
+      layers: [
+        tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+          maxZoom: 18,
+          attribution: '&copy; OpenStreetMap &copy; CartoDB contributors'
+        })
+      ],
+      zoom: 13,
+      center: latLng(14.6928, -17.4467) // Dakar
     };
   }
+  
 
   onMapReady(map: Map): void {
     this.map = map;
@@ -305,7 +272,7 @@ userData: UserData = {
   updateUserMarker(): void {
     if (!this.userPosition) return;
     this.markers = this.markers.filter(m => !(m instanceof L.Marker && m.getPopup()?.getContent() === 'Votre position actuelle'));
-    const userIcon = icon({ iconUrl: 'posi.png', iconSize: [60, 60], iconAnchor: [30, 30], popupAnchor: [0, -32] });
+    const userIcon = icon({ iconUrl: 'emplacement.png', iconSize: [60, 60], iconAnchor: [30, 30], popupAnchor: [0, -32] });
     this.markers.push(marker([this.userPosition.lat, this.userPosition.lng], { icon: userIcon }).bindPopup('Votre position actuelle'));
   }
 
@@ -334,7 +301,7 @@ userData: UserData = {
  
 
   addMarkers(): void {
-    const userIcon = icon({ iconUrl: 'posi.jpeg', iconSize: [60, 60], iconAnchor: [30, 30], popupAnchor: [0, -32] });
+    const userIcon = icon({ iconUrl: 'emplacement.png', iconSize: [60, 60], iconAnchor: [30, 30], popupAnchor: [0, -32] });
     const parkingIcon = icon({ iconUrl: 'imagelogoParking.png', iconSize: [32, 32], iconAnchor: [16, 16], popupAnchor: [0, -16] });
 
     // Ajoutez le marqueur de l'utilisateur s'il n'est pas déjà présent

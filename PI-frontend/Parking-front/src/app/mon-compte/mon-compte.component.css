@@ -32,27 +32,6 @@ body {
     overflow: hidden;
 }
 
-.outside-image-container {
-    position: absolute;
-    top: 50%;
-    right: 800px;
-    transform: translateY(-50%);
-    /* Centre l'image verticalement */
-    z-index: -1;
-    /* S'assure que l'image ne cache pas le contenu principal */
-}
-
-/* L'image à l'extérieur */
-
-.outside-image {
-    width: 690px;
-    height: 750px;
-    margin-top: 100px;
-    /* Ajustez la taille de l'image comme nécessaire */
-    border-radius: 10px;
-    /* Ajoutez une bordure arrondie si souhaité */
-}
-
 /* Main content */
 
 .main-content {
@@ -63,7 +42,7 @@ body {
     border-radius: 8px;
     border: 1px solid #d1d5db;
     box-shadow: 0 0 0 2px rgba(209, 208, 208, 0.3), 0 8px 15px rgba(170, 169, 169, 0.8);
-    margin: 30px 15px 15px 30px;
+    margin: -50px 15px 50px 30px;
     /* Augmentez l'espace en haut et à gauche */
     width: 90%;
     /* Augmentez la largeur ici */
@@ -87,6 +66,40 @@ body {
 
 .header-icons {
     position: relative;
+}
+
+.logo-container {
+    display: flex;
+    /* Utilise Flexbox */
+    justify-content: center;
+    /* Centre horizontalement */
+    align-items: center;
+    /* Centre verticalement */
+    height: 60px;
+    /* Hauteur du conteneur, ajustez si nécessaire */
+    margin-bottom: 1rem;
+    /* Espace en bas, ajustez si nécessaire */
+}
+
+.logo {
+    width: 70px;
+    height: 60px;
+    border-radius: 50%;
+    box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.2), 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.logout-divider {
+    border: none;
+    /* Supprime la bordure par défaut */
+    border-top: 1px solid rgb(2, 170, 221);
+    /* Trait de couleur */
+    margin: 0;
+    /* Supprime la marge par défaut */
+    margin-bottom: 0.5rem;
+    /* Espace sous le trait */
+    width: 150px;
+    /* Longueur fixe du trait */
+    /* Vous pouvez aussi utiliser une valeur en pourcentage si souhaité, par ex. 80% */
 }
 
 /* Style du modal des paramètres */
@@ -218,39 +231,7 @@ body {
     }
 }
 
-.logo-container {
-    display: flex;
-    /* Utilise Flexbox */
-    justify-content: center;
-    /* Centre horizontalement */
-    align-items: center;
-    /* Centre verticalement */
-    height: 60px;
-    /* Hauteur du conteneur, ajustez si nécessaire */
-    margin-bottom: 1rem;
-    /* Espace en bas, ajustez si nécessaire */
-}
 
-.logo {
-    width: 70px;
-    height: 60px;
-    border-radius: 50%;
-    box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.2), 0 4px 6px rgba(0, 0, 0, 0.2);
-}
-
-.logout-divider {
-    border: none;
-    /* Supprime la bordure par défaut */
-    border-top: 1px solid rgb(2, 170, 221);
-    /* Trait de couleur */
-    margin: 0;
-    /* Supprime la marge par défaut */
-    margin-bottom: 0.5rem;
-    /* Espace sous le trait */
-    width: 150px;
-    /* Longueur fixe du trait */
-    /* Vous pouvez aussi utiliser une valeur en pourcentage si souhaité, par ex. 80% */
-}
 
 /* Sidebar */
 
@@ -356,22 +337,6 @@ body {
     border-radius: 50%;
 }
 
-.notification-badge {
-    position: absolute;
-    /* Positionne le badge par rapport au bouton */
-    top: 0;
-    right: 0;
-    background-color: red;
-    /* Couleur de fond du badge */
-    color: white;
-    /* Couleur du texte */
-    border-radius: 50%;
-    padding: 0.2rem 0.4rem;
-    /* Espacement du badge */
-    font-size: 0.8rem;
-    /* Taille du texte */
-}
-
 /* Content container */
 
 .content-container {
@@ -443,20 +408,42 @@ body {
     }
 }
 
+
+
+
+.home-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease;
+}
+
+.home-icon:hover {
+    transform: scale(1.1);
+}
+
+
+
+/* Modal de modification d'utilisateur */
+
 .modification-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
-    padding: 20px;
-    background-color: #f5f5f5;
+    height: 70vh;
+    padding: 10px;
+    background-color: #ffffff;
     width: 1800px;
+    margin-bottom: 300px;
+
+
 }
 
 .modification-card {
-    width: 900%;
-    max-width: 1000px;
-    padding: 60px;
+    width: 500%;
+    max-width: 750px;
+    padding: 25px;
     background-color: white;
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(7, 84, 161, 0.4);
@@ -488,10 +475,10 @@ h1 {
 h2 {
     text-align: center;
     margin-bottom: 50px;
-    color: #fcf9f9;
-    font-weight: 800;
-    font-size: 35px;
+    color: #333;
+    font-weight: 600;
 }
+
 
 .form-row {
     display: flex;
@@ -584,23 +571,6 @@ input::placeholder {
     cursor: not-allowed;
 }
 
-.spinner {
-    display: inline-block;
-    width: 20px;
-    height: 20px;
-    margin-right: 8px;
-    border: 10px solid rgba(3, 3, 3, 0.3);
-    border-radius: 70%;
-    border-top-color: #fff;
-    animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
-}
-
 .alert-error {
     background-color: #ffebee;
     color: #c62828;
@@ -619,29 +589,469 @@ input::placeholder {
     text-align: center;
 }
 
-.back-to-home {
+
+/* Main Content pour le formulaire de mot de passe */
+
+.main-content {
+    flex: 1;
+    padding: 2rem;
+    background-color: #f7f9fc;
+}
+
+.password-change-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.section-header {
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.section-header h2 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 0.5rem;
+}
+
+.password-form-card {
+    background: linear-gradient(to bottom, #add8e6, #779ffa);
+    /* Dégradé du bleu clair au bleu ciel */
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    padding: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: -20px;
+
+
+}
+
+.password-icon {
+    padding: 1.5rem;
+}
+
+.large-icon {
+    width: 30px;
+    height: 30px;
+}
+
+.password-form {
+    width: 100%;
+    max-width: 500px;
+}
+
+.alert-message {
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+    text-align: center;
+}
+
+.success {
+    background-color: #e6f7e6;
+    color: #2c7a2c;
+}
+
+.error {
+    background-color: #ffeaea;
+    color: #d32f2f;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    font-size: 0.95rem;
+    color: #070707;
+}
+
+.password-input-container {
+    position: relative;
+    display: flex;
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    padding-right: 3rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #4a6cf7;
+    box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.1);
+}
+
+.invalid-input {
+    border-color: #e53e3e;
+}
+
+.toggle-password {
     position: absolute;
-    bottom: 20px;
-    left: 20px;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 10;
-    text-decoration: none;
 }
 
-.home-icon {
-    width: 50px;
-    height: 50px;
+.toggle-password img {
+    width: 20px;
+    height: 20px;
+    opacity: 0.5;
+    transition: opacity 0.3s;
+}
+
+.toggle-password:hover img {
+    opacity: 0.8;
+}
+
+.error-message {
+    margin-top: 0.4rem;
+    color: #e53e3e;
+    font-size: 0.85rem;
+}
+
+.password-strength {
+    margin-bottom: 2rem;
+}
+
+.strength-label {
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    color: #4a5568;
+}
+
+.strength-meter {
+    height: 6px;
+    background-color: #e2e8f0;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 0.75rem;
+}
+
+.strength-indicator {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.3s;
+}
+
+.weak {
+    background-color: #e53e3e;
+}
+
+.medium {
+    background-color: #f7c941;
+}
+
+.strong {
+    background-color: #2bfa2b;
+}
+
+.password-tips {
+    font-size: 0.85rem;
+    color: #718096;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2rem;
+}
+
+.btn-cancel,
+.btn-save {
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s;
+    min-width: 120px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.btn-cancel {
+    background-color: #f7f9fc;
+    color: #4a5568;
+    border: 1px solid #e2e8f0;
+}
+
+.btn-cancel:hover {
+    background-color: #e2e8f0;
+}
+
+.btn-save {
+    background-color: #0754A1;
+    color: white;
+    border: none;
+}
+
+.btn-save:hover {
+    background-color: #3a5cd7;
+}
+
+.btn-save:disabled {
+    background-color: #a4b4fa;
+    cursor: not-allowed;
+}
+
+.spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
     border-radius: 50%;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    border-top-color: white;
+    animation: spin 0.8s linear infinite;
+}
+.search-text {
+    font-size: 2rem;
+    /* Augmentez la taille du texte selon vos besoins */
+    font-weight: bold;
+    /* Met le texte en gras */
+    color: white;
+    /* Change la couleur du texte en blanc */
+    margin: 0;
+    /* Supprime la marge par défaut de h1 */
+    text-align: center;
+    /* Centre le texte, si souhaité */
+}
+/* Responsive design */
+
+@media (max-width: 992px) {
+    .password-form-card {
+        padding: 2rem 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .main-content {
+        padding: 1.5rem 1rem;
+    }
+    .password-form-card {
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .form-actions {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    .btn-cancel,
+    .btn-save {
+        width: 100%;
+    }
+}
+
+/* Styles pour le bloc de navigation des onglets de mon compte */
+.account-tabs-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 2rem;
+    background-color: var(--white);
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(149, 157, 165, 0.2);
+}
+
+.account-nav-tabs {
+    display: flex;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--gray);
+    position: relative;
+    margin-left: 2rem;
+
+}
+
+.account-tab {
+    padding: 1.2rem 2rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--gray-dark);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    position: relative;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    margin-right: 1.5rem;
+    overflow: hidden;
+}
+
+.account-tab::before {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    transform: translateX(-100%);
+    transition: transform 0.4s cubic-bezier(0.65, 0, 0.35, 1);
+    z-index: 1;
+}
+
+.account-tab:hover {
+    color: var(--primary-color);
+}
+
+.account-tab:hover::before {
+    transform: translateX(-90%);
+}
+
+.account-tab-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 0.75rem;
     transition: transform 0.3s ease;
 }
 
-.home-icon:hover {
+.account-tab:hover .account-tab-icon {
     transform: scale(1.1);
 }
 
+.account-tab span {
+    position: relative;
+    z-index: 2;
+}
+
+.account-tab.active {
+    color: var(--primary-color);
+    font-weight: 700;
+    background: linear-gradient(to right, rgba(82, 255, 2, 0.08), rgba(1, 85, 1, 0.08));
+    border-radius: 8px 8px 0 0;
+}
+
+.account-tab.active .account-tab-icon {
+    transform: scale(1.1);
+}
+
+.account-tab.active::before {
+    transform: translateX(0);
+    transition: transform 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.account-tab.active::after {
+    content: "";
+    position: absolute;
+    bottom: -1px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 10px;
+    height: 10px;
+    background-color: var(--white);
+    border: 3px solid var(--secondary-color);
+    border-radius: 50%;
+    z-index: 2;
+    animation: pulse 2s infinite;
+}
+
+.account-tab-indicator {
+    position: absolute;
+    bottom: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    border-radius: 3px 3px 0 0;
+    transition: all 0.3s ease;
+}
+
+.account-tab-content {
+    padding: 1.5rem 0;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.nav-item:hover,
+.nav-item.active {
+    color: var(--primary-color);
+    background-color: rgba(0, 74, 173, 0.1);
+    border-left: 4px solid var(--primary-color);
+}
+
+.nav-item.active {
+    font-weight: bold;
+}
+.password-toggle {
+    position: absolute;
+    /* Positionner l'icône absolument */
+    right: 10px;
+    /* Espacement à droite */
+    top: 50%;
+    /* Centrer verticalement */
+    transform: translateY(-50%);
+    /* Ajuster l'alignement */
+    cursor: pointer;
+    /* Changer le curseur au survol */
+}
+
+/* Animation pour le changement d'onglet */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Animation de pulsation pour l'indicateur d'onglet actif */
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(247, 38, 1, 0.4);
+    }
+    70% {
+        box-shadow: 0 0 0 8px rgba(119, 119, 119, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(54, 185, 204, 0);
+    }
+}
+
+/* Styles adaptatifs pour les appareils mobiles */
+@media (max-width: 768px) {
+    .account-nav-tabs {
+        justify-content: space-between;
+    }
+    
+    .account-tab {
+        padding: 0.75rem 1rem;
+        margin-right: 0;
+        font-size: 0.9rem;
+        flex: 1;
+        justify-content: center;
+    }
+    
+    .account-tab-icon {
+        margin-right: 0.5rem;
+        width: 16px;
+        height: 16px;
+    }
+    
+    .account-tab.active::after {
+        width: 8px;
+        height: 8px;
+    }
+}
 @media (max-width: 576px) {
     .back-icon {
         width: 32px;

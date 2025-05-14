@@ -73,6 +73,10 @@
                     <img src="bank.png" alt="Bank" class="nav-icon">
                     <span>MiniBank</span>
                 </a>
+                <a class="nav-item " [routerLink]="[ '/mon-compte'] ">
+                    <img src="parametres.png" alt="Transactions " class="nav-icon ">
+                    <span>Mon compte</span>
+                </a>
             </nav>
             <div class="logout-container">
                 <hr class="logout-divider">
@@ -168,20 +172,7 @@
 
             <!-- Transaction History & Chart Section -->
             <div class="transaction-section">
-                <div class="section-header">
-                    <h3>Aperçu des transactions de la journee</h3>
-                    <div class="period-selector">
-                        <button class="period-btn active" (click)="changePeriod('week')">Semaine</button>
-                        <!-- <button class="period-btn" (click)="changePeriod('month')">Mois</button>
-                        <button class="period-btn" (click)="changePeriod('year')">Année</button> -->
-                    </div>
-                </div>
-
-                <!-- Transaction Chart -->
-                <div class="chart-container">
-                    <canvas id="transactionChart" style="width: 100%; height: 400px;"></canvas>
-                    <!-- Assurez-vous que le canvas a un style défini -->
-                </div>
+               
 
                 <!-- Transaction History Table -->
                 <!-- Transaction History Table -->

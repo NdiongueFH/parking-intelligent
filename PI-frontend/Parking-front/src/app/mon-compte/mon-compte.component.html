@@ -4,16 +4,19 @@
         <div class="logo-container">
             <img src="imagelogoParking.png" alt="Parking Logo" class="logo">
         </div>
-
-        <h1>Pour votre sécurité, veuillez choisir un mot de passe fort !</h1>
+        <div class="search-container">
+            <h1 class="search-text">Parametrage de mon compte</h1>
+        </div>
 
         <div class="header-icons">
+
             <button class="settings-button" (click)="toggleSettingsModal()">
                 <img src="iconeParametre.jpg" alt="Settings" class="header-icon" />
             </button>
 
             <!-- Modal des paramètres -->
             <div class="settings-modal" *ngIf="showSettingsModal">
+
                 <div class="settings-modal-content">
                     <div class="user-info">
                         <div class="user-avatar">
@@ -70,7 +73,7 @@
                     <img src="bank.png" alt="Bank" class="nav-icon">
                     <span>MiniBank</span>
                 </a>
-                <a class="nav-item " [routerLink]="[ '/mon-compte'] ">
+                <a class="nav-item active" [routerLink]="[ '/mon-compte'] ">
                     <img src="parametres.png" alt="Transactions " class="nav-icon ">
                     <span>Mon compte</span>
                 </a>
@@ -84,19 +87,101 @@
             </div>
         </div>
 
-        <!-- Password Change Form Section -->
+        <!-- Structure HTML à ajouter dans la section "main-content" de la page Mon compte -->
+    <div class="account-tabs-container">
+        <!-- Navigation des onglets -->
+        <div class="account-nav-tabs">
+            <a class="account-tab" [ngClass]="{'active': activeTab === 'info'}" (click)="switchTab('info')">
+                <img src="mesInfos.png" alt="Informations" class="account-tab-icon">
+                <span>Mes informations</span>
+            </a>
+            <a class="account-tab" [ngClass]="{'active': activeTab === 'password'}" (click)="switchTab('password')">
+                <img src="mdp1.png" alt="Mot de passe" class="account-tab-icon">
+                <span>Mon mot de passe</span>
+            </a>
+        </div>
+        
+        <!-- Contenu de l'onglet "Mes informations" -->
+        <div class="account-tab-content" *ngIf="activeTab === 'info'">
+            <div class="main-content">
+                <div class="password-change-container">
+                <div class="password-form-card">
+                    
+    
+                    <h2>Modifier ses informations</h2>
+    
+                    <form [formGroup]="modificationForm" (ngSubmit)="onSubmitModification()">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="nom">Nom<span class="required">*</span></label>
+                                <input type="text" id="nom" formControlName="nom" placeholder="Entrer votre nom" [ngClass]="{'is-invalid': isFieldInvalid('nom')}">
+                                <div *ngIf="isFieldInvalid('nom') && modificationForm.get('nom')?.value" class="error-message">Le nom est obligatoire</div>
+                            </div>
+    
+                            <div class="form-group">
+                                <label for="prenom">Prenom<span class="required">*</span></label>
+                                <input type="text" id="prenom" formControlName="prenom" placeholder="Entrer votre prenom" [ngClass]="{'is-invalid': isFieldInvalid('prenom')}">
+                                <div *ngIf="isFieldInvalid('prenom') && modificationForm.get('prenom')?.value" class="error-message">Le prénom est obligatoire</div>
+                            </div>
+                        </div>
+    
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="email">Email<span class="required">*</span></label>
+                                <input type="email" id="email" formControlName="email" placeholder="Entrer votre email" [ngClass]="{'is-invalid': isFieldInvalid('email')}">
+                                <div *ngIf="isFieldInvalid('email') && modificationForm.get('email')?.value" class="error-message">Veuillez entrer un email valide</div>
+                            </div>
+    
+                            <div class="form-group">
+                                <label for="telephone">Telephone<span class="required">*</span></label>
+                                <input type="tel" id="telephone" formControlName="telephone" placeholder="Entrer votre telephone" [ngClass]="{'is-invalid': isFieldInvalid('telephone')}">
+                                <div *ngIf="isFieldInvalid('telephone') && modificationForm.get('telephone')?.value" class="error-message">Veuillez entrer un numéro valide (9 chiffres)</div>
+                            </div>
+                        </div>
+    
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="adresse">Adresse de residence<span class="required">*</span></label>
+                                <input type="text" id="adresse" formControlName="adresse" placeholder="Entrer votre adresse" [ngClass]="{'is-invalid': isFieldInvalid('adresse')}">
+                                <div *ngIf="isFieldInvalid('adresse') && modificationForm.get('adresse')?.value" class="error-message">L'adresse est obligatoire</div>
+                            </div>
+                        </div>
+    
+                        <div *ngIf="error" class="alert-error">
+                            {{ error }}
+                        </div>
+                        <div *ngIf="success" class="alert-success">
+                            Modification réussie! Vous allez etre rediriger vers la page deconnexion.
+                        </div>
+    
+                        <div class="button-container">
+                            <button type="submit">Modifier</button>
+                        </div>
+    
+                    </form>
+                </div>
+            </div>
+
+            </div>
+        
+        </div>
+        
+        <!-- Contenu de l'onglet "Mon mot de passe" -->
+        <div class="account-tab-content" *ngIf="activeTab === 'password'">
+             <!-- Password Change Form Section -->
         <div class="main-content">
             <div class="password-change-container">
                 <div class="section-header">
-                    <h3>Modification du mot de passe</h3>
                 </div>
 
                 <div class="password-form-card">
+
                     <div class="password-icon">
-                        <img src="mdp1.png" alt="Password" class="large-icon">
+
+                        <h2>Modifier son mot de passe</h2>
                     </div>
 
-                    <form [formGroup]="passwordForm" (ngSubmit)="onSubmit()" class="password-form">
+                    <form [formGroup]="passwordForm" (ngSubmit)=" onSubmitPassword()" class="password-form">
                         <div class="alert-message" *ngIf="message" [ngClass]="{'success': isSuccess, 'error': !isSuccess}">
                             {{ message }}
                         </div>
@@ -161,5 +246,9 @@
                 </div>
             </div>
         </div>
+            
+        </div>
+    </div>
+
     </div>
 </div>

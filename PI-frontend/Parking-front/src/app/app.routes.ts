@@ -52,9 +52,60 @@ export const routes: Routes = [
     path: 'modifier-utilisateur', 
     loadComponent: () => import('./modifier-utilisateur/modifier-utilisateur.component').then(m => m.ModificationComponent) 
   },
+
   { 
     path: 'change-password', 
     loadComponent: () => import('./change-password/change-password.component').then(m => m.MotDePasseComponent) 
+  },
+
+  { 
+    path: 'change-password-user', 
+    loadComponent: () => import('./change-password-user/change-password-user.component').then(m => m.ChangePasswordUserComponent) 
+  },
+
+  {
+    path: 'mon-compte',
+    loadComponent: () => import('./mon-compte/mon-compte.component').then(m => m.MonCompteComponent),
+    children: [
+      {
+        path: '',
+        redirectTo: 'modifier-utilisateur',
+        pathMatch: 'full'
+      },
+      {
+        path: 'modifier-utilisateur',
+        loadComponent: () => import('./modifier-utilisateur/modifier-utilisateur.component').then(m => m.ModificationComponent)
+      },
+      {
+        path: 'change-password',
+        loadComponent: () => import('./change-password/change-password.component').then(m => m.MotDePasseComponent)
+      }
+    ]
+  },
+
+  {
+    path: 'mon-compte-utilisateur',
+    loadComponent: () => import('./mon-compte-utilisateur/mon-compte-utilisateur.component').then(m => m.MonCompteUtilisateurComponent),
+    children: [
+      {
+        path: '',
+        redirectTo: 'update-ses-infos-user',
+        pathMatch: 'full'
+      },
+      {
+        path: 'update-ses-infos-user',
+        loadComponent: () => import('./update-ses-infos-user/update-ses-infos-user.component').then(m => m.UpdateSesInfosUserComponent)
+      },
+      {
+        path: 'update-son-mdp-user',
+        loadComponent: () => import('./update-son-mdp-user/update-son-mdp-user.component').then(m => m.UpdateSonMDPUserComponent)
+      }
+    ]
+  },
+
+  { 
+    path: 'mes-transactions', 
+    loadComponent: () => import('./mes-transactions/mes-transactions.component').then(m => m.MesTransactionsComponent) 
   },
 
 

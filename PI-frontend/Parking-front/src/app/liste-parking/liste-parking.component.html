@@ -74,6 +74,10 @@
                     <img src="bank.png" alt="Bank" class="nav-icon">
                     <span>MiniBank</span>
                 </a>
+                <a class="nav-item " [routerLink]="[ '/mon-compte'] ">
+                    <img src="parametres.png" alt="Transactions " class="nav-icon ">
+                    <span>Mon compte</span>
+                </a>
             </nav>
             <div class="logout-container">
                 <hr class="logout-divider">
@@ -83,18 +87,25 @@
                 </a>
             </div>
         </div>
-
+        <div class="image-container">
+            <img src="Gparkings.jpg" alt="Image de gauche" class="side-image">
+        </div> 
         <!-- Main Content Area -->
         <div class="main-content">
-
+            
+            
             <div class="section-header">
                 <h2>Gestion des parkings</h2>
+               
+    
                 <button class="add-parking-btn" (click)="toggleAddForm()">
                     {{ showAddForm ? 'Annuler' : 'Ajouter un parking' }}
-                </button> </div>
+                </button> 
+            </div>
 
             <!-- Formulaire d'ajout (affiché conditionnellement) -->
             <div class="add-parking-form" *ngIf="showAddForm">
+                
                 <div class="form-row">
                     <div class="form-group">
                         <input type="text" placeholder="Nom du parking" class="form-control" [(ngModel)]="newParking.nom_du_parking" name="nom_du_parking">
