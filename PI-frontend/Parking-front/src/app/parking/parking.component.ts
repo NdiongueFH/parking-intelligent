@@ -102,6 +102,21 @@ ngOnInit(): void {
       this.cdr.detectChanges();
     }
   });
+
+  // Écoute de l'événement 'statutPlaceChange' pour gérer les changements de statut de place
+  this.socket.on('statutPlaceChange', (data: { placeId: string, statut: string }) => {
+    console.log('Changement de statut de place reçu:', data);
+
+    const updatedPlace = this.parkingPlaces.find(place => place._id === data.placeId);
+    if (updatedPlace) {
+      updatedPlace.statut = data.statut;
+      console.log(`Place ${updatedPlace.nomPlace} statut mis à jour: ${updatedPlace.statut}`);
+      this.updateParkingStats();
+      this.cdr.detectChanges();
+    }
+  });
+
+ 
 }
 
 ngOnDestroy(): void {

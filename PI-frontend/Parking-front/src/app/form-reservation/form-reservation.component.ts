@@ -3,6 +3,8 @@ import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { io, Socket } from 'socket.io-client';
+
 
 
 export interface Parking {
@@ -40,9 +42,13 @@ export class ParkingReservationComponent implements OnInit {
     isPaymentProcessed: boolean = false; // État du paiement
     isPaymentInitiated: boolean = false; // Nouvelle propriété pour indiquer si le paiement a été initié
     errorMessage: string | null = null; // Pour stocker les messages d'erreur
+    private socket: Socket;
+
 
 
     constructor(private fb: FormBuilder, private http: HttpClient) {
+        this.socket = io('http://localhost:3000'); // l’URL de ton backend
+
         this.reservationForm = this.fb.group({
             vehicleType: ['voiture', Validators.required],
             plateNumber: ['', Validators.required],
@@ -121,7 +127,13 @@ export class ParkingReservationComponent implements OnInit {
                         this.reservationForm.patchValue({
                             price: `${response.data.montant} FCFA`
                         });
+
+                        this.socket.emit('majEtatParking', {
+                            placeId: this.placeId,
+                            statut: 'reservee' // ou le statut exact utilisé côté backend
+                        });
                         this.closeModal();
+                        
                         this.reservationSuccess.emit('Réservation effectuée avec succès !');
                     },
                     error: (error) => {
