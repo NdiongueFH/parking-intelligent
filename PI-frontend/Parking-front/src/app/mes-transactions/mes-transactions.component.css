@@ -1,0 +1,1232 @@
+/* Variables */
+
+:root {
+    --primary-color: #004AAD;
+    --secondary-color: #00A0E4;
+    --white: #ffffff;
+    --gray-light: #f5f5f5;
+    --gray: #e0e0e0;
+    --gray-dark: #666666;
+    --success-color: #4cd964;
+}
+
+
+/* Global styles */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: var(--gray-light);
+}
+
+.search-text {
+    font-size: 30px;
+    margin: 0;
+    color: white;
+}
+
+
+/* Dashboard container */
+
+.dashboard-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.outside-image-container {
+    position: absolute;
+    top: 50%;
+    right: 800px;
+    transform: translateY(-50%);
+    /* Centre l'image verticalement */
+    z-index: -1;
+    /* S'assure que l'image ne cache pas le contenu principal */
+}
+
+
+/* L'image à l'extérieur */
+
+.outside-image {
+    width: 690px;
+    height: 750px;
+    margin-top: 100px;
+    /* Ajustez la taille de l'image comme nécessaire */
+    border-radius: 10px;
+    /* Ajoutez une bordure arrondie si souhaité */
+}
+
+
+/* Main content */
+
+.main-content {
+    flex-grow: 1;
+    padding: 20px;
+    overflow-y: auto;
+    background-color: white;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    box-shadow: 0 0 0 2px rgba(209, 208, 208, 0.3), 0 8px 15px rgba(170, 169, 169, 0.8);
+    margin: 30px 15px 15px 30px;
+    /* Augmentez l'espace en haut et à gauche */
+    width: 90%;
+    /* Augmentez la largeur ici */
+    max-width: 1500px;
+    /* Ajustez cette valeur selon vos besoins */
+}
+
+
+/* Header */
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #0754A1;
+    /* Couleur de fond bleue */
+    /* Couleur de fond bleue */
+    padding: 0.75rem 1.5rem;
+    color: var(--white);
+    /* Changez pour du texte blanc */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.logo-container {
+    width: 60px;
+    height: 60px;
+    background-color: var(--white);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.logo {
+    width: 110%;
+    height: auto;
+    box-shadow: 0 8px 8px rgba(0, 0, 0, 0.2);
+    /* Ombre légère */
+    border-radius: 50%;
+    /* Arrondir complètement pour un effet rond */
+}
+
+.logout-divider {
+    border: none;
+    /* Supprime la bordure par défaut */
+    border-top: 1px solid rgb(2, 170, 221);
+    /* Trait de couleur */
+    margin: 0;
+    /* Supprime la marge par défaut */
+    margin-bottom: 0.5rem;
+    /* Espace sous le trait */
+    width: 150px;
+    /* Longueur fixe du trait */
+    /* Vous pouvez aussi utiliser une valeur en pourcentage si souhaité, par ex. 80% */
+}
+
+
+/* Sidebar */
+
+.sidebar {
+    width: 200px;
+    /* Augmente la largeur de la barre latérale */
+    background-color: var(--white);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.nav-menu {
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem 0;
+    /* Augmente l'espacement interne */
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    padding: 1.25rem;
+    /* Augmente l'espacement interne */
+    color: var(--gray-dark);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    font-size: 1.1rem;
+    /* Augmente la taille de la police */
+    line-height: 1.6;
+    /* Augmente l'espacement entre les lignes */
+}
+
+.nav-icon {
+    width: 30px;
+    /* Augmente la taille des icônes */
+    height: auto;
+    margin-right: 1rem;
+    /* Augmente l'espacement entre l'icône et le texte */
+    vertical-align: middle;
+}
+
+.logout-container {
+    padding: 1.5rem;
+    /* Augmente l'espacement interne */
+    border-top: 1px solid var(--gray);
+}
+
+.logout-button {
+    display: flex;
+    align-items: center;
+    color: var(--gray-dark);
+    text-decoration: none;
+    padding: 1rem;
+    /* Augmente l'espacement interne */
+    cursor: pointer;
+    font-size: 1.1rem;
+    /* Augmente la taille de la police */
+}
+
+.logout-icon {
+    width: 20px;
+    /* Augmente la taille de l'icône */
+    height: auto;
+    margin-right: 1rem;
+    /* Augmente l'espacement entre l'icône et le texte */
+    vertical-align: middle;
+}
+
+.header-icons {
+    display: flex;
+    align-items: center;
+    /* Centre verticalement les icônes */
+}
+
+.notification-button,
+.settings-button {
+    border: none;
+    /* Supprime la bordure par défaut */
+    background: white;
+    /* Fond blanc */
+    border-radius: 50%;
+    /* Crée un cercle */
+    width: 40px;
+    /* Largeur du cercle */
+    height: 40px;
+    /* Hauteur du cercle */
+    display: flex;
+    /* Utilise flexbox pour centrer le contenu */
+    align-items: center;
+    /* Centre verticalement le contenu */
+    justify-content: center;
+    /* Centre horizontalement le contenu */
+    margin: 0 5px;
+    /* Espacement entre les boutons */
+    cursor: pointer;
+    /* Change le curseur pour indiquer que c'est cliquable */
+    position: relative;
+    /* Nécessaire pour le positionnement du badge */
+}
+
+.header-icon {
+    width: 60px;
+    /* Ajustez la taille selon vos besoins */
+    height: auto;
+    /* Maintient le ratio de l'image */
+    border-radius: 50%;
+}
+
+
+/* Content container */
+
+.content-container {
+    display: flex;
+    flex-grow: 1;
+    overflow: hidden;
+}
+
+
+/* Sidebar */
+
+.nav-item i {
+    margin-right: 0.75rem;
+    width: 20px;
+    text-align: center;
+}
+
+.nav-item:hover,
+.nav-item.active {
+    color: var(--primary-color);
+    background-color: rgba(0, 74, 173, 0.1);
+    border-left: 4px solid var(--primary-color);
+}
+
+.nav-item.active {
+    font-weight: bold;
+}
+
+.logout-button i {
+    margin-right: 0.75rem;
+}
+
+.logout-button:hover {
+    color: crimson;
+}
+
+
+/* User Profile Card */
+
+.user-profile-card {
+    background: linear-gradient(135deg, #0754A1 0%, #00A0E4 100%);
+    border-radius: 16px;
+    color: white;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.profile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+}
+
+.profile-info {
+    flex: 1;
+}
+
+.welcome-text {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    font-weight: 400;
+}
+
+.user-name {
+    font-weight: 700;
+}
+
+.user-phone {
+    opacity: 0.8;
+    font-size: 1.2rem;
+}
+
+.balance-container {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 1.5rem;
+    min-width: 200px;
+}
+
+.balance-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.balance-header h3 {
+    font-size: 1.5rem;
+    font-weight: 400;
+    margin: 0;
+    width: 500px;
+    height: 50px;
+}
+
+.toggle-balance-btn {
+    background: none;
+    border: none;
+    color: #050505;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.balance-amount {
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+.balance-hidden {
+    font-size: 1.8rem;
+    letter-spacing: 4px;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+}
+
+.action-btn {
+    flex: 1;
+    background-color: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    padding: 0.8rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.action-btn:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+}
+
+.deposit-btn {
+    background-color: rgba(76, 217, 100, 0.2);
+}
+
+.deposit-btn:hover {
+    background-color: rgba(76, 217, 100, 0.3);
+}
+
+.withdraw-btn {
+    background-color: rgba(255, 59, 48, 0.2);
+}
+
+.withdraw-btn:hover {
+    background-color: rgba(255, 59, 48, 0.3);
+}
+
+
+/* Transaction Section */
+
+.transaction-section {
+    background-color: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.section-header h3 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--gray-dark);
+    margin: 0;
+}
+
+.period-selector {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.period-btn {
+    background-color: var(--gray-light);
+    border: none;
+    border-radius: 20px;
+    padding: 0.4rem 1rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: var(--gray-dark);
+}
+
+.period-btn.active {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+
+/* Chart Container */
+
+.chart-container {
+    height: 300px;
+    margin-bottom: 2rem;
+    position: relative;
+}
+
+
+/* Transaction History */
+
+.transaction-history h3 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--gray-dark);
+    margin-bottom: 1rem;
+}
+
+.transaction-table-container {
+    overflow-x: auto;
+}
+
+.transaction-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.transaction-table th,
+.transaction-table td {
+    padding: 0.8rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--gray);
+}
+
+.transaction-table th {
+    font-weight: 600;
+    color: var(--gray-dark);
+    background-color: var(--gray-light);
+}
+
+.transaction-type {
+    display: inline-block;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.transaction-type.deposit {
+    background-color: rgba(76, 217, 100, 0.1);
+    color: #4cd964;
+}
+
+.transaction-type.withdrawal {
+    background-color: rgba(255, 59, 48, 0.1);
+    color: #ff3b30;
+}
+
+.amount {
+    font-weight: 600;
+}
+
+.amount.deposit {
+    color: #4cd964;
+}
+
+.amount.withdrawal {
+    color: #ff3b30;
+}
+
+.toggle-balance-btn {
+    background-color: transparent;
+    /* Pas de fond */
+    border: none;
+    /* Pas de bordure */
+    cursor: pointer;
+    /* Curseur en forme de main au survol */
+    font-size: 1.5em;
+    /* Taille de l'icône */
+    color: #fafbfc;
+    /* Couleur de l'icône */
+    transition: color 0.3s ease;
+    /* Transition douce pour la couleur */
+}
+
+.toggle-balance-btn:hover {
+    color: #b30c00;
+    /* Couleur plus foncée au survol */
+}
+
+.toggle-balance-btn:focus {
+    outline: none;
+    /* Supprimer le contour au focus */
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 1rem;
+    font-weight: bold;
+}
+
+.pagination button {
+    background-color: var(--primary-color);
+    /* Couleur de fond bleu */
+    color: var(--user-color);
+    /* Couleur du texte en blanc */
+    border: none;
+    /* Pas de bordure */
+    border-radius: 10px;
+    /* Coins arrondis */
+    padding: 0.5rem 1rem;
+    /* Espacement interne */
+    margin: 0 0.25rem;
+    /* Espace entre les boutons */
+    cursor: pointer;
+    /* Curseur pointer */
+    transition: background-color 0.3s;
+    /* Transition pour le survol */
+}
+
+.pagination button:hover:not(:disabled) {
+    background-color: var(--secondary-color);
+    /* Couleur au survol */
+}
+
+.pagination button:disabled {
+    background-color: var(--gray);
+    /* Couleur pour le bouton désactivé */
+    cursor: not-allowed;
+    /* Change le curseur pour indiquer l'impossibilité */
+}
+
+.pagination .active {
+    font-weight: bold;
+    /* Met le numéro de page active en gras */
+    /* Couleur pour la page active */
+    font-size: 18px;
+    color: #fafbfd;
+    background-color: #0754A1;
+}
+
+.pagination span {
+    margin: 0 0.5rem;
+    /* Espace autour des ellipses */
+    color: var(--gray-dark);
+    /* Couleur des ellipses */
+    font-weight: bold;
+    /* Met les ellipses en gras */
+}
+
+
+/* Ajoutez ce CSS dans votre fichier dashboard-admin.component.css */
+
+
+/* Position relative pour le conteneur des icônes du header */
+
+.header-icons {
+    position: relative;
+}
+
+
+/* Style du modal des paramètres */
+
+.settings-modal {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 300px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    margin-top: 15px;
+    animation: fadeIn 0.2s ease-out;
+    overflow: hidden;
+}
+
+
+/* Flèche pointant vers le haut */
+
+.settings-modal-arrow {
+    position: absolute;
+    top: -10px;
+    right: 15px;
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid #ffffff;
+}
+
+
+/* Contenu du modal */
+
+.settings-modal-content {
+    padding: 20px;
+}
+
+
+/* Informations utilisateur */
+
+.user-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.user-avatar {
+    margin-right: 15px;
+}
+
+.avatar-img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #3498db;
+}
+
+.user-details h3 {
+    margin: 0 0 5px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+.user-email {
+    margin: 0 0 10px 0;
+    font-size: 14px;
+    color: #666;
+}
+
+.user-balance {
+    background-color: #f8f9fa;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.balance-label {
+    font-weight: 500;
+    color: #555;
+}
+
+.balance-amount {
+    font-weight: 500;
+    color: #050375;
+    margin-left: 5px;
+    font-size: 20px;
+}
+
+
+/* Actions du paramétrage */
+
+.settings-actions {
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+}
+
+.settings-action-link {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    color: #555;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.settings-action-link:hover {
+    color: #3498db;
+    background-color: #f5f7fa;
+    padding-left: 5px;
+    border-radius: 4px;
+}
+
+.action-icon {
+    width: 18px;
+    height: 18px;
+    margin-right: 10px;
+}
+
+
+/* Animation */
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* Media Queries */
+
+@media (max-width: 992px) {
+    .profile-header {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+    .balance-container {
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .action-buttons {
+        flex-direction: column;
+    }
+}
+
+
+/* Pour les écrans plus petits */
+
+@media (max-width: 768px) {
+    .section-header {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+    }
+    .add-parking-btn {
+        width: 100%;
+    }
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+
+/* Media queries */
+
+@media (max-width: 992px) {
+    .search-container {
+        width: 50%;
+    }
+}
+
+@media (max-width: 768px) {
+    .content-container {
+        flex-direction: column;
+    }
+    .sidebar {
+        width: 100%;
+        flex-direction: row;
+        height: auto;
+    }
+    .nav-menu {
+        flex-direction: row;
+        padding: 0;
+        justify-content: space-between;
+        width: 100%;
+    }
+    .nav-item {
+        flex-direction: column;
+        padding: 0.5rem;
+    }
+    .logout-container {
+        display: none;
+    }
+}
+
+@media (max-width: 576px) {
+    .header {
+        flex-direction: column;
+        gap: 0.75rem;
+        padding: 0.75rem;
+    }
+    .search-container {
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .main-content {
+        width: 100%;
+        /* Prendre toute la largeur sur les petits écrans */
+    }
+}
+
+
+/* Styles de base pour les modals */
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(8px);
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.modal-content {
+    background: linear-gradient(145deg, #ffffff, #f5f7fa);
+    width: 90%;
+    max-width: 500px;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.5) inset, 0 -10px 30px rgba(7, 84, 161, 0.05) inset;
+    padding: 2.5rem;
+    position: relative;
+    overflow: hidden;
+    animation: slideUp 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+
+/* Styles pour le bouton de fermeture */
+
+.close {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    font-size: 2rem;
+    color: #050505;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.close:hover {
+    color: #fa2f0b;
+    transform: rotate(90deg);
+    background-color: rgba(255, 59, 48, 0.1);
+}
+
+
+/* En-tête du modal */
+
+.modal-content h3 {
+    margin-bottom: 1.5rem;
+    color: #050505;
+    font-size: 1.8rem;
+    font-weight: 600;
+    text-align: center;
+    position: relative;
+    padding-bottom: 0.75rem;
+}
+
+.modal-content h4 {
+    color: #1073f5;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-align: center;
+    position: relative;
+    padding-bottom: 0.75rem;
+}
+
+.modal-content h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 4px;
+    background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+    border-radius: 2px;
+}
+
+
+/* Conteneur d'image */
+
+.image-placeholder {
+    margin: 1.5rem auto;
+    text-align: center;
+    max-width: 150px;
+    max-height: 150px;
+    overflow: hidden;
+    border-radius: 50%;
+    padding: 0.5rem;
+    background: white;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    border: 2px solid rgba(7, 84, 161, 0.1);
+}
+
+.image-placeholder img {
+    width: 70%;
+    height: auto;
+    object-fit: cover;
+    border-radius: 20%;
+    transition: transform 0.5s ease;
+}
+
+.image-placeholder:hover img {
+    transform: scale(1.1);
+}
+
+
+/* Styles de formulaire */
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    margin-top: 1.5rem;
+}
+
+label {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #050505;
+    margin-bottom: 0.3rem;
+    display: block;
+}
+
+input {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border: 2px solid rgba(0, 0, 0, 0.08);
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background-color: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03) inset;
+}
+
+input:focus {
+    outline: none;
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 0 3px rgba(0, 160, 228, 0.15);
+}
+
+.success-message {
+    background-color: #d4edda;
+    /* Vert clair */
+    color: #155724;
+    /* Texte vert foncé */
+    padding: 10px;
+    border: 1px solid #c3e6cb;
+    /* Bordure verte */
+    border-radius: 5px;
+    margin-bottom: 15px;
+    /* Espace en bas */
+}
+
+
+/* Styles pour les types de transactions */
+
+.transaction-type.deposit {
+    background-color: #d4edda;
+    /* Vert clair */
+    color: #155724;
+    /* Texte vert foncé */
+    padding: 5px;
+    border-radius: 4px;
+}
+
+.transaction-type.withdrawal {
+    background-color: #fadd7c;
+    /* Orange clair */
+    color: #856404;
+    /* Texte orange foncé */
+    padding: 5px;
+    border-radius: 4px;
+}
+
+.transaction-table {
+    width: 100%;
+    border-collapse: collapse;
+    /* Élimine les espaces entre les cellules */
+    margin-top: 20px;
+    /* Espace au-dessus du tableau */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    /* Ombre */
+}
+
+.transaction-table th,
+.transaction-table td {
+    padding: 12px 15px;
+    /* Espacement interne */
+    text-align: left;
+    /* Alignement à gauche */
+    border-bottom: 1px solid #ddd;
+    /* Ligne de séparation */
+}
+
+.transaction-table th {
+    background-color: #f8f9fa;
+    /* Couleur d'arrière-plan des en-têtes */
+    color: #333;
+    /* Couleur du texte des en-têtes */
+}
+
+.transaction-table tbody tr:hover {
+    background-color: #f1f1f1;
+    /* Couleur de survol des lignes */
+}
+
+.transaction-table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+    /* Couleur de fond alternée pour les lignes paires */
+}
+
+.transaction-table .transaction-type {
+    padding: 5px 10px;
+    /* Espacement interne pour le type de transaction */
+    border-radius: 4px;
+    /* Coins arrondis */
+    font-weight: bold;
+    /* Met le texte en gras */
+}
+
+
+/* Ajoutez des styles spécifiques pour les dépôts et retraits */
+
+.transaction-table .deposit-amount {
+    color: #28a745;
+    /* Vert pour les dépôts */
+}
+
+.transaction-table .withdrawal-amount {
+    color: #dc3545;
+    /* Rouge pour les retraits */
+}
+
+
+/* Styles pour les montants */
+
+.amount.deposit-amount {
+    color: #28a745;
+    /* Vert pour les dépôts */
+}
+
+.amount.withdrawal-amount {
+    color: #dc3545;
+    /* Rouge pour les retraits */
+}
+
+
+/* Personnalisation par type de modal */
+
+#depositModal .modal-content {
+    border-top: 5px solid #4cc9d9;
+}
+
+#depositModal button[type="submit"] {
+    background: linear-gradient(135deg, #4cc9d9, #39a1e6);
+}
+
+#depositModal button[type="submit"]:hover {
+    background: linear-gradient(135deg, #4cc9d9, #39a1e6);
+}
+
+#withdrawModal .modal-content {
+    border-top: 5px solid #8ee2fc;
+}
+
+#withdrawModal button[type="submit"] {
+    background: linear-gradient(135deg, #8ee2fc, #1fa4fc);
+}
+
+#withdrawModal button[type="submit"]:hover {
+    background: linear-gradient(135deg, #8ee2fc, #1fa4fc);
+}
+
+
+/* Bouton de confirmation */
+
+button[type="submit"] {
+    padding: 1rem;
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 1rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    position: relative;
+    overflow: hidden;
+}
+
+button[type="submit"]::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: all 0.5s ease;
+}
+
+button[type="submit"]:hover::before {
+    left: 100%;
+}
+
+button[type="submit"]:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+
+/* Animations lors de l'ouverture/fermeture */
+
+.modal.closing {
+    animation: fadeOut 0.3s ease-in forwards;
+}
+
+.modal.closing .modal-content {
+    animation: slideDown 0.3s ease-in forwards;
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateY(30px);
+        opacity: 0;
+    }
+}
+
+
+/* Styles responsifs */
+
+@media (max-width: 576px) {
+    .modal-content {
+        padding: 1.5rem;
+        width: 95%;
+    }
+    h3 {
+        font-size: 1.5rem;
+    }
+    .close {
+        top: 1rem;
+        right: 1rem;
+    }
+    button[type="submit"] {
+        padding: 0.8rem;
+    }
+}
