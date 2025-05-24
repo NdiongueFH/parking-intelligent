@@ -1,6 +1,9 @@
 const User = require('../models/userModel');
+const ResetToken = require('../models/ResetToken');
+const crypto = require('crypto');
+const nodemailer = require('nodemailer');
+const bcrypt = require('bcrypt');
 const Transfer = require('../models/transferModel');
-
 const TokenBlacklist = require('../models/tokenBlacklistModel');
 const jwt = require('jsonwebtoken');
 const { promisify } = require('util');
@@ -558,7 +561,9 @@ exports.deposit = async(req, res) => {
             telephone: user.telephone,
             nom: user.nom,
             prenom: user.prenom,
-            administrateur: admin._id
+            administrateur: admin._id,
+            utilisateur: user._id // <-- AJOUT OBLIGATOIRE
+
         });
 
         res.status(200).json({
@@ -629,7 +634,9 @@ exports.withdraw = async(req, res) => {
             telephone: user.telephone,
             nom: user.nom,
             prenom: user.prenom,
-            administrateur: admin._id
+            administrateur: admin._id,
+            utilisateur: user._id // <-- AJOUT OBLIGATOIRE
+
         });
 
         res.status(200).json({
@@ -650,189 +657,6 @@ exports.withdraw = async(req, res) => {
     }
 };
 
-
-const crypto = require('crypto');
-const nodemailer = require('nodemailer');
-
-// Configuration de Nodemailer
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: process.env.EMAIL_USER, // Votre email
-        pass: process.env.EMAIL_PASS // Votre mot de passe d'application
-    }
-});
-
-
-
-
-
-// Demande de réinitialisation du mot de passe
-exports.forgotPassword = async(req, res) => {
-    try {
-        const { email } = req.body;
-
-        // Vérifier si l'email existe
-        const user = await User.findOne({ email });
-        if (!user) {
-            return res.status(404).json({
-                status: 'fail',
-                message: 'Aucun utilisateur trouvé avec cet email.'
-            });
-        }
-
-        // Générer un code de vérification à 6 chiffres
-        const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
-
-        // Stocker le code avec une date d'expiration
-        user.resetCode = verificationCode;
-        user.resetCodeExpires = Date.now() + 3600000; // 1 heure d'expiration
-        await user.save();
-
-        // Envoyer l'email avec le code
-        await transporter.sendMail({
-            to: email,
-            subject: 'Code de réinitialisation de mot de passe',
-            html: `
-                <h1>Réinitialisation de mot de passe</h1>
-                <p>Votre code de vérification est : <strong>${verificationCode}</strong></p>
-                <p>Ce code expirera dans 1 heure.</p>
-            `
-        });
-
-        res.status(200).json({
-            status: 'success',
-            message: 'Un code de vérification a été envoyé à votre adresse email.'
-        });
-    } catch (err) {
-        console.error('Erreur de réinitialisation :', err);
-        res.status(500).json({
-            status: 'fail',
-            message: 'Erreur lors de l\'envoi de l\'email de réinitialisation.',
-            error: err.message
-        });
-    }
-};
-
-// Vérification du code de réinitialisation
-exports.verifyResetCode = async(req, res) => {
-    try {
-        const { email, code } = req.body;
-
-        const user = await User.findOne({
-            email,
-            resetCode: code,
-            resetCodeExpires: { $gt: Date.now() }
-        });
-
-        if (!user) {
-            return res.status(400).json({
-                status: 'fail',
-                message: 'Code invalide ou expiré.'
-            });
-        }
-
-        // Générer un token pour la réinitialisation finale du mot de passe
-        const resetToken = crypto.randomBytes(32).toString('hex');
-        user.resetToken = resetToken;
-        user.resetTokenExpires = Date.now() + 3600000; // 1 heure supplémentaire
-        await user.save();
-
-        res.status(200).json({
-            status: 'success',
-            resetToken
-        });
-    } catch (err) {
-        res.status(500).json({
-            status: 'fail',
-            message: 'Erreur lors de la vérification du code.',
-            error: err.message
-        });
-    }
-};
-
-// Réinitialisation du mot de passe
-exports.resetPassword = async(req, res) => {
-    try {
-        const { email, resetToken, newPassword } = req.body;
-
-        const user = await User.findOne({
-            email,
-            resetToken,
-            resetTokenExpires: { $gt: Date.now() }
-        });
-
-        if (!user) {
-            return res.status(400).json({
-                status: 'fail',
-                message: 'Token invalide ou expiré.'
-            });
-        }
-
-        // Mise à jour du mot de passe
-        user.mot_de_passe = newPassword;
-        user.resetToken = undefined;
-        user.resetTokenExpires = undefined;
-        user.resetCode = undefined;
-        user.resetCodeExpires = undefined;
-        await user.save();
-
-        res.status(200).json({
-            status: 'success',
-            message: 'Votre mot de passe a été réinitialisé avec succès.'
-        });
-    } catch (err) {
-        res.status(500).json({
-            status: 'fail',
-            message: 'Erreur lors de la réinitialisation du mot de passe.',
-            error: err.message
-        });
-    }
-};
-
-// Renvoyer le code de vérification
-exports.resendCode = async(req, res) => {
-    try {
-        const { email } = req.body;
-
-        const user = await User.findOne({ email });
-        if (!user) {
-            return res.status(404).json({
-                status: 'fail',
-                message: 'Aucun utilisateur trouvé avec cet email.'
-            });
-        }
-
-        // Générer un nouveau code
-        const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
-
-        user.resetCode = verificationCode;
-        user.resetCodeExpires = Date.now() + 3600000; // 1 heure d'expiration
-        await user.save();
-
-        // Envoyer l'email avec le code
-        await transporter.sendMail({
-            to: email,
-            subject: 'Nouveau code de réinitialisation de mot de passe',
-            html: `
-                <h1>Réinitialisation de mot de passe</h1>
-                <p>Votre nouveau code de vérification est : <strong>${verificationCode}</strong></p>
-                <p>Ce code expirera dans 1 heure.</p>
-            `
-        });
-
-        res.status(200).json({
-            status: 'success',
-            message: 'Un nouveau code de vérification a été envoyé à votre adresse email.'
-        });
-    } catch (err) {
-        res.status(500).json({
-            status: 'fail',
-            message: 'Erreur lors de l\'envoi du nouveau code.',
-            error: err.message
-        });
-    }
-};
 
 // Obtenir le total des utilisateurs
 exports.getTotalUsers = async(req, res) => {
@@ -867,3 +691,108 @@ exports.getTotalAdmins = async(req, res) => {
         });
     }
 };
+
+
+
+exports.forgotPassword = async (req, res) => {
+    try {
+      const { email } = req.body;
+  
+      if (!email) {
+        return res.status(400).json({ message: 'Email requis' });
+      }
+  
+      const user = await User.findOne({ email: email.toLowerCase() });
+      if (!user) {
+        return res.status(404).json({ message: 'Utilisateur non trouvé' });
+      }
+  
+      const token = crypto.randomBytes(32).toString('hex');
+      const expiresAt = new Date(Date.now() + 3600000); // 1 heure
+  
+      await ResetToken.create({ userId: user._id, token, expiresAt });
+  
+      // Envoi de l'email avec le lien de réinitialisation
+      await sendResetEmail(user.email, token);
+  
+      return res.json({
+        message: 'Un email de réinitialisation a été envoyé.',
+      });
+  
+    } catch (error) {
+      console.error('Erreur dans forgotPassword:', error);
+      return res.status(500).json({ message: 'Erreur serveur' });
+    }
+  };
+  
+  exports.resetPassword = async (req, res) => {
+    const { token, newPassword } = req.body;
+  
+    // Vérifie que le nouveau mot de passe est valide
+    if (!newPassword || newPassword.length < 6) {
+      return res.status(400).json({ message: 'Mot de passe trop court (min. 6 caractères)' });
+    }
+  
+    try {
+      // Recherche du token dans la base
+      const reset = await ResetToken.findOne({ token });
+      if (!reset || reset.expiresAt < new Date()) {
+        return res.status(400).json({ message: 'Token invalide ou expiré' });
+      }
+  
+      // Recherche de l'utilisateur associé
+      const user = await User.findById(reset.userId);
+      if (!user) {
+        return res.status(404).json({ message: 'Utilisateur non trouvé' });
+      }
+  
+      // Affecte le mot de passe en clair (sera hashé automatiquement par le middleware)
+      user.mot_de_passe = newPassword;
+      await user.save();
+  
+      // Supprime tous les tokens liés à cet utilisateur
+      await ResetToken.deleteMany({ userId: user._id });
+  
+      // Réponse au client
+      return res.json({ message: 'Mot de passe réinitialisé avec succès' });
+  
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: "Erreur serveur" });
+    }
+  };
+  
+const sendResetEmail = async (email, token) => {
+    // Configure le transporteur SMTP (ici exemple avec Gmail)
+    let transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+  
+    const resetUrl = `http://localhost:4200/reset-password?token=${token}`;
+  
+    // Contenu de l’email
+    let mailOptions = {
+      from: '"Support Parking Intelligent" <hawa.ndiongue@gmail.com>', // expéditeur
+      to: email,
+      subject: 'Réinitialisation de votre mot de passe',
+      html: `<p>Bonjour Cher utilisateur,</p>
+             <p>Vous avez demandé à réinitialiser votre mot de passe.</p>
+             <p>Cliquez sur ce <a href="${resetUrl}">ici</a> pour créer un nouveau mot de passe. Ce lien est valide pour une duree de 1 heure.</p>
+             <p>Si vous n’avez pas fait cette demande, ignorez ce message.</p>`
+    };
+  
+    try {
+        let info = await transporter.sendMail(mailOptions);
+        console.log('Email envoyé:', info.messageId);
+      } catch (error) {
+        console.error('Erreur envoi email:', error);
+      }
+      
+  };
+  
+
+  

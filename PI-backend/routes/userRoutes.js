@@ -3,6 +3,11 @@ const router = express.Router();
 const userController = require('../controllers/userController');
 const { verifyToken } = require('../middlewares/authMiddleware'); // Assure-toi du bon chemin
 
+// Route mot de passe oublie
+router.post('/forgot-password', userController.forgotPassword);
+router.post('/reset-password', userController.resetPassword);
+
+
 // Vérification du token pour toutes les routes
 router.use(verifyToken);
 
@@ -39,6 +44,7 @@ router.post('/deposit', userController.restrictTo('administrateur'), userControl
 
 // Route pour retirer de l'argent
 router.post('/withdraw', userController.restrictTo('administrateur'), userController.withdraw);
+
 
 
 module.exports = router;

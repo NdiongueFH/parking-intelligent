@@ -12,12 +12,6 @@ router.post('/login', userController.login);
 // Route de connexion via carte RFID pour administrateurs (pas besoin de token ici)
 router.post('/login-rfid', userController.loginRfid);
 
-// **Routes non protégées**
-// Route pour la réinitialisation du mot de passe (accessible sans authentification)
-router.post('/forgot-password', userController.forgotPassword); // Demande de réinitialisation du mot de passe
-router.post('/verify-reset-code', userController.verifyResetCode); // Vérification du code de réinitialisation
-router.post('/reset-password', userController.resetPassword); // Réinitialisation du mot de passe
-router.post('/resend-code', userController.resendCode); // Renvoyer le code de vérification
 
 // **Vérification du token pour toutes les autres routes**
 router.use(verifyToken);

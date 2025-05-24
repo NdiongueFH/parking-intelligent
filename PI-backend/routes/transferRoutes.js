@@ -13,4 +13,7 @@ router.use(userController.protect); // Toutes les routes ci-dessous nécessitent
 // Route pour obtenir la liste des transactions
 router.get('/', userController.restrictTo('administrateur'), transferController.getAllTransfers);
 
+// ✅ Nouvelle route : transactions de l'utilisateur connecté
+router.get('/mes-transactions', transferController.getUserTransfers);
+
 module.exports = router;

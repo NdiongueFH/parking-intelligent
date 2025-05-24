@@ -158,6 +158,19 @@ exports.addReservation = async(req, res) => {
         place.statut = 'reservee';
         await place.save();
 
+        // Émettre l’événement WebSocket pour mise à jour en temps réel
+        const io = req.app.get('io');
+        io.emit('majEtatParking', {
+            placeId: place._id,
+            statut: place.statut,
+            nomPlace: place.nomPlace,
+        });
+
+       
+
+       
+
+
         // Vérifier et gérer les amendes après la période de réservation
         setTimeout(async() => {
             const currentTime = new Date();
@@ -185,7 +198,10 @@ exports.addReservation = async(req, res) => {
                 // Mettre à jour la place à "libre"
                 place.statut = 'libre';
                 await place.save();
+                
                 console.log(`Place ${place.nomPlace} mise à jour à "libre" après la réservation.`);
+
+              
             }
         }, dureeEnMillisecondes);
 

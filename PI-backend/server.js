@@ -39,6 +39,8 @@ const io = socketIo(server, {
         credentials: true,
     }
 });
+app.set('io', io);
+
 
 
 // Utiliser CORS pour permettre les requêtes depuis différents domaines

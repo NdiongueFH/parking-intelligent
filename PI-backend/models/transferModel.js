@@ -33,6 +33,12 @@ const transferSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User', // Référence à l'utilisateur administrateur qui effectue le transfert
         required: true
+    },
+
+    utilisateur: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
     }
 });
 
