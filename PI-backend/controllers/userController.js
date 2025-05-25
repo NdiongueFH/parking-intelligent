@@ -248,7 +248,7 @@ exports.restrictTo = (...roles) => {
 // Obtenir tous les utilisateurs
 exports.getAllUsers = async(req, res) => {
     try {
-        const users = await User.find();
+        const users = await User.find().sort({ createdAt: -1 }); // <- tri ici
 
         res.status(200).json({
             status: 'success',
