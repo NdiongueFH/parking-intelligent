@@ -1,0 +1,285 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+:host {
+    display: block;
+    font-family: 'Roboto', sans-serif;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.reservation-container {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid #030303;
+    width: 800px;
+    /* Ajustez la largeur selon vos besoins */
+    box-shadow: 0 0 0 2px rgba(66, 66, 66, 0.3), 0 8px 15px rgba(170, 169, 169, 0.8);
+}
+
+.reservation-header {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.reservation-header h2 {
+    margin: 0;
+    font-weight: 500;
+    font-size: 1.5rem;
+}
+
+.parking-info-card {
+    background-color: #e1f5fe;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid #030303;
+    box-shadow: 0 0 0 2px rgba(66, 66, 66, 0.3), 0 8px 15px rgba(170, 169, 169, 0.8);
+}
+
+.form-section {
+    margin-bottom: 20px;
+}
+
+.form-section h3 {
+    margin: 0 0 15px 0;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.form-row {
+    display: flex;
+    flex-wrap: wrap;
+    /* Permet aux éléments de passer à la ligne si nécessaire */
+    gap: 20px;
+    /* Espace entre les champs */
+    margin-bottom: 15px;
+    /* Espace en dessous de la ligne */
+}
+
+.form-group {
+    flex: 1 1 45%;
+    /* Permet aux champs d'avoir une largeur de 45% */
+    min-width: 250px;
+    /* Largeur minimale pour éviter le débordement */
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 0.9rem;
+}
+
+input,
+select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    border: 1px solid #d8d7d7;
+    font-size: 1rem;
+    outline: none;
+    box-sizing: border-box;
+    box-shadow: 0 0 0 2px rgba(8, 8, 8, 0.3), 0 8px 15px rgba(0, 0, 0, 0.8);
+    /* Assure que le padding est inclus dans la largeur totale */
+}
+
+input:focus,
+select:focus {
+    border-color: #2196f3;
+}
+
+.payment-options {
+    display: flex;
+    gap: 20px;
+    /* Espace entre les options de paiement */
+}
+
+.payment-option {
+    flex: 1;
+    /* Permet aux options de paiement de prendre de l'espace équitablement */
+    background: white;
+    border: 1px solid #807f7f;
+    border-radius: 5px;
+    padding: 10px 15px;
+}
+
+
+/* Styles pour les options de paiement */
+
+.custom-radio {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.custom-radio input {
+    display: none;
+    /* Masquer le bouton radio par défaut */
+}
+
+.radio-button {
+    width: 20px;
+    /* Taille du bouton */
+    height: 20px;
+    /* Taille du bouton */
+    border: 2px solid black;
+    /* Bordure noire */
+    border-radius: 50%;
+    /* Forme ronde */
+    margin-right: 10px;
+    /* Espace à droite */
+    transition: background-color 0.3s, border-color 0.3s;
+    /* Transition pour le changement de couleur */
+}
+
+.custom-radio input:checked+.radio-button {
+    background-color: #1606f7;
+    /* Couleur verte lorsque sélectionné */
+    border-color: #f7b603;
+    /* Bordure verte lorsque sélectionné */
+}
+
+
+/* Styles pour les boutons */
+
+.form-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    /* Espace au-dessus des boutons */
+}
+
+button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s;
+}
+
+button[type="button"] {
+    background-color: #f44336;
+    /* Couleur pour le bouton Annuler */
+    color: white;
+}
+
+button[type="button"]:hover {
+    background-color: #d32f2f;
+    /* Couleur au survol pour Annuler */
+}
+
+button[type="submit"] {
+    background-color: #0d47a1;
+    /* Couleur pour le bouton Confirmer */
+    color: white;
+}
+
+button[type="submit"]:hover {
+    background-color: #0a3b86;
+    /* Couleur au survol pour Confirmer */
+}
+
+
+/* Styles pour le texte d'amende */
+
+.alert-warning {
+    background-color: #fff8e1;
+    /* Couleur de fond pour l'alerte */
+    border-left: 4px solid #ffc107;
+    /* Bordure à gauche */
+    padding: 10px 15px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+.alert-warning .material-icons {
+    color: #ffc107;
+    /* Couleur de l'icône d'avertissement */
+    margin-right: 8px;
+    /* Espace à droite de l'icône */
+}
+
+.success-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: white;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    animation: slideIn 0.5s ease-out;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+
+/* form-reservation.component.css */
+
+.payment-initiated {
+    color: rgb(147, 252, 147);
+    /* Changez la couleur du texte à vert */
+    font-weight: bold;
+    /* Optionnel : mettre en gras */
+}
+
+.error-message {
+    color: red;
+    font-size: 0.9em;
+    margin-top: 5px;
+    text-align: center;
+    /* Centre le texte */
+    width: 100%;
+    /* Prend toute la largeur du conteneur */
+}
+
+
+/* Animation */
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}

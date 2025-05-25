@@ -1,0 +1,977 @@
+/* Variables */
+
+:root {
+    --primary-color: #004AAD;
+    --secondary-color: #00A0E4;
+    --white: #ffffff;
+    --gray-light: #f5f5f5;
+    --gray: #e0e0e0;
+    --gray-dark: #666666;
+    --success-color: #4cd964;
+}
+
+
+/* Global styles */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: var(--gray-light);
+}
+
+
+/* Main content */
+
+.main-content {
+    flex-grow: 1;
+    padding: 20px;
+    overflow-y: auto;
+    background-color: white;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    box-shadow: 0 0 0 2px rgba(209, 208, 208, 0.3), 0 8px 15px rgba(170, 169, 169, 0.8);
+    margin: 30px 15px 15px 30px;
+    /* Augmentez l'espace en haut et à gauche */
+    width: 90%;
+    /* Augmentez la largeur ici */
+    max-width: 1600px;
+    /* Ajustez cette valeur selon vos besoins */
+}
+
+
+/* Header */
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #0754A1;
+    /* Couleur de fond bleue */
+    /* Couleur de fond bleue */
+    padding: 0.75rem 1.5rem;
+    color: var(--white);
+    /* Changez pour du texte blanc */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    height: 90px;
+}
+
+.search-container {
+    display: flex;
+    align-items: center;
+    background-color: var(--secondary-color);
+    border-radius: 25px;
+    padding: 0.5rem;
+    width: 25%;
+    position: relative;
+    /* Ajouté pour positionner le bouton */
+}
+
+h1 {
+    font-size: 30px;
+    margin: 0;
+    color: #fcfdfd;
+}
+
+.search-input {
+    border: none;
+    flex-grow: 1;
+    padding: 0.5rem 2.5rem;
+    /* Ajoutez de l'espace à droite pour l'image */
+    outline: none;
+    font-size: 1rem;
+    border-radius: 10px;
+    height: 50px;
+}
+
+.search-button {
+    border: none;
+    background: none;
+    cursor: pointer;
+    position: absolute;
+    /* Positionne le bouton à l'intérieur du conteneur */
+    right: 10px;
+    /* Ajustez la position à droite */
+    top: 50%;
+    /* Centre le bouton verticalement */
+    transform: translateY(-50%);
+    /* Ajuste le centrage vertical */
+    padding: 0;
+    /* Supprime le padding */
+}
+
+.search-icon {
+    width: 20px;
+    /* Ajustez la taille de l'icône */
+    height: auto;
+    /* Maintient le ratio de l'image */
+}
+
+.logo-container {
+    display: flex;
+    /* Utilise Flexbox */
+    justify-content: center;
+    /* Centre horizontalement */
+    align-items: center;
+    /* Centre verticalement */
+    height: 60px;
+    /* Hauteur du conteneur, ajustez si nécessaire */
+    margin-bottom: 1rem;
+    /* Espace en bas, ajustez si nécessaire */
+}
+
+.logo {
+    width: 70px;
+    height: 60px;
+    border-radius: 50%;
+    box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.2), 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.logout-divider {
+    border: none;
+    /* Supprime la bordure par défaut */
+    border-top: 1px solid rgb(2, 170, 221);
+    /* Trait de couleur */
+    margin: 0;
+    /* Supprime la marge par défaut */
+    margin-bottom: 0.5rem;
+    /* Espace sous le trait */
+    width: 150px;
+    /* Longueur fixe du trait */
+    /* Vous pouvez aussi utiliser une valeur en pourcentage si souhaité, par ex. 80% */
+}
+
+input {
+    padding: 12px 16px;
+    border: 2px solid #8a8989;
+    border-radius: 8px;
+    /* Augmentation du border-radius pour les champs */
+    font-size: 16px;
+    transition: border-color 0.3s;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    /* Ombre beaucoup plus foncée et plus marquée */
+    /* Ombre plus foncée et plus marquée */
+    &:focus {
+        outline: none;
+        border-color: #080808;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        /* Ombre encore plus foncée au focus, avec une grande profondeur */
+    }
+    &.is-invalid {
+        border-color: #e53935;
+        background-color: rgba(229, 57, 53, 0.05);
+    }
+    &::placeholder {
+        color: #999;
+    }
+}
+
+
+/* Sidebar */
+
+.sidebar {
+    width: 200px;
+    /* Augmente la largeur de la barre latérale */
+    background-color: var(--white);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.nav-menu {
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem 0;
+    /* Augmente l'espacement interne */
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    padding: 1.25rem;
+    /* Augmente l'espacement interne */
+    color: var(--gray-dark);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    font-size: 1.1rem;
+    /* Augmente la taille de la police */
+    line-height: 1.6;
+    /* Augmente l'espacement entre les lignes */
+}
+
+.nav-icon {
+    width: 30px;
+    /* Augmente la taille des icônes */
+    height: auto;
+    margin-right: 1rem;
+    /* Augmente l'espacement entre l'icône et le texte */
+    vertical-align: middle;
+}
+
+.logout-container {
+    padding: 1.5rem;
+    /* Augmente l'espacement interne */
+    border-top: 1px solid var(--gray);
+}
+
+.logout-button {
+    display: flex;
+    align-items: center;
+    color: var(--gray-dark);
+    text-decoration: none;
+    padding: 1rem;
+    /* Augmente l'espacement interne */
+    cursor: pointer;
+    font-size: 1.1rem;
+    /* Augmente la taille de la police */
+}
+
+.logout-icon {
+    width: 20px;
+    /* Augmente la taille de l'icône */
+    height: auto;
+    margin-right: 1rem;
+    /* Augmente l'espacement entre l'icône et le texte */
+    vertical-align: middle;
+}
+
+.search-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    color: var(--gray-dark);
+}
+
+.header-icons {
+    display: flex;
+    align-items: center;
+    /* Centre verticalement les icônes */
+}
+
+.settings-button {
+    border: none;
+    /* Supprime la bordure par défaut */
+    background: white;
+    /* Fond blanc */
+    border-radius: 50%;
+    /* Crée un cercle */
+    width: 40px;
+    /* Largeur du cercle */
+    height: 40px;
+    /* Hauteur du cercle */
+    display: flex;
+    /* Utilise flexbox pour centrer le contenu */
+    align-items: center;
+    /* Centre verticalement le contenu */
+    justify-content: center;
+    /* Centre horizontalement le contenu */
+    margin: 0 5px;
+    /* Espacement entre les boutons */
+    cursor: pointer;
+    /* Change le curseur pour indiquer que c'est cliquable */
+    position: relative;
+    /* Nécessaire pour le positionnement du badge */
+}
+
+.header-icon {
+    width: 60px;
+    /* Ajustez la taille selon vos besoins */
+    height: auto;
+    /* Maintient le ratio de l'image */
+    border-radius: 50%;
+}
+
+
+/* Content container */
+
+.content-container {
+    display: flex;
+    flex-grow: 1;
+    overflow: hidden;
+}
+
+@media (max-width: 768px) {
+    .section-header {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+    }
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+
+/* Media queries */
+
+@media (max-width: 992px) {
+    .search-container {
+        width: 50%;
+    }
+}
+
+@media (max-width: 768px) {
+    .content-container {
+        flex-direction: column;
+    }
+    .sidebar {
+        width: 100%;
+        flex-direction: row;
+        height: auto;
+    }
+    .nav-menu {
+        flex-direction: row;
+        padding: 0;
+        justify-content: space-between;
+        width: 100%;
+    }
+    .nav-item {
+        flex-direction: column;
+        padding: 0.5rem;
+    }
+    .logout-container {
+        display: none;
+    }
+}
+
+@media (max-width: 576px) {
+    .header {
+        flex-direction: column;
+        gap: 0.75rem;
+        padding: 0.75rem;
+    }
+    .search-container {
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .main-content {
+        width: 100%;
+        /* Prendre toute la largeur sur les petits écrans */
+    }
+}
+
+.modification-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    background-color: #f5f5f5;
+    width: 1800px;
+}
+
+h3 {
+    text-align: center;
+    margin-bottom: 50px;
+    color: #020202;
+    font-weight: 800;
+    font-size: 25px;
+}
+
+.error-message {
+    color: #e53935;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+
+/* Styles généraux */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    background-color: #f7f9fc;
+    color: #333;
+}
+
+.dashboard-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.settings-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    transition: background-color 0.3s;
+}
+
+.settings-button:hover {
+    background-color: #f5f5f5;
+}
+
+
+/* Modal des paramètres */
+
+.settings-modal {
+    position: absolute;
+    top: 50px;
+    right: 0;
+    width: 320px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+    z-index: 100;
+}
+
+.settings-modal-content {
+    padding: 1.5rem;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.user-avatar {
+    margin-right: 1rem;
+}
+
+.avatar-img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #4a6cf7;
+}
+
+.user-details h3 {
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 0.25rem;
+}
+
+.user-email {
+    color: #707070;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.user-balance {
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem;
+}
+
+.balance-label {
+    color: #707070;
+    margin-right: 0.5rem;
+}
+
+.balance-amount {
+    font-weight: 600;
+    color: #4a6cf7;
+}
+
+.settings-actions {
+    display: flex;
+    flex-direction: column;
+}
+
+.settings-action-link {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem;
+    border-radius: 8px;
+    transition: background-color 0.3s;
+    cursor: pointer;
+    margin-bottom: 0.5rem;
+}
+
+.settings-action-link:hover {
+    background-color: #f5f7ff;
+}
+
+.action-icon {
+    width: 22px;
+    height: 22px;
+    margin-right: 0.75rem;
+}
+
+.settings-modal-arrow {
+    position: absolute;
+    top: -10px;
+    right: 10px;
+    width: 20px;
+    height: 20px;
+    background-color: white;
+    transform: rotate(45deg);
+    box-shadow: -2px -2px 5px rgba(0, 0, 0, 0.04);
+}
+
+.password-toggle {
+    position: absolute;
+    /* Positionner l'icône absolument */
+    right: 10px;
+    /* Espacement à droite */
+    top: 50%;
+    /* Centrer verticalement */
+    transform: translateY(-50%);
+    /* Ajuster l'alignement */
+    cursor: pointer;
+    /* Changer le curseur au survol */
+}
+
+
+/* Main Content pour le formulaire de mot de passe */
+
+.main-content {
+    flex: 1;
+    padding: 2rem;
+    background-color: #f7f9fc;
+}
+
+.password-change-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.section-header {
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.section-header h2 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 0.5rem;
+}
+
+.password-form-card {
+    background: linear-gradient(to bottom, #add8e6, #779ffa);
+    /* Dégradé du bleu clair au bleu ciel */
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    padding: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.password-icon {
+    margin-bottom: 2rem;
+    background-color: #f0f4ff;
+    padding: 1.5rem;
+    border-radius: 50%;
+}
+
+.large-icon {
+    width: 30px;
+    height: 30px;
+}
+
+.password-form {
+    width: 100%;
+    max-width: 500px;
+}
+
+.alert-message {
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+    text-align: center;
+}
+
+.success {
+    background-color: #e6f7e6;
+    color: #2c7a2c;
+}
+
+.error {
+    background-color: #ffeaea;
+    color: #d32f2f;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    font-size: 0.95rem;
+    color: #070707;
+}
+
+.password-input-container {
+    position: relative;
+    display: flex;
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    padding-right: 3rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #4a6cf7;
+    box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.1);
+}
+
+.invalid-input {
+    border-color: #e53e3e;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.toggle-password img {
+    width: 20px;
+    height: 20px;
+    opacity: 0.5;
+    transition: opacity 0.3s;
+}
+
+.toggle-password:hover img {
+    opacity: 0.8;
+}
+
+.error-message {
+    margin-top: 0.4rem;
+    color: #e53e3e;
+    font-size: 0.85rem;
+}
+
+.password-strength {
+    margin-bottom: 2rem;
+}
+
+.strength-label {
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    color: #4a5568;
+}
+
+.strength-meter {
+    height: 6px;
+    background-color: #e2e8f0;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 0.75rem;
+}
+
+.strength-indicator {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.3s;
+}
+
+.weak {
+    background-color: #e53e3e;
+}
+
+.medium {
+    background-color: #f7c941;
+}
+
+.strong {
+    background-color: #2bfa2b;
+}
+
+.password-tips {
+    font-size: 0.85rem;
+    color: #718096;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2rem;
+}
+
+.btn-cancel,
+.btn-save {
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s;
+    min-width: 120px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.btn-cancel {
+    background-color: #f7f9fc;
+    color: #4a5568;
+    border: 1px solid #e2e8f0;
+}
+
+.btn-cancel:hover {
+    background-color: #e2e8f0;
+}
+
+.btn-save {
+    background-color: #0754A1;
+    color: white;
+    border: none;
+}
+
+.btn-save:hover {
+    background-color: #3a5cd7;
+}
+
+.btn-save:disabled {
+    background-color: #a4b4fa;
+    cursor: not-allowed;
+}
+
+.spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 0.8s linear infinite;
+}
+
+
+/* Ajoutez ce CSS dans votre fichier dashboard-admin.component.css */
+
+
+/* Position relative pour le conteneur des icônes du header */
+
+.header-icons {
+    position: relative;
+}
+
+
+/* Style du modal des paramètres */
+
+.settings-modal {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 300px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    margin-top: 15px;
+    animation: fadeIn 0.2s ease-out;
+    overflow: hidden;
+}
+
+
+/* Flèche pointant vers le haut */
+
+.settings-modal-arrow {
+    position: absolute;
+    top: -10px;
+    right: 15px;
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid #ffffff;
+}
+
+
+/* Contenu du modal */
+
+.settings-modal-content {
+    padding: 20px;
+}
+
+
+/* Informations utilisateur */
+
+.user-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.user-avatar {
+    margin-right: 15px;
+}
+
+.avatar-img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #3498db;
+}
+
+.user-details h3 {
+    margin: 0 0 5px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+.user-email {
+    margin: 0 0 10px 0;
+    font-size: 14px;
+    color: #666;
+}
+
+.user-balance {
+    background-color: #f8f9fa;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.balance-label {
+    font-weight: 500;
+    color: #555;
+}
+
+.balance-amount {
+    font-weight: 600;
+    color: #3498db;
+    margin-left: 5px;
+}
+
+
+/* Actions du paramétrage */
+
+.settings-actions {
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+}
+
+.settings-action-link {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    color: #555;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.settings-action-link:hover {
+    color: #3498db;
+    background-color: #f5f7fa;
+    padding-left: 5px;
+    border-radius: 4px;
+}
+
+.action-icon {
+    width: 18px;
+    height: 18px;
+    margin-right: 10px;
+}
+
+
+/* Animation */
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* Animation */
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
+/* Responsive design */
+
+@media (max-width: 992px) {
+    .password-form-card {
+        padding: 2rem 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .nav-item span,
+    .logout-button span {
+        display: none;
+    }
+    .nav-item,
+    .logout-button {
+        justify-content: center;
+    }
+    .nav-icon,
+    .logout-icon {
+        margin-right: 0;
+    }
+    .main-content {
+        padding: 1.5rem 1rem;
+    }
+    .password-form-card {
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .form-actions {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    .btn-cancel,
+    .btn-save {
+        width: 100%;
+    }
+}

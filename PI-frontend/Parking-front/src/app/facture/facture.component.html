@@ -1,0 +1,78 @@
+<div class="invoice-container">
+    <div class="header">
+        <div class="logo">
+            <span class="logo-circle">P</span>
+            <h1>Facture de reservation</h1>
+        </div>
+        <div class="date">
+            <p>Date d'emission</p>
+            <p class="bold">{{ reservationData.emissionDate }}</p>
+        </div>
+    </div>
+
+    <div class="reservation-info">
+        <div class="parking-info">
+            <h2>{{ reservationData.parkingName }}</h2>
+            <p>Code de reservation</p>
+            <div class="code-box">
+                <span class="qr-code"></span>
+                <span class="code-number">{{ reservationData.reservationCode }}</span>
+            </div>
+        </div>
+        <div class="status-box">
+            <p>Statut</p>
+            <div class="status">{{ reservationData.status }}</div>
+        </div>
+    </div>
+
+    <div class="client-info">
+        <div class="section-header">
+            <h2>Informations du client</h2>
+            <div class="receipt-number">N°Reçu : {{ reservationData.receiptNumber }}</div>
+        </div>
+        <div class="client-details">
+            <div class="personal-info">
+                <p class="bold">{{ reservationData.clientName }}</p>
+                <p>{{ reservationData.clientEmail }}</p>
+                <p>{{ reservationData.clientPhone }}</p>
+            </div>
+            <div class="vehicle-info">
+                <div class="car-icon"></div>
+                <p class="license-plate">{{ reservationData.licensePlate }}</p>
+                <p class="parking-place">{{ reservationData.parkingPlace }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="payment-info">
+        <div class="time-details">
+            <div class="info-row">
+                <span>Heure</span>
+                <span>{{ reservationData.startTime }}-{{ reservationData.endTime }}</span>
+            </div>
+            <div class="info-row">
+                <span>Durée</span>
+                <span>{{ reservationData.duration }}</span>
+            </div>
+            <div class="info-row">
+                <span>Tarif horaire</span>
+                <span>{{ reservationData.hourlyRate }} {{ reservationData.currency }}</span>
+            </div>
+        </div>
+        <div class="total-row">
+            <span>Total</span>
+            <span class="total-amount">{{ reservationData.totalAmount }} {{ reservationData.currency }}</span>
+        </div>
+    </div>
+
+    <div class="important-notes">
+        <h3>Notes importantes</h3>
+        <ul>
+            <li>Veuillez inserer ce code à l'entrée du parking !</li>
+            <li>Le code est valable uniquement pour la date et l'heure réservées</li>
+        </ul>
+        <div class="stamp">
+            <div class="stamp-text">L'ADMINISTRATEUR</div>
+        </div>
+    </div>
+</div>

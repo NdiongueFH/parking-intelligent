@@ -1,0 +1,355 @@
+<div class="dashboard-container">
+    <!-- Header -->
+    <header class="header">
+        <div class="logo-container">
+            <img src="imagelogoParking.png" alt="Parking Logo" class="logo">
+        </div>
+
+        <div class="search-container">
+            <input type="text" placeholder="Rechercher un parking par son nom" class="search-input" [(ngModel)]="searchTerm" (input)="searchParking()">
+            <button class="search-button" (click)="searchParking()">
+                <img src="search.png" alt="Search" class="search-icon">
+            </button>
+        </div>
+
+        <div class="header-icons">
+            <button class="settings-button" (click)="toggleSettingsModal()">
+        <img src="iconeParametre.jpg" alt="Settings" class="header-icon" />
+    </button>
+
+            <!-- Modal des paramètres -->
+            <div class="settings-modal" *ngIf="showSettingsModal">
+                <div class="settings-modal-content">
+                    <div class="user-info">
+                        <div class="user-avatar">
+                            <img src="user.png" alt="Avatar" class="avatar-img" />
+                        </div>
+                        <div class="user-details">
+                            <h3>{{ userData.nom }} {{ userData.prenom }}</h3>
+                            <p class="user-email">{{ userData.email }}</p>
+                            <div class="user-balance">
+                                <span class="balance-label">Solde :</span>
+                                <span class="balance-amount">{{ userData.solde | currency:'FCFA':'symbol':'1.2-2' }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="settings-actions">
+                        <a class="settings-action-link" (click)="goToEditProfile()">
+                            <img src="modif.png" alt="Éditer" class="action-icon" />
+                            <span>Mes informations</span>
+                        </a>
+                      
+                    </div>
+                </div>
+                <div class="settings-modal-arrow"></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="content-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <nav class="nav-menu">
+                <a class="nav-item" [routerLink]="['/dashboard-admin']">
+                    <img src="home.png" alt="Accueil" class="nav-icon">
+                    <span>Accueil</span>
+                </a>
+                <a class="nav-item" [routerLink]="['/historiques-reservations']">
+                    <img src="file.png" alt="Historiques" class="nav-icon">
+                    <span>Historiques</span>
+                </a>
+                <a class="nav-item" [routerLink]="['/gestions-utilisateurs']">
+                    <img src="group.png" alt="Utilisateurs" class="nav-icon">
+                    <span>Utilisateurs</span>
+                </a>
+                <a class="nav-item active">
+                    <img src="total.png" alt="Parkings" class="nav-icon">
+                    <span>Parkings</span>
+                </a>
+                <a class="nav-item" [routerLink]="['/minibank']">
+                    <img src="bank.png" alt="Bank" class="nav-icon">
+                    <span>MiniBank</span>
+                </a>
+                <a class="nav-item " [routerLink]="[ '/mon-compte'] ">
+                    <img src="parametres.png" alt="Transactions " class="nav-icon ">
+                    <span>Mon compte</span>
+                </a>
+            </nav>
+            <div class="logout-container">
+                <hr class="logout-divider">
+                <a class="logout-button" (click)="logout()">
+                    <img src="deconnexion.png" alt="Déconnexion" class="logout-icon">
+                    <span>Déconnexion</span>
+                </a>
+            </div>
+        </div>
+        <div class="image-container">
+            <img src="Gparkings.jpg" alt="Image de gauche" class="side-image">
+        </div> 
+        <!-- Main Content Area -->
+        <div class="main-content">
+            
+            
+            <div class="section-header">
+                <h2>Gestion des parkings</h2>
+               
+    
+                <button class="add-parking-btn" (click)="toggleAddForm()">
+                    {{ showAddForm ? 'Annuler' : 'Ajouter un parking' }}
+                </button> 
+            </div>
+
+            <!-- Formulaire d'ajout (affiché conditionnellement) -->
+            <div class="add-parking-form" *ngIf="showAddForm">
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <input type="text" placeholder="Nom du parking" class="form-control" [(ngModel)]="newParking.nom_du_parking" name="nom_du_parking">
+                    </div>
+                    <div class="form-group">
+                        <input type="number" placeholder="Capacite totale" class="form-control" [(ngModel)]="newParking.capaciteTotale" name="capaciteTotale">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <input type="text" placeholder="Adresse" class="form-control" [(ngModel)]="newParking.adresse" name="adresse" readonly>
+                    </div>
+                    <div class="form-group">
+                        <button class="map-selector-btn" (click)="selectMapLocation()">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                <circle cx="12" cy="10" r="3"></circle>
+                            </svg>
+                            Selectionner l'adresse sur la carte
+                        </button>
+                    </div>
+                </div>
+
+
+                <div class="form-actions">
+                    <button class="btn-save" (click)="saveParking()">Enregistrer</button>
+                </div>
+            </div>
+
+            <!-- Modal de succès -->
+            <div class="modal" *ngIf="showSuccessModal" (click)="closeSuccessModal()">
+                <div class="modal-content" (click)="$event.stopPropagation()">
+                    <div class="icon-circle">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="green">
+                <path d="M9 19L2 12l2-2 5 5 13-13 2 2-15 15z" />
+            </svg>
+                    </div>
+                    <h2>{{ successMessage }}</h2>
+                </div>
+            </div>
+
+            <!-- Message de succès -->
+            <div *ngIf="showSuccessMessage" class="success-message">
+                <h3>{{ successMessage }}</h3>
+            </div>
+
+
+            <div class="parkings-container">
+
+                <div *ngIf="paginatedParkings.length === 0" class="error-message">
+                    Aucun parking n'est disponible dans cette liste.
+                </div>
+
+                <div *ngFor="let parking of paginatedParkings" class="parking-item">
+                    <div class="parking-header" (click)="toggleParkingDetails(parking)">
+                        <h3>{{ parking.nom_du_parking }}</h3>
+
+                        <!-- Ajouter l'image de suppression à l'extrême droite -->
+                        <img src="sup.png" alt="Supprimer" class="delete-icon" (click)="openDeleteModal(parking); $event.stopPropagation()" />
+
+                        <button class="expand-btn" [class.expanded]="selectedParking === parking" (click)="selectParking(parking); toggleParkingDetails(parking)">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Contenu détaillé du parking (visible quand sélectionné) -->
+                    <div class="parking-details" *ngIf="selectedParking === parking">
+                        <div class="tab-navigation">
+                            <div class="tab" [class.active]="selectedTab === 'details'" (click)="selectTab('details')">Détails</div>
+                            <div class="tab" [class.active]="selectedTab === 'tarifs'" (click)="selectTab('tarifs')">Tarifs</div>
+                            <div class="tab" [class.active]="selectedTab === 'amendes'" (click)="selectTab('amendes')">Amendes</div>
+                            <div class="tab" [class.active]="selectedTab === 'places'" (click)="selectTab('places')">Places</div>
+                        </div>
+
+                        <!-- Contenu des onglets -->
+                        <div class="tab-content" *ngIf="selectedTab === 'details'">
+                            <p>Adresse : {{ parking.adresse }}</p>
+                            <p>Latitude : {{ parking.latitude }}</p>
+                            <p>Longitude : {{ parking.longitude }}</p>
+                            <p>Places disponibles : {{ parking.placesLibres }} / {{ parking.capaciteTotale }}</p>
+                        </div>
+
+                        <div class="tab-content" *ngIf="selectedTab === 'tarifs'">
+                            <div class="tarif-grid">
+                                <div class="tarif-row">
+                                    <div class="tarif-item">
+                                        <div class="tarif-label">Heure</div>
+                                        <div *ngIf="!isEditing; else editHour">
+                                            <span class="tarif-value">{{ modifiedTariffs.heure }} FCFA</span>
+                                        </div>
+                                        <ng-template #editHour>
+                                            <input type="number" [(ngModel)]="modifiedTariffs.heure" class="tarif-input" />
+                                        </ng-template>
+                                    </div>
+                                    <div class="tarif-item">
+                                        <div class="tarif-label">Jour</div>
+                                        <div *ngIf="!isEditing; else editDay">
+                                            <span class="tarif-value">{{ modifiedTariffs.jour }} FCFA</span>
+                                        </div>
+                                        <ng-template #editDay>
+                                            <input type="number" [(ngModel)]="modifiedTariffs.jour" class="tarif-input" />
+                                        </ng-template>
+                                    </div>
+                                    <div class="tarif-item">
+                                        <div class="tarif-label">Type de véhicule :</div>
+                                        <select [(ngModel)]="selectedVehicleType" class="form-select">
+                                            <option value="voiture">Voiture</option>
+                                            <option value="moto">Moto</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="tarif-row">
+                                    <div class="tarif-item">
+                                        <div class="tarif-label">Semaine</div>
+                                        <div *ngIf="!isEditing; else editWeek">
+                                            <span class="tarif-value">{{ modifiedTariffs.semaine }} FCFA</span>
+                                        </div>
+                                        <ng-template #editWeek>
+                                            <input type="number" [(ngModel)]="modifiedTariffs.semaine" class="tarif-input" />
+                                        </ng-template>
+                                    </div>
+                                    <div class="tarif-item">
+                                        <div class="tarif-label">Mois</div>
+                                        <div *ngIf="!isEditing; else editMonth">
+                                            <span class="tarif-value">{{ modifiedTariffs.mois }} FCFA</span>
+                                        </div>
+                                        <ng-template #editMonth>
+                                            <input type="number" [(ngModel)]="modifiedTariffs.mois" class="tarif-input" />
+                                        </ng-template>
+                                    </div>
+                                    <div class="tarif-item">
+                                        <button class="action-button" (click)="isEditing ? saveTariffs() : modifyTariffs()">
+                                            {{ isEditing ? 'Sauvegarder' : 'Modifier les tarifs' }}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Affichage des messages d'erreur -->
+                            <div *ngIf="errorMessage" class="error-message">
+                                <h3>{{ errorMessage }}</h3>
+                            </div>
+                        </div>
+
+                        <div class="tab-content" *ngIf="selectedTab === 'amendes'">
+                            <div class="form-row amendes-form">
+                                <div class="form-group">
+                                    <label for="typeInfraction">Type d'infraction</label>
+                                    <input type="text" id="typeInfraction" placeholder="Type infraction" class="form-control" [(ngModel)]="newAmende.typeInfraction" required />
+                                </div>
+                                <div class="form-group">
+                                    <label for="montant">Montant (FCFA)</label>
+                                    <input type="number" id="montant" placeholder="Montant" class="form-control" [(ngModel)]="newAmende.montant" required />
+                                </div>
+                                <div class="form-group">
+                                    <label for="duree">Durée (minutes)</label>
+                                    <input type="number" id="duree" placeholder="Durée" class="form-control" [(ngModel)]="newAmende.duree" required />
+                                </div>
+                                <div class="form-group">
+                                    <label for="typeVehicule">Type de véhicule</label>
+                                    <select id="typeVehicule" [(ngModel)]="newAmende.typeVehicule" class="form-select" required>
+                                        <option value="voiture">Voiture</option>
+                                        <option value="moto">Moto</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <!-- Affichage des messages d'erreur -->
+                            <div *ngIf="errorMessage" class="error-message">
+                                <h3>{{ errorMessage }}</h3>
+                            </div>
+                            <button class="action-button" (click)="saveAmende()">Ajouter</button>
+                        </div>
+
+                        <div class="tab-content" *ngIf="selectedTab === 'places'">
+                            <div class="places-grid">
+                                <div class="places-row">
+                                    <div class="places-item">
+                                        <div class="places-label">Nom de la place :</div>
+                                        <input type="text" [(ngModel)]="newPlace.nomPlace" class="places-input" placeholder="Entrez le nom de la place" />
+                                    </div>
+                                    <div class="places-item">
+                                        <div class="places-label">Statut :</div>
+                                        <select [(ngModel)]="newPlace.statut" class="form-select">
+                                            <option>libre</option>
+                                            <option>occupee</option>
+                                            <option>reservee</option>
+                                        </select>
+                                    </div>
+                                    <div class="places-item">
+                                        <div class="places-label">Type de véhicule :</div>
+                                        <select [(ngModel)]="newPlace.typeVehicule" class="form-select">
+                                            <option>voiture</option>
+                                            <option>moto</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <button class="action-button" (click)="addPlace()">Ajouter la place</button>
+                                <!-- Affichage des messages d'erreur -->
+                                <div *ngIf="errorMessage" class="error-message">
+                                    <h3>{{ errorMessage }}</h3>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination">
+                <button (click)="previousPage()" [disabled]="currentPage === 1">Précédent</button>
+                <button *ngFor="let page of pageNumbers" (click)="goToPage(page)" [ngClass]="{'active': currentPage === page}">
+                    {{ page }}
+                </button>
+                <button (click)="nextPage()" [disabled]="currentPage === totalPages">Suivant</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal pour sélectionner la carte -->
+    <div class="map-modal" *ngIf="showMapModal" (click)="closeMapModal()">
+        <div class="map-modal-content" (click)="$event.stopPropagation()">
+            <h2>Sélectionnez un emplacement sur la carte</h2>
+            <div class="map" leaflet [leafletOptions]="mapOptions" (leafletMapReady)="onMapReady($event)"></div>
+            <div class="modal-actions">
+                <button class="btn-save" (click)="saveSelectedLocation()">Sauvegarder l'emplacement</button>
+                <button class="btn-cancel" (click)="closeMapModal()">Annuler</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de confirmation de suppression -->
+    <div class="modal" *ngIf="showDeleteModal" (click)="closeDeleteModal()">
+        <div class="modal-content" (click)="$event.stopPropagation()">
+            <h2>Confirmer la suppression</h2>
+            <p>Êtes-vous sûr de vouloir supprimer le parking "{{ selectedParking?.nom_du_parking }}" ?</p>
+            <div class="modal-actions">
+                <button class="btn-confirm" (click)="confirmDelete()">Confirmer</button>
+                <button class="btn-cancel" (click)="closeDeleteModal()">Annuler</button>
+            </div>
+        </div>
+    </div>
+
+
+</div>

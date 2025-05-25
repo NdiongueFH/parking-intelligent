@@ -1,0 +1,36 @@
+<!-- src/app/components/home/home.component.html -->
+<div class="home-container">
+    <header class="header">
+        <div class="logo-container">
+            <img src="imagelogoParking.png" alt="Logo Parking Intelligent" class="logo">
+        </div>
+        <h1 class="title">Bienvenue sur votre plateforme de parking intelligent !</h1>
+        <div class="auth-buttons">
+            <a routerLink="/login" class="btn btn-primary">Se connecter</a>
+            <a routerLink="/inscription" class="btn btn-primary">S'inscrire</a>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <h2 class="subtitle">Trouvez votre place en un clic !</h2>
+
+        <div class="features-section">
+            <h3 class="features-title">Fonctionnalités :</h3>
+
+            <div class="features-grid">
+                <div class="feature-card" *ngFor="let feature of features">
+                    <div class="feature-icon">
+                        <img [src]="feature.icon" [alt]="feature.title">
+                    </div>
+                    <h4 class="feature-title">{{ feature.title }}</h4>
+                    <p class="feature-description">{{ feature.description }}</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+
+    <footer class="footer">
+        <p>© 2025 PI Tous droits réservés</p>
+    </footer>
+</div>

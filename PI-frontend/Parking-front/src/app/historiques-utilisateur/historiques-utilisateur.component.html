@@ -1,0 +1,313 @@
+<div class="dashboard-container">
+    <!-- Header -->
+    <header class="header">
+        <div class="logo-container">
+            <img src="imagelogoParking.png" alt="Parking Logo" class="logo">
+        </div>
+        <div class="search-container">
+            <h1 class="search-text">Consultez vos réservations passées et à venir</h1>
+        </div>
+        <div class="header-icons">
+            <button class="settings-button" (click)="toggleSettingsModal()">
+        <img src="iconeParametre.jpg" alt="Settings" class="header-icon" />
+    </button>
+
+            <!-- Modal des paramètres -->
+            <div class="settings-modal" *ngIf="showSettingsModal">
+                <div class="settings-modal-content">
+                    <div class="user-info">
+                        <div class="user-avatar">
+                            <img src="user.png" alt="Avatar" class="avatar-img" />
+                        </div>
+                        <div class="user-details">
+                            <h3>{{ userData.nom }} {{ userData.prenom }}</h3>
+                            <p class="user-email">{{ userData.email }}</p>
+                            <div class="user-balance">
+                                <span class="balance-label">Solde :</span>
+                                <span class="balance-amount">{{ userData.solde | currency:'FCFA':'symbol':'1.2-2' }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="settings-actions">
+                        <a class="settings-action-link" (click)="goToEditProfile()">
+                            <img src="modif.png" alt="Éditer" class="action-icon" />
+                            <span>Mes informations</span>
+                        </a>
+                       
+                    </div>
+                </div>
+                <div class="settings-modal-arrow"></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="content-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <nav class="nav-menu">
+                <a class="nav-item" [routerLink]="['/dashboard-utilisateur']">
+                    <img src="home.png" alt="Accueil" class="nav-icon">
+                    <span>Accueil</span>
+                </a>
+                <a class="nav-item active" [routerLink]="['/historiques-utilisateur']">
+                    <img src="file.png" alt="Historiques" class="nav-icon">
+                    <span>Historiques</span>
+                </a>
+                <a class="nav-item " [routerLink]="[ '/mes-transactions'] ">
+                    <img src="bank.png " alt="Transactions " class="nav-icon ">
+                    <span>Transactions</span>
+                </a>
+                <a class="nav-item " [routerLink]="[ '/mon-compte-utilisateur'] ">
+                    <img src="parametres.png" alt="Transactions " class="nav-icon ">
+                    <span>Mon compte</span>
+                </a>
+
+            </nav>
+            <div class="logout-container">
+                <hr class="logout-divider">
+                <a class="logout-button" (click)="logout()">
+                    <img src="deconnexion.png" alt="Déconnexion" class="logout-icon">
+                    <span>Déconnexion</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Content Section -->
+        <div class="main-content">
+            <div class="stats">
+                <div class="stat">
+                    <h3>{{ totalReservations }}</h3>
+                    <p>Total réservations</p>
+                </div>
+                <div class="stat green">
+                    <h3>{{ ongoingReservations }}</h3>
+                    <p>En cours</p>
+                </div>
+                <div class="stat">
+                    <h3>{{ completedReservations }}</h3>
+                    <p>Terminées</p>
+                </div>
+                <div class="stat red">
+                    <h3>{{ cancelledReservations }}</h3>
+                    <p>Annulées</p>
+                </div>
+            </div>
+            <div class="filters">
+                <select [(ngModel)]="selectedEtat" (change)="applyFilters()">
+                    <option *ngFor="let etat of etatOptions" [value]="etat">{{ etat }}</option>
+                </select>
+                <select [(ngModel)]="selectedParking" (change)="applyFilters()">
+                    <option value="Tous les parkings">Tous les parkings</option>
+                    <option *ngFor="let parking of parkingOptions" [value]="parking">{{ parking }}</option>
+                </select>
+                <!-- <select [(ngModel)]="selectedStatsParking" (change)="openStatsModal()">
+                    <option value="">Voir statistiques</option>
+                    <option *ngFor="let parking of parkingOptions" [value]="parking">{{ parking }}</option>
+                </select> -->
+            </div>
+            <div class="reservations-container">
+                <h2>Historique de mes réservations</h2>
+
+                <!-- Message lorsque l'historique est vide -->
+                <div *ngIf="reservations.length === 0" class="no-reservations-message">
+                    <p>Aucune réservation trouvée dans votre historique.</p>
+                </div>
+
+                <div *ngFor="let reservation of paginatedReservations" class="reservation">
+                    <div class="info">
+                        <h3>Parking: {{ reservation.parkingId.nom_du_parking }}</h3>
+                        <p><img src="posi.jpeg" alt="Adresse"> <strong>Adresse:</strong> {{ reservation.parkingId.adresse }}</p>
+                        <p><img src="heure.png" alt="Heure d'arrivée"> <strong>Heure d'arrivée:</strong> {{ reservation.heureArrivee | date:'short' }}</p>
+                        <p><img src="heure.png" alt="Heure de départ"> <strong>Heure de départ:</strong> {{ reservation.heureDepart | date:'short' }}</p>
+                        <p><img src="prix.png" alt="Montant"> <strong>Montant:</strong> {{ reservation.montant }} FCFA</p>
+                    </div>
+                    <div class="status" [ngClass]="{'en-cours': reservation.etat === 'En cours', 'annulee': reservation.etat === 'Annulée'}">
+                        {{ reservation.etat }}
+                    </div>
+                    <div class="actions">
+                        <div class="button-container">
+                            <button
+                              (click)="openEditModal(reservation)"
+                              [disabled]="reservation.etat === 'Terminée' || reservation.etat === 'Annulée'"
+                              [ngClass]="{'disabled-button': reservation.etat === 'Terminée' || reservation.etat === 'Annulée'}">
+                              <img src="modif.png" alt="Modifier">
+                            </button>
+                          
+                            <button
+                              (click)="openCancelModal(reservation)"
+                              [disabled]="reservation.etat === 'Terminée' || reservation.etat === 'Annulée'"
+                              [ngClass]="{'disabled-button': reservation.etat === 'Terminée' || reservation.etat === 'Annulée'}">
+                              <img src="sup.png" alt="Annuler">
+                            </button>
+                        </div>
+                          
+
+                        <button class="invoice" (click)="openInvoiceModal(reservation)">Voir la facture</button>
+                        <div class="user-info">
+                            <span><strong>Réservé par:</strong> {{ reservation.userId.prenom }} {{ reservation.userId.nom }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pagination">
+                <button (click)="previousPage()" [disabled]="currentPage === 1">Précédent</button>
+                <div class="page-numbers">
+                    <button *ngFor="let page of pageNumbers" (click)="goToPage(page)" [class.active]="currentPage === page">
+                        {{ page }}
+                    </button>
+                    <span *ngIf="(currentPage > 2 && totalPages > 3)">..</span>
+                </div>
+                <button (click)="nextPage()" [disabled]="currentPage === totalPages">Suivant</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal pour les statistiques -->
+    <!-- <div class="stats-modal" *ngIf="showStatsModal" (click)="handleOutsideClick($event)">
+        <div class="stats-modal-content" (click)="$event.stopPropagation()">
+            <div class="stats-container">
+                <div class="header">
+                    <div class="logo">
+                        <img src="imagelogoParking.png" alt="Logo" class="logo-image" />
+                        <h1>Statistiques du parking: {{ selectedStatsParking }}</h1>
+                    </div>
+
+
+                </div>
+                <div class="stats-chart">
+                    <h3>Taux d'occupation par semaine</h3>
+                    <canvas #occupancyChart></canvas>
+                </div>
+                <div class="stats-chart">
+                    <h3>Heures de forte affluence</h3>
+                    <canvas #peakHoursChart></canvas>
+                </div>
+            </div>
+        </div>
+    </div> -->
+
+    <!-- Modal pour la facture -->
+    <div class="invoice-modal" *ngIf="showInvoiceModal" (click)="closeIfOutside($event)">
+        <div class="invoice-modal-content">
+            <div class="invoice-container">
+
+                <div class="header">
+                    <div class="logo">
+                        <img src="imagelogoParking.png" alt="Logo" class="logo-image" />
+                        <h1>Facture de réservation</h1>
+                    </div>
+                    <div class="date">
+                        <p>Date d'émission</p>
+                        <p class="bold">{{ selectedReservation?.createdAt | date:'shortDate' }}</p>
+                    </div>
+
+                </div>
+
+                <div class="reservation-info">
+                    <div class="parking-info">
+                        <h2>{{ selectedReservation?.parkingId?.nom_du_parking }}</h2>
+                        <p>Code de réservation</p>
+                        <div class="code-box">
+                            <span class="qr-code"></span>
+                            <span class="code-number">{{ selectedReservation?.codeNumerique }}</span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="client-info">
+                    <div class="section-header">
+                        <h2>Informations du client</h2>
+                        <div class="receipt-number">N° Reçu : {{ selectedReservation?.numeroRecu }}</div>
+                    </div>
+                    <div class="client-details">
+                        <div class="personal-info">
+                            <p class="bold">{{ selectedReservation?.userId?.prenom }} {{ selectedReservation?.userId?.nom }}</p>
+                            <p>{{ selectedReservation?.userId?.telephone }}</p>
+                        </div>
+                        <div class="vehicle-info">
+                            <p class="license-plate">{{ selectedReservation?.placeId?.nomPlace }}</p>
+                            <p class="parking-place">{{ selectedReservation?.parkingId?.nom_du_parking }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="payment-info">
+                    <div class="time-details">
+                        <div class="info-row">
+                            <span>Heure</span>
+                            <span>{{ selectedReservation?.heureArrivee | date:'short' }} - {{ selectedReservation?.heureDepart | date:'short' }}</span>
+                        </div>
+                        <div class="info-row">
+                            <span>Durée</span>
+                            <span>{{ selectedReservation?.duree }} minutes</span>
+                        </div>
+                        <div class="info-row">
+                            <span>Montant</span>
+                            <span>{{ selectedReservation?.montant }} FCFA</span>
+                        </div>
+                    </div>
+                    <div class="total-row">
+                        <span>Total</span>
+                        <span class="total-amount">{{ selectedReservation?.montant }} FCFA</span>
+                    </div>
+                </div>
+
+                <div class="important-notes">
+                    <h3>Notes importantes</h3>
+                    <ul>
+                        <li>Veuillez insérer ce code à l'entrée du parking !</li>
+                        <li>Le code est valable uniquement pour la date et l'heure réservées.</li>
+                    </ul>
+                    <div class="stamp">
+                        <img src="cachet.png" alt="Stamp" class="stamp-image" />
+                    </div>
+                </div>
+                <button class="download-invoice" (click)="downloadInvoice(selectedReservation)">Télécharger la facture</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Modal pour la modification -->
+    <div class="modal" *ngIf="isModalActive" (click)="closeModalIfOutside($event)">
+        <div class="modal-content" (click)="$event.stopPropagation()">
+            <span class="close" (click)="closeEditModal()">&times;</span>
+            <h2>Modifier la Réservation</h2>
+            <form (ngSubmit)="updateReservation()">
+                <label>Heure d'arrivée:</label>
+                <input type="datetime-local" [(ngModel)]="editReservation.heureArrivee" name="heureArrivee" required />
+
+                <label>Heure de départ:</label>
+                <input type="datetime-local" [(ngModel)]="editReservation.heureDepart" name="heureDepart" required />
+
+                <label>Type de véhicule:</label>
+                <select [(ngModel)]="editReservation.typeVehicule" name="typeVehicule" required>
+                <option value="" disabled>Sélectionnez un type de véhicule</option>
+                <option value="voiture">Voiture</option>
+                <option value="moto">Moto</option>
+                <!-- Ajoutez d'autres options de type de véhicule si nécessaire -->
+            </select>
+
+                <label>Numéro d'immatriculation:</label>
+                <input type="text" [(ngModel)]="editReservation.numeroImmatriculation" name="numeroImmatriculation" required />
+
+                <button type="submit">Sauvegarder</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal pour l'annulation -->
+    <div class="modal" *ngIf="isCancelModalActive">
+        <div class="modal-content">
+            <h2>Annuler la Réservation</h2>
+            <p>Êtes-vous sûr de vouloir annuler cette réservation ?</p>
+            <div class="button-container">
+                <button class="btn-oui" (click)="cancelReservation(editReservation)">OUI</button>
+                <button class="btn-non" (click)="closeCancelModal()">NON</button>
+            </div>
+        </div>
+    </div>
+
+</div>

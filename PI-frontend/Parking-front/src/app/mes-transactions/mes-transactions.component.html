@@ -1,0 +1,172 @@
+<div class="dashboard-container">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Header -->
+    <header class="header">
+        <div class="logo-container">
+            <img src="imagelogoParking.png" alt="Parking Logo" class="logo">
+        </div>
+
+
+        <h1 class="search-text">Mes transactions</h1>
+
+
+
+        <div class="header-icons">
+            <button class="settings-button" (click)="toggleSettingsModal()">
+        <img src="iconeParametre.jpg" alt="Settings" class="header-icon" />
+    </button>
+
+            <!-- Modal des paramètres -->
+            <div class="settings-modal" *ngIf="showSettingsModal">
+                <div class="settings-modal-content">
+                    <div class="user-info">
+                        <div class="user-avatar">
+                            <img src="user.png" alt="Avatar" class="avatar-img" />
+                        </div>
+                        <div class="user-details">
+                            <h3>{{ userData.nom }} {{ userData.prenom }}</h3>
+                            <p class="user-email">{{ userData.email }}</p>
+                            <div class="user-balance">
+                                <span class="balance-label">Solde :</span>
+                                <span class="balance-amount">{{ userData.solde | currency:'FCFA':'symbol':'1.2-2' }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="settings-actions">
+                        <a class="settings-action-link" (click)="goToEditProfile()">
+                            <img src="modif.png" alt="Éditer" class="action-icon" />
+                            <span>Mes informations</span>
+                        </a>
+                       
+                    </div>
+                </div>
+                <div class="settings-modal-arrow"></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="content-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <nav class="nav-menu">
+                <a class="nav-item" [routerLink]="['/dashboard-utilisateur']">
+                    <img src="home.png" alt="Accueil" class="nav-icon">
+                    <span>Accueil</span>
+                </a>
+                <a class="nav-item" [routerLink]="['/historiques-utilisateur']">
+                    <img src="file.png" alt="Historiques" class="nav-icon">
+                    <span>Historiques</span>
+                </a>
+                <a class="nav-item active" [routerLink]="[ '/mes-transactions'] ">
+                    <img src="bank.png " alt="Transactions " class="nav-icon ">
+                    <span>Transactions</span>
+                </a>
+               
+                <a class="nav-item " [routerLink]="[ '/mon-compte-utilisateur'] ">
+                    <img src="parametres.png" alt="Transactions " class="nav-icon ">
+                    <span>Mon compte</span>
+                </a>
+            </nav>
+            <div class="logout-container">
+                <hr class="logout-divider">
+                <a class="logout-button" (click)="logout()">
+                    <img src="deconnexion.png" alt="Déconnexion" class="logout-icon">
+                    <span>Déconnexion</span>
+                </a>
+            </div>
+        </div>
+
+
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <!-- User Profile Card -->
+            <!-- Zone de message de succès -->
+            <div *ngIf="successMessage" class="success-message">
+                {{ successMessage }}
+            </div>
+            <div class="user-profile-card">
+                <div class="profile-header">
+                    <div class="profile-info">
+                        <h2 class="welcome-text">
+                            <i class="fas fa-user"></i>
+                            Bienvenue, <span class="user-name">{{ userData.prenom || 'Chargement...' }}</span>
+                        </h2>
+                        <p class="user-phone">
+                            <i class="fas fa-phone"></i>
+                            {{ userData.telephone || 'Chargement...' }}
+                        </p>
+                    </div>
+                    <div class="balance-container">
+                        <div class="balance-header">
+                            <h3>
+                                <i class="fas fa-wallet"></i>
+                                Solde du compte
+                            </h3>
+                            <button class="toggle-balance-btn" (click)="toggleBalanceVisibility()">
+                                <i class="fa" [ngClass]="isBalanceVisible ? 'fa-eye' : 'fa-eye-slash'" id="eyeIcon"></i>
+                            </button>
+                        </div>
+                        <div class="balance-amount" *ngIf="isBalanceVisible">
+                            <span>{{ userData.solde | currency:'FCFA':'symbol':'1.2-2' }}</span>
+                        </div>
+                        <div class="balance-hidden" *ngIf="!isBalanceVisible">
+                            <span>••••••</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Transaction History & Chart Section -->
+            <div class="transaction-section">
+               
+
+                <!-- Transaction History Table -->
+                <!-- Transaction History Table -->
+                <div class="transaction-history">
+                    <h3>Historique des transactions</h3>
+                    <div class="transaction-table-container">
+                        <table class="transaction-table">
+                          <thead>
+                            <tr>
+                              <th>Date</th>
+                              <th>Type</th>
+                              <th>Téléphone</th>
+                              <th>Nom du distributeur</th>
+                              <th>Montant</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr *ngFor="let transaction of visibleTransactions">
+                                <td>{{ transaction.date | date:'dd/MM/yyyy' }}</td>
+                                <td>
+                                    <span class="transaction-type" [ngClass]="{'deposit': transaction.type === 'depot', 'withdrawal': transaction.type === 'retrait'}">
+                                        {{ transaction.type }}
+                                    </span>
+                                </td>                              <td>{{ transaction.telephone }}</td>
+                              <td>{{ transaction.administrateur?.prenom }} {{ transaction.administrateur?.nom }}</td>
+                              <td class="amount" [ngClass]="{'deposit-amount': transaction.type === 'depot', 'withdrawal-amount': transaction.type === 'retrait'}">
+                                {{ transaction.type === 'depot' ? '+' : '-' }}{{ transaction.montant | currency:'FCFA':'symbol' }}
+                            </td>                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      
+                    <!-- Pagination -->
+                    <div class="pagination" *ngIf="totalPages > 1">
+                        <!-- Afficher si plus d'une page -->
+                        <button (click)="previousPage()" [disabled]="currentPage === 1">Précédent</button>
+                        <div>
+                            <button *ngFor="let page of pageNumbers" (click)="goToPage(page)" [class.active]="currentPage === page">
+                {{ page }}
+            </button>
+                            <span *ngIf="(currentPage > 2 && totalPages > 3)">..</span>
+                        </div>
+                        <button (click)="nextPage()" [disabled]="currentPage === totalPages">Suivant</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

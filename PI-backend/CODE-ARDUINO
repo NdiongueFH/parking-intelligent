@@ -1,0 +1,252 @@
+#include <SPI.h>
+#include <MFRC522.h>
+#include <Keypad.h>
+#include <Servo.h>
+
+// Définit les broches pour le lecteur RFID
+#define SS_PIN 53  // Pin de sélection du Slave
+#define RST_PIN 13  // Pin de réinitialisation
+
+MFRC522 rfid(SS_PIN, RST_PIN);  // Crée une instance du lecteur RFID
+
+// Configuration du Keypad 4x4
+const byte ROWS = 4; 
+const byte COLS = 4; 
+char keys[ROWS][COLS] = {
+  {'1','2','3','A'},
+  {'4','5','6','B'},
+  {'7','8','9','C'},
+  {'*','0','#','D'}
+};
+byte rowPins[ROWS] = {9, 8, 7, 6}; 
+byte colPins[COLS] = {5, 4, 3, 2}; 
+Keypad keypad = Keypad(makeKeymap(keys), rowPins, colPins, ROWS, COLS);
+
+// Servo moteur pour la porte
+Servo doorServo;
+const int SERVO_PIN = 10; // Choisissez un pin disponible
+
+// Variables pour la saisie du code
+String enteredCode = "";
+const int CODE_LENGTH = 5; // Longueur du code
+bool codeEntryMode = false;
+
+// Définition des pins pour 5 capteurs
+const int numSensors = 5; 
+const int trigPins[numSensors] = {22, 24, 26, 28, 30};  
+const int echoPins[numSensors] = {23, 25, 27, 29, 31};  
+
+const int ledVerte[numSensors] = {34, 36, 38, 40, 42}; // LEDs vertes pour chaque place
+const int ledRouge[numSensors] = {35, 37, 39, 41, 43}; // LEDs rouges pour chaque place
+
+// Statuts des places
+enum Status { libre, reservee, occupee };
+Status placeStatus[numSensors] = {libre, libre, libre, libre, libre};
+
+// Définition des broches pour le capteur de flamme
+const int flameSensorPin = 12;    // Pin du capteur de flamme
+const int pumpRelayPin = 11;      // Pin du relais pour la pompe à eau
+const int buzzerPin = 48;         // Pin du buzzer
+const int ledPin = 46;            // Pin de la LED rouge
+
+// Variable pour l'état du capteur de flamme
+int flameDetected = 0;  // 0 : pas de flamme, 1 : flamme détectée
+bool flameAlerted = false; // Variable pour suivre si l'alerte a été envoyée
+
+void setup() {
+    Serial.begin(9600);
+    
+    // Initialisation de la communication SPI et du lecteur RFID
+    SPI.begin();         
+    rfid.PCD_Init();     
+    Serial.println("Approchez votre carte RFID...");
+
+    // Configuration des pins des capteurs
+    for (int i = 0; i < numSensors; i++) {
+        pinMode(trigPins[i], OUTPUT);
+        pinMode(echoPins[i], INPUT);
+        pinMode(ledVerte[i], OUTPUT);
+        pinMode(ledRouge[i], OUTPUT);
+        digitalWrite(ledVerte[i], HIGH);
+        digitalWrite(ledRouge[i], LOW);
+    }
+    
+    // Configuration du servo
+    doorServo.attach(SERVO_PIN);
+    doorServo.write(0); // Position initiale fermée
+
+    // Initialisation des broches pour le capteur de flamme
+    pinMode(flameSensorPin, INPUT);  // Capteur de flamme en entrée
+    pinMode(pumpRelayPin, OUTPUT);   // Relais pour la pompe en sortie
+    pinMode(buzzerPin, OUTPUT);      // Buzzer en sortie
+    pinMode(ledPin, OUTPUT);         // LED en sortie
+
+    // Mise initiale des composants
+    digitalWrite(pumpRelayPin, LOW);  // Pompe éteinte
+    digitalWrite(buzzerPin, LOW);     // Buzzer éteint
+    digitalWrite(ledPin, LOW);        // LED éteinte
+}
+
+void loop() {
+    // Vérifie si une carte est présente
+    if (rfid.PICC_IsNewCardPresent()) {
+        // Vérifie si la carte est lue
+        if (rfid.PICC_ReadCardSerial()) {
+            // Affiche l'ID de la carte en hexadécimal
+            Serial.print("UID de la carte: ");
+            for (byte i = 0; i < rfid.uid.size; i++) {
+                Serial.print(rfid.uid.uidByte[i], HEX);
+            }
+            Serial.println();
+            
+            // Arrête la lecture de la carte
+            rfid.PICC_HaltA();
+        }
+    }
+
+    // Gestion des capteurs
+    for (int i = 0; i < numSensors; i++) {
+        long duration, distance;
+        digitalWrite(trigPins[i], LOW);
+        delayMicroseconds(2);
+        digitalWrite(trigPins[i], HIGH);
+        delayMicroseconds(10);
+        digitalWrite(trigPins[i], LOW);
+        
+        duration = pulseIn(echoPins[i], HIGH);
+        distance = (duration * 0.034) / 2;
+        
+        // Logique de détection de véhicule
+        if (distance <= 2) {
+            if (placeStatus[i] == libre) {
+                placeStatus[i] = occupee;
+                Serial.print("Capteur ");
+                Serial.print(i + 1);
+                Serial.println(": Statut de la place: occupee");
+                
+                digitalWrite(ledVerte[i], LOW);
+                digitalWrite(ledRouge[i], HIGH);
+            } else if (placeStatus[i] == reservee) {
+                placeStatus[i] = occupee;
+                Serial.print("Capteur ");
+                Serial.print(i + 1);
+                Serial.println(": Statut de la place: occupee (reservee)");
+                
+                digitalWrite(ledVerte[i], LOW);
+                digitalWrite(ledRouge[i], HIGH);
+            }
+        } else {
+            if (placeStatus[i] == occupee) {
+                placeStatus[i] = libre;
+                Serial.print("Capteur ");
+                Serial.print(i + 1);
+                Serial.println(": Statut de la place: libre");
+                
+                digitalWrite(ledVerte[i], HIGH);
+                digitalWrite(ledRouge[i], LOW);
+            }
+        }
+    }
+
+    // Lecture du capteur de flamme
+    flameDetected = digitalRead(flameSensorPin);
+
+    if (flameDetected == HIGH) {  // Flamme détectée
+        if (!flameAlerted) { // Vérifier si l'alerte n'a pas encore été envoyée
+            Serial.println("URGENCE : Flamme détectée !  Activation du systeme d'arrosage");
+
+            flameAlerted = true; // Marquer que l'alerte a été envoyée
+        }
+        
+        // Allumer la pompe (activer le relais)
+        digitalWrite(pumpRelayPin, HIGH);
+        
+        // Activer le buzzer (son fort)
+        digitalWrite(buzzerPin, HIGH);
+        
+        // Allumer la LED rouge
+        digitalWrite(ledPin, HIGH);
+    } else {  // Pas de flamme détectée
+        // Réinitialiser l'alerte si aucune flamme n'est détectée
+        flameAlerted = false;
+
+        // Éteindre la pompe (désactiver le relais)
+        digitalWrite(pumpRelayPin, LOW);
+        
+        // Éteindre le buzzer
+        digitalWrite(buzzerPin, LOW);
+        
+        // Éteindre la LED rouge
+        digitalWrite(ledPin, LOW);
+    }
+
+    // Gestion du Keypad
+    char key = keypad.getKey();
+    
+    if (key) {
+        // Mode entrée de code
+        if (!codeEntryMode) {
+            // Démarrer la saisie du code si '#' est pressé
+            if (key == '#') {
+                enteredCode = "";
+                codeEntryMode = true;
+                Serial.println("Mode saisie de code activé");
+            }
+        } else {
+            // Saisie du code
+            if (key != '#' && key != '*' && key != 'A' && key != 'B' && key != 'C' && key != 'D') {
+                enteredCode += key;
+                Serial.println("Code en cours de saisie");
+                
+                // Vérification de la longueur du code
+                if (enteredCode.length() == CODE_LENGTH) {
+                    // Envoyer le code au serveur pour validation
+                    Serial.print("CODE:"); 
+                    Serial.println(enteredCode);
+                    
+                    // Attendre la réponse du serveur
+                    unsigned long startTime = millis();
+                    bool responseReceived = false;
+                    
+                    while (millis() - startTime < 5000) { // Timeout de 5 secondes
+                        if (Serial.available()) {
+                            String response = Serial.readStringUntil('\n');
+                            response.trim();
+                            
+                            if (response == "VALIDE") {
+                                // Code valide - ouvrir la porte
+                                doorServo.write(180); // Angle d'ouverture
+                                Serial.println("Accès autorisé");
+                                responseReceived = true;
+                                delay(5000); // Temps d'ouverture
+                                doorServo.write(0); // Refermer
+                                break;
+                            } else if (response == "INVALIDE") {
+                                // Code invalide
+                                Serial.println("Accès refusé");
+                                responseReceived = true;
+                                break;
+                            }
+                        }
+                    }
+                    
+                    if (!responseReceived) {
+                        Serial.println("Pas de réponse du serveur");
+                    }
+                    
+                    // Réinitialiser le mode de saisie
+                    enteredCode = "";
+                    codeEntryMode = false;
+                }
+            }
+            // Annuler la saisie avec '*'
+            else if (key == '*') {
+                enteredCode = "";
+                codeEntryMode = false;
+                Serial.println("Saisie annulée");
+            }
+        }
+    }
+    
+    delay(100); // Petit délai pour stabilité
+}

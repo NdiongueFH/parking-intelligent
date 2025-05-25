@@ -1,0 +1,1460 @@
+/* Variables */
+
+:root {
+    --primary-color: #004AAD;
+    --secondary-color: #00A0E4;
+    --white: #ffffff;
+    --gray-light: #f5f5f6;
+    --gray: #e0e0e0;
+    --gray-dark: #666666;
+    --success-color: #4cd964;
+}
+
+.search-input {
+    border: none;
+    flex-grow: 1;
+    padding: 0.5rem 2.5rem;
+    /* Ajoutez de l'espace à droite pour l'image */
+    outline: none;
+    font-size: 1rem;
+    border-radius: 10px;
+    height: 50px;
+}
+
+.disabled-button {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+  
+
+.search-button {
+    border: none;
+    background: none;
+    cursor: pointer;
+    position: absolute;
+    /* Positionne le bouton à l'intérieur du conteneur */
+    right: 10px;
+    /* Ajustez la position à droite */
+    top: 50%;
+    /* Centre le bouton verticalement */
+    transform: translateY(-50%);
+    /* Ajuste le centrage vertical */
+    padding: 0;
+    /* Supprime le padding */
+}
+
+.search-icon {
+    width: 20px;
+    /* Ajustez la taille de l'icône */
+    height: auto;
+    /* Maintient le ratio de l'image */
+}
+
+.search-text {
+    font-size: 2rem;
+    /* Augmentez la taille du texte selon vos besoins */
+    font-weight: bold;
+    /* Met le texte en gras */
+    color: white;
+    /* Change la couleur du texte en blanc */
+    margin: 0;
+    /* Supprime la marge par défaut de h1 */
+    text-align: center;
+    /* Centre le texte, si souhaité */
+}
+
+
+/* Global styles */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: var(--gray-light);
+}
+
+
+/* Dashboard container */
+
+.dashboard-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+}
+
+
+/* Header */
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #0754A1;
+    padding: 0.75rem 1.5rem;
+    color: var(--white);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.search-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    color: var(--gray-dark);
+}
+
+.header-icons {
+    display: flex;
+    align-items: center;
+    /* Centre verticalement les icônes */
+}
+
+.notification-button,
+.settings-button {
+    border: none;
+    /* Supprime la bordure par défaut */
+    background: white;
+    /* Fond blanc */
+    border-radius: 50%;
+    /* Crée un cercle */
+    width: 40px;
+    /* Largeur du cercle */
+    height: 40px;
+    /* Hauteur du cercle */
+    display: flex;
+    /* Utilise flexbox pour centrer le contenu */
+    align-items: center;
+    /* Centre verticalement le contenu */
+    justify-content: center;
+    /* Centre horizontalement le contenu */
+    margin: 0 5px;
+    /* Espacement entre les boutons */
+    cursor: pointer;
+    /* Change le curseur pour indiquer que c'est cliquable */
+    position: relative;
+    /* Nécessaire pour le positionnement du badge */
+}
+
+.header-icon {
+    width: 60px;
+    /* Ajustez la taille selon vos besoins */
+    height: auto;
+    /* Maintient le ratio de l'image */
+    border-radius: 50%;
+}
+
+.notification-badge {
+    position: absolute;
+    /* Positionne le badge par rapport au bouton */
+    top: 0;
+    right: 0;
+    background-color: red;
+    /* Couleur de fond du badge */
+    color: white;
+    /* Couleur du texte */
+    border-radius: 50%;
+    padding: 0.2rem 0.4rem;
+    /* Espacement du badge */
+    font-size: 0.8rem;
+    /* Taille du texte */
+}
+
+.notification-button,
+.settings-button {
+    background: var(--white);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+}
+
+.notification-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: red;
+    color: var(--white);
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.logo-container {
+    width: 60px;
+    height: 60px;
+    background-color: var(--white);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.logo {
+    width: 110%;
+    height: auto;
+    box-shadow: 0 8px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 50%;
+}
+
+.logout-divider {
+    border: none;
+    border-top: 1px solid rgb(2, 170, 221);
+    margin: 0;
+    margin-bottom: 0.5rem;
+    width: 150px;
+}
+
+
+/* Sidebar */
+
+.sidebar {
+    width: 200px;
+    background-color: var(--white);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.nav-menu {
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem 0;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    padding: 1.25rem;
+    color: var(--gray-dark);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+.nav-item:hover,
+.nav-item.active {
+    color: var(--primary-color);
+    background-color: rgba(0, 74, 173, 0.1);
+    border-left: 4px solid var(--primary-color);
+}
+
+.nav-item.active {
+    font-weight: bold;
+}
+
+.nav-icon {
+    width: 30px;
+    height: auto;
+    margin-right: 1rem;
+}
+
+.logout-container {
+    padding: 1.5rem;
+    border-top: 1px solid var(--gray);
+}
+
+.logout-button {
+    display: flex;
+    align-items: center;
+    color: var(--gray-dark);
+    text-decoration: none;
+    padding: 1rem;
+    cursor: pointer;
+    font-size: 1.1rem;
+}
+
+.logout-icon {
+    width: 20px;
+    height: auto;
+    margin-right: 1rem;
+}
+
+.reservation .info img {
+    width: 20px;
+    /* Ajustez la largeur selon vos besoins */
+    height: 20px;
+    /* Ajustez la hauteur selon vos besoins */
+    margin-right: 10px;
+    /* Espace entre l'image et le texte */
+}
+
+.reservation {
+    background-color: #fff;
+    padding: 20px;
+    margin-top: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.reservation .info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.reservation .info p {
+    display: flex;
+    align-items: center;
+    margin: 5px 0;
+}
+
+.reservation .info img {
+    margin-right: 10px;
+    /* Espace entre l'image et le texte */
+}
+
+.reservation .status {
+    text-align: center;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.reservation .status.en-cours {
+    background-color: #74f5b2;
+    /* Couleur verte */
+    color: #065f46;
+    /* Couleur du texte */
+    margin-right: 500px;
+}
+
+.reservation .status.annulee {
+    background-color: #ffb8b8;
+    /* Couleur rouge */
+    color: #b91c1c;
+    /* Couleur du texte */
+    margin-right: 500px;
+}
+
+.reservation .actions {
+    display: flex;
+    flex-direction: column;
+    /* Aligne les éléments verticalement */
+    align-items: flex-end;
+    /* Aligne les éléments à droite */
+}
+
+.reservation .actions .button-container {
+    display: flex;
+    /* Utilise le flexbox pour aligner les boutons horizontalement */
+    gap: 10px;
+    /* Ajoute un espace entre les boutons */
+    margin-bottom: 10px;
+    /* Espace en bas entre les boutons et le nom de l'utilisateur */
+}
+
+.reservation .actions .user-info {
+    margin-bottom: 20px;
+    /* Espace en bas entre le nom de l'utilisateur et le bouton de facture */
+    margin-top: 10px;
+}
+
+.reservation .actions button {
+    background-color: #e0f2fe;
+    color: #1d4ed8;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.reservation .actions .invoice {
+    background-color: #4cd964;
+    /* Couleur verte pour le bouton de facture */
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 2px;
+}
+
+.reservation .user-info span {
+    display: block;
+    /* Affiche le prénom et le nom sur des lignes séparées */
+}
+
+.reservation .actions button img {
+    width: 20px;
+    /* Ajustez la largeur selon vos besoins */
+    height: 20px;
+    /* Ajustez la hauteur selon vos besoins */
+}
+
+
+/* Main Content */
+
+.content-container {
+    display: flex;
+    flex-grow: 1;
+    overflow: hidden;
+}
+
+.main-content {
+    flex-grow: 1;
+    padding: 20px;
+    background-color: var(--white);
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+
+/* Stats Section */
+
+.stats {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    border-radius: 25px;
+    border: 1px solid #d1d5db;
+    /* Couleur de la bordure */
+    box-shadow: 0 0 0 2px rgba(209, 208, 208, 0.3), 0 8px 15px rgba(170, 169, 169, 0.8);
+    /* Ombre */
+    padding: 20px;
+    /* Ajoutez un peu de padding pour l'espacement interne */
+    background-color: #fff;
+    /* Fond blanc pour le bloc */
+}
+
+.stats .stat {
+    background-color: #fff;
+    padding: 20px;
+    text-align: center;
+    border-radius: 10px;
+    /* Augmentation du rayon de bordure */
+    box-shadow: 0 2px 6px rgba(1, 113, 218, 0.15);
+    /* Ombre légèrement plus prononcée */
+    width: 23%;
+    border: 1px solid #d1d5db;
+    /* Couleur de la bordure */
+}
+
+.stats .stat.green {
+    background-color: #74f5b2;
+    /* Couleur de fond pour les "En cours" */
+    box-shadow: 0 2px 6px rgba(1, 113, 218, 0.15);
+}
+
+.stats .stat.red {
+    background-color: #ffb8b8;
+    /* Couleur de fond pour les "Annulées" */
+    box-shadow: 0 2px 6px rgba(1, 113, 218, 0.15);
+}
+
+.reservations-container {
+    background-color: #fff;
+    /* Couleur de fond blanche */
+    padding: 20px;
+    /* Padding interne */
+    border-radius: 10px;
+    /* Arrondi des coins */
+    box-shadow: 0 0 0 2px rgba(209, 208, 208, 0.3), 0 8px 15px rgba(201, 199, 199, 0.8);
+    /* Ombre légère */
+    margin-top: 20px;
+    /* Espace au-dessus du conteneur */
+}
+
+
+/* Filters Section */
+
+.filters {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.filters select,
+.filters input {
+    padding: 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 5px;
+    width: 32%;
+}
+
+.filters input {
+    position: relative;
+}
+
+.filters input::placeholder {
+    color: #9ca3af;
+}
+
+.filters i {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #9ca3af;
+}
+
+
+/* Reservation Section */
+
+.reservation {
+    background-color: #fff;
+    padding: 20px;
+    margin-top: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 0 2px rgba(209, 208, 208, 0.3), 0 8px 15px rgba(201, 199, 199, 0.8);
+    /* Ombre légère */
+    border: 1px solid #d1d5db;
+    /* Bordure grise */
+    transition: box-shadow 0.3s;
+    /* Transition pour l'ombre lors du survol */
+    height: 200px;
+}
+
+.reservation:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    /* Ombre plus prononcée au survol */
+}
+
+.reservation .details {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.reservation .details .info {
+    flex: 1;
+}
+
+.reservation .details .status {
+    background-color: #d1fae5;
+    color: #065f46;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.reservation .details .status.red {
+    background-color: #fee2e2;
+    color: #b91c1c;
+}
+
+.reservation .details .actions button {
+    background-color: #e0f2fe;
+    color: #1d4ed8;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    margin-left: 10px;
+    cursor: pointer;
+}
+
+.reservation .details .actions button.red {
+    background-color: #fee2e2;
+    color: #b91c1c;
+}
+
+.reservation .invoice {
+    background-color: #d1fae5;
+    color: #065f46;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+
+/* Pagination */
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    /* Centre les éléments horizontalement */
+    align-items: center;
+    /* Centre les éléments verticalement */
+    font-weight: bold;
+}
+
+.pagination .page-numbers {
+    display: flex;
+    /* Utilise flexbox pour les boutons de page */
+    align-items: center;
+    /* Aligne les boutons verticalement */
+}
+
+.pagination button {
+    background-color: var(--primary-color);
+    color: var(--user-color);
+    border: none;
+    border-radius: 10px;
+    padding: 0.5rem 1rem;
+    margin: 0 0.01rem;
+    /* Espace entre les boutons */
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.pagination button:hover:not(:disabled) {
+    background-color: var(--secondary-color);
+}
+
+.pagination button:disabled {
+    background-color: var(--gray);
+    cursor: not-allowed;
+}
+
+.pagination .active {
+    font-weight: bold;
+    font-size: 18px;
+    color: #fafbfd;
+    background-color: #0754A1;
+}
+
+.pagination span {
+    margin: 0 0.5rem;
+    /* Espace autour des ellipses */
+    color: var(--gray-dark);
+    font-weight: bold;
+}
+
+.stats-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    /* Fond semi-transparent */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    /* Assure que le modal soit au-dessus des autres éléments */
+}
+
+.stats-modal-content {
+    background-color: white;
+    /* Fond blanc pour le contenu du modal */
+    border-radius: 10px;
+    /* Coins arrondis */
+    padding: 20px;
+    /* Espacement interne */
+    width: 90%;
+    /* Largeur du modal */
+    max-width: 600px;
+    /* Largeur maximale */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    /* Ombre pour le modal */
+    position: relative;
+    /* Position relative pour positionner le bouton de fermeture */
+    max-height: 90%;
+    /* Limite la hauteur maximale */
+}
+
+.stats-modal-header {
+    display: flex;
+    justify-content: space-between;
+    /* Espace entre le titre et le bouton de fermeture */
+    align-items: center;
+    /* Centre verticalement */
+}
+
+.stats-modal-header h2 {
+    margin: 0;
+    /* Supprime la marge par défaut */
+    color: var(--primary-color);
+    /* Couleur du titre */
+}
+
+.stats-modal-body {
+    margin-top: 20px;
+    /* Espace entre l'en-tête et le corps du modal */
+}
+
+.stats-modal-body .stats-chart {
+    margin: 20px 0;
+    /* Espace entre les graphiques */
+}
+
+.invoice-modal {
+    display: flex;
+    justify-content: center;
+    /* Centre horizontalement */
+    align-items: center;
+    /* Centre verticalement */
+    position: fixed;
+    /* Reste au même endroit même lors du défilement */
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    /* Fond semi-transparent pour l'arrière-plan */
+    z-index: 1000;
+    /* S'assure que le modal est au-dessus des autres éléments */
+}
+
+.invoice-modal-content {
+    background-color: white;
+    /* Fond blanc pour le contenu du modal */
+    border-radius: 10px;
+    /* Coins arrondis */
+    padding: 20px;
+    /* Espacement interne */
+    width: 90%;
+    /* Largeur du modal */
+    max-width: 600px;
+    /* Largeur maximale */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    /* Ombre pour le modal */
+}
+
+.invoice-container {
+    max-width: 600px;
+    margin: 20px auto;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+}
+
+.logo-circle {
+    width: 30px;
+    height: 30px;
+    background-color: #1e3a8a;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.logo-image {
+    display: flex;
+    align-items: center;
+    border-radius: 30px;
+    width: 45px;
+}
+
+h1 {
+    font-size: 20px;
+    margin: 0;
+    color: white;
+}
+
+.date {
+    text-align: right;
+    color: white;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+.reservation-info {
+    background-color: #e0f7fa;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 10px;
+    margin: 10px;
+    border-top: 1px solid #a0a0a0;
+    box-shadow: 0 0 0 2px rgba(209, 208, 208, 0.3), 0 8px 15px rgba(170, 169, 169, 0.8);
+}
+
+.parking-info h2 {
+    margin-bottom: 10px;
+    font-size: 18px;
+}
+
+.code-box {
+    display: flex;
+    align-items: center;
+    margin-top: 5px;
+}
+
+.qr-code {
+    width: 20px;
+    height: 20px;
+    background-image: linear-gradient(to right, #000 33%, transparent 33%), linear-gradient(to right, #000 33%, transparent 33%), linear-gradient(to bottom, #000 33%, transparent 33%), linear-gradient(to bottom, #000 33%, transparent 33%);
+    background-position: left top, right top, left top, left bottom;
+    background-repeat: no-repeat;
+    background-size: 10px 10px;
+    margin-right: 10px;
+}
+
+.code-number {
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.status-box {
+    text-align: center;
+}
+
+.status {
+    background-color: white;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-weight: bold;
+    color: #ff9800;
+    margin-top: 5px;
+}
+
+.client-info {
+    padding: 15px 20px;
+    border-top: 1px solid #e0e0e0;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    box-shadow: 0 0 0 2px rgba(209, 208, 208, 0.3), 0 8px 15px rgba(170, 169, 169, 0.8);
+}
+
+.payment-info {
+    padding: 20px 20px;
+    border-top: 1px solid #e0e0e0;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    box-shadow: 0 0 0 2px rgba(209, 208, 208, 0.3), 0 8px 15px rgba(170, 169, 169, 0.8);
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.section-header h2 {
+    font-size: 16px;
+}
+
+.client-details {
+    display: flex;
+    justify-content: space-between;
+}
+
+.vehicle-info {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.car-icon {
+    width: 40px;
+    height: 20px;
+    border: 2px solid #333;
+    border-radius: 5px;
+    position: relative;
+    margin-bottom: 5px;
+}
+
+.license-plate {
+    font-weight: bold;
+    border: 1px solid #ccc;
+    padding: 5px 10px;
+    border-radius: 3px;
+    margin-bottom: 5px;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.total-row {
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+    border-top: 1px solid #e0e0e0;
+    padding-top: 10px;
+    margin-top: 5px;
+}
+
+.important-notes {
+    padding: 15px 20px;
+    border-top: 1px solid #e0e0e0;
+    position: relative;
+}
+
+.important-notes h3 {
+    color: #f44336;
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+.important-notes ul {
+    list-style-type: disc;
+    padding-left: 20px;
+}
+
+.important-notes li {
+    margin-bottom: 5px;
+}
+
+.stamp {
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+    width: 100px;
+    height: 100px;
+    border: 2px solid #f44336;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: rotate(-20deg);
+    color: #f44336;
+    font-weight: bold;
+    font-size: 12px;
+    text-align: center;
+}
+
+.logo-image {
+    height: 40px;
+    /* Ajustez la taille de l'image selon vos besoins */
+    margin-right: 10px;
+}
+
+.stamp-image {
+    width: 100px;
+    /* Ajustez la taille de l'image du tampon */
+    height: auto;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    width: 90%;
+    max-width: 500px;
+    animation: fadeIn 0.3s;
+    text-align: center;
+    /* Centrer le texte */
+}
+
+.no-reservations-message {
+    color: #ff0000;
+    /* Rouge pour attirer l'attention */
+    font-weight: bold;
+    text-align: center;
+    margin: 20px 0;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+h2 {
+    margin-bottom: 20px;
+}
+
+.modal-logo {
+    width: 100px;
+    /* Ajustez la taille du logo */
+    margin: 20px 0;
+    /* Espace autour du logo */
+    box-shadow: 0 0 0 2px rgba(209, 208, 208, 0.3), 0 8px 15px rgba(170, 169, 169, 0.8);
+    border-radius: 50px;
+}
+
+label {
+    display: block;
+    margin: 10px 0 5px;
+}
+
+input,
+select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+.download-invoice {
+    background-color: #4CAF50;
+    /* Couleur de fond */
+    color: white;
+    /* Couleur du texte */
+    border: none;
+    /* Pas de bordure */
+    padding: 10px 20px;
+    /* Espacement intérieur */
+    text-align: center;
+    /* Centrer le texte */
+    text-decoration: none;
+    /* Pas de soulignement */
+    display: inline-block;
+    /* Pour que le padding fonctionne */
+    font-size: 16px;
+    /* Taille de la police */
+    margin-top: 20px;
+    /* Espacement au-dessus */
+    cursor: pointer;
+    /* Curseur en forme de main */
+    border-radius: 5px;
+    /* Coins arrondis */
+    transition: background-color 0.3s;
+    /* Transition pour l'effet au survol */
+}
+
+.download-invoice:hover {
+    background-color: #45a049;
+    /* Couleur de fond au survol */
+}
+
+.btn-oui {
+    background-color: #4CAF50;
+    /* Vert */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin-right: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.btn-oui:hover {
+    background-color: #74f57b;
+    /* Couleur plus foncée au survol */
+}
+
+.btn-non {
+    background-color: #f44336;
+    /* Rouge */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.btn-non:hover {
+    background-color: #e53935;
+    /* Couleur plus foncée au survol */
+}
+
+.button-container {
+    display: flex;
+    /* Utiliser Flexbox */
+    justify-content: space-between;
+    /* Espacement entre les boutons */
+    margin-top: 20px;
+    /* Optionnel : marge au-dessus des boutons */
+}
+
+.btn-oui,
+.btn-non {
+    margin-right: 10px;
+    /* Espace entre les boutons */
+}
+
+.btn-non {
+    margin-right: 0;
+    /* Pas de marge à droite pour le dernier bouton */
+}
+
+
+/* Ajoutez ce CSS dans votre fichier dashboard-admin.component.css */
+
+
+/* Position relative pour le conteneur des icônes du header */
+
+.header-icons {
+    position: relative;
+}
+
+
+/* Style du modal des paramètres */
+
+.settings-modal {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 300px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    margin-top: 15px;
+    animation: fadeIn 0.2s ease-out;
+    overflow: hidden;
+}
+
+
+/* Flèche pointant vers le haut */
+
+.settings-modal-arrow {
+    position: absolute;
+    top: -10px;
+    right: 15px;
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid #ffffff;
+}
+
+
+/* Contenu du modal */
+
+.settings-modal-content {
+    padding: 20px;
+}
+
+
+/* Informations utilisateur */
+
+.user-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.user-avatar {
+    margin-right: 15px;
+}
+
+.avatar-img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #3498db;
+}
+
+.user-details h3 {
+    margin: 0 0 5px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+.user-email {
+    margin: 0 0 10px 0;
+    font-size: 14px;
+    color: #666;
+}
+
+.user-balance {
+    background-color: #f8f9fa;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.balance-label {
+    font-weight: 500;
+    color: #555;
+}
+
+.balance-amount {
+    font-weight: 600;
+    color: #3498db;
+    margin-left: 5px;
+}
+
+
+/* Actions du paramétrage */
+
+.settings-actions {
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+}
+
+.settings-action-link {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    color: #555;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.settings-action-link:hover {
+    color: #3498db;
+    background-color: #f5f7fa;
+    padding-left: 5px;
+    border-radius: 4px;
+}
+
+.action-icon {
+    width: 18px;
+    height: 18px;
+    margin-right: 10px;
+}
+
+
+/* Ajoutez ce CSS dans votre fichier dashboard-admin.component.css */
+
+
+/* Position relative pour le conteneur des icônes du header */
+
+.header-icons {
+    position: relative;
+}
+
+
+/* Style du modal des paramètres */
+
+.settings-modal {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 300px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    margin-top: 15px;
+    animation: fadeIn 0.2s ease-out;
+    overflow: hidden;
+}
+
+
+/* Flèche pointant vers le haut */
+
+.settings-modal-arrow {
+    position: absolute;
+    top: -10px;
+    right: 15px;
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid #ffffff;
+}
+
+
+/* Contenu du modal */
+
+.settings-modal-content {
+    padding: 20px;
+}
+
+
+/* Informations utilisateur */
+
+.user-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.user-avatar {
+    margin-right: 15px;
+}
+
+.avatar-img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #3498db;
+}
+
+.user-details h3 {
+    margin: 0 0 5px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+.user-email {
+    margin: 0 0 10px 0;
+    font-size: 14px;
+    color: #666;
+}
+
+.user-balance {
+    background-color: #f8f9fa;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.balance-label {
+    font-weight: 500;
+    color: #555;
+}
+
+.balance-amount {
+    font-weight: 600;
+    color: #3498db;
+    margin-left: 5px;
+}
+
+
+/* Actions du paramétrage */
+
+.settings-actions {
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+}
+
+.settings-action-link {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    color: #555;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.settings-action-link:hover {
+    color: #3498db;
+    background-color: #f5f7fa;
+    padding-left: 5px;
+    border-radius: 4px;
+}
+
+.action-icon {
+    width: 18px;
+    height: 18px;
+    margin-right: 10px;
+}
+
+
+/* Animation */
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* Animation */
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* Media queries */
+
+@media (max-width: 992px) {
+    .search-container {
+        width: 50%;
+    }
+}
+
+@media (max-width: 768px) {
+    .content-container {
+        flex-direction: column;
+    }
+    .sidebar {
+        width: 100%;
+        height: auto;
+    }
+    .nav-menu {
+        flex-direction: row;
+        padding: 0;
+        justify-content: space-between;
+        width: 100%;
+    }
+    .nav-item {
+        flex-direction: column;
+        padding: 0.5rem;
+    }
+    .logout-container {
+        display: none;
+    }
+}
+
+@media (max-width: 576px) {
+    .header {
+        flex-direction: column;
+        gap: 0.75rem;
+        padding: 0.75rem;
+    }
+    .search-container {
+        width: 100%;
+    }
+}

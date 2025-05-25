@@ -1,0 +1,248 @@
+.container {
+    display: flex;
+    height: 100vh;
+    width: 100%;
+}
+
+.login-container {
+    display: flex;
+    width: 100%;
+}
+
+.logo-section {
+    width: 40%;
+    background-color: #004AAD;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.logo-circle {
+    width: 600px;
+    height: 700px;
+    background-color: white;
+    border-radius: 60%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.form-section {
+    width: 50%;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    /* Pour centrer les éléments dans la section */
+}
+
+h1 {
+    font-size: 2.5rem;
+    margin-bottom: 5rem;
+    text-align: center;
+}
+
+.form-group {
+    margin-bottom: 700px;
+    /* Ajustez cette valeur selon vos besoins */
+    width: 100%;
+    max-width: 1000px;
+    margin: 40px auto;
+}
+
+.login-button-container {
+    margin-top: 200px;
+    /* Espacement au-dessus du bouton */
+    margin-bottom: 50px;
+    /* Espacement en dessous du bouton */
+}
+
+.forgot-password {
+    margin-top: 120px;
+    /* Espacement au-dessus du lien mot de passe oublié */
+}
+
+.alternate-login {
+    margin-top: 200px;
+    /* Espacement au-dessus de la section de connexion alternative */
+}
+
+.form-control {
+    box-shadow: 0 0 0 2px rgba(8, 8, 8, 0.3), 0 8px 15px rgba(0, 0, 0, 0.8);
+    width: 100%;
+    padding: 1rem;
+    border: 1px solid #8a8989;
+    border-radius: 15px;
+    font-size: 1rem;
+    height: 60px;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    /* Ajout de la transition */
+}
+
+.form-control:focus {
+    border-color: #004AAD;
+    /* Changement de couleur de bordure au focus */
+    box-shadow: 0 0 0 4px rgba(0, 74, 173, 0.5);
+    /* Ombre accentuée */
+    outline: none;
+    /* Retirer le contour par défaut */
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.required {
+    color: red;
+}
+
+
+/* .form-control {
+    box-shadow: 0 0 0 2px rgba(8, 8, 8, 0.3), 0 8px 15px rgba(0, 0, 0, 0.8);
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #8a8989;
+    border-radius: 15px;
+    font-size: 1rem;
+} */
+
+.password-input-container {
+    position: relative;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+
+.login-button-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+
+.login-button {
+    background-color: #0754A1;
+    color: white;
+    padding: 0.75rem 2rem;
+    border: none;
+    border-radius: 15px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    width: 60%;
+    height: 60px;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.login-button:hover {
+    background-color: #0455c0;
+}
+
+.forgot-password {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.inscription {
+    text-align: center;
+    margin-bottom: 0.5rem;
+}
+
+
+.forgot-password a {
+    color: #00A0E4;
+    text-decoration: none;
+}
+
+.alternate-login {
+    text-align: center;
+    margin-top: 5px;
+    font-size: 1rem;
+    /* Augmentez la taille du texte selon vos préférences */
+    font-weight: bold;
+    /* Met le texte en gras */
+}
+
+
+/* Bloc contenant le formulaire avec ombrage en bas */
+
+.form-block {
+    box-shadow: 0 4px 12px rgba(7, 84, 161, 0.4);
+    /* Ombre en bas */
+    padding: 6rem;
+    border-radius: 10px;
+    background-color: white;
+    width: 100%;
+    max-width: 500px;
+    /* Limite la largeur du bloc contenant le formulaire */
+    margin: 0 auto;
+    /* Centre le bloc de formulaire */
+    height: 600px;
+}
+
+
+/* Conteneur pour l'image cliquable */
+
+.back-to-home {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    text-decoration: none;
+    /* Retirer le soulignement du lien */
+}
+
+.home-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease;
+}
+
+.home-icon:hover {
+    transform: scale(1.1);
+    /* Agrandir légèrement au survol */
+}
+
+.error-message {
+    color: red;
+    font-size: 1rem;
+    margin-top: 0.25rem;
+}
+
+.global-error-message {
+    color: red;
+    text-align: center;
+    margin-top: 10px;
+    font-size: 0.9em;
+}
+
+@media (max-width: 768px) {
+    .login-container {
+        flex-direction: column;
+    }
+    .logo-section,
+    .form-section {
+        width: 100%;
+    }
+    .logo-section {
+        height: 30vh;
+    }
+    .logo-circle {
+        width: 150px;
+        height: 150px;
+    }
+}

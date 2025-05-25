@@ -1,0 +1,183 @@
+<div class="dashboard-container">
+    <!-- Header -->
+    <header class="header">
+        <div class="logo-container">
+            <img src="imagelogoParking.png" alt="Parking Logo" class="logo">
+        </div>
+
+        <div class="search-container">
+            <input type="text" placeholder="Rechercher un parking par son nom" class="search-input" [(ngModel)]="searchTerm" (input)="searchParking()">
+            <button class="search-button" (click)="searchParking()">
+                <img src="search.png" alt="Search" class="search-icon">
+            </button>
+        </div>
+
+
+
+        <div class="header-icons ">
+            <button class="settings-button " (click)="toggleSettingsModal() ">
+        <img src="iconeParametre.jpg " alt="Settings " class="header-icon " />
+    </button>
+
+            <!-- Modal des paramètres -->
+            <div class="settings-modal " *ngIf="showSettingsModal ">
+                <div class="settings-modal-content ">
+                    <div class="user-info ">
+                        <div class="user-avatar ">
+                            <img src="user.png " alt="Avatar " class="avatar-img " />
+                        </div>
+                        <div class="user-details ">
+                            <h3>{{ userData.nom }} {{ userData.prenom }}</h3>
+                            <p class="user-email ">{{ userData.email }}</p>
+                            <div class="user-balance ">
+                                <span class="balance-label ">Solde :</span>
+                                <span class="balance-amount ">{{ userData.solde | currency:'FCFA':'symbol':'1.2-2' }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="settings-actions ">
+                        <a class="settings-action-link " (click)="goToEditProfile() ">
+                            <img src="modif.png " alt="Éditer " class="action-icon " />
+                            <span>Mes informations</span>
+                        </a>
+                       
+                    </div>
+                </div>
+                <div class="settings-modal-arrow "></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="content-container ">
+        <!-- Sidebar -->
+        <div class="sidebar ">
+            <nav class="nav-menu ">
+                <a class="nav-item active ">
+                    <img src="home.png " alt="Accueil " class="nav-icon ">
+                    <span>Accueil</span>
+                </a>
+                <a class="nav-item " [routerLink]="[ '/historiques-utilisateur'] ">
+                    <img src="file.png " alt="Historiques " class="nav-icon ">
+                    <span>Historiques</span>
+                </a>
+                <a class="nav-item " [routerLink]="[ '/mes-transactions'] ">
+                    <img src="bank.png " alt="Transactions " class="nav-icon ">
+                    <span>Transactions</span>
+                </a>
+                <a class="nav-item " [routerLink]="[ '/mon-compte-utilisateur'] ">
+                    <img src="parametres.png" alt="Transactions " class="nav-icon ">
+                    <span>Mon compte</span>
+                </a>
+
+            </nav>
+            <div class="logout-container ">
+                <hr class="logout-divider ">
+                <a class="logout-button " (click)="logout() ">
+                    <img src="deconnexion.png " alt="Déconnexion " class="logout-icon ">
+                    <span>Déconnexion</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="map-container ">
+            <div *ngIf="isLoading " class="loading-indicator ">
+                <svg xmlns="http://www.w3.org/2000/svg " viewBox="0 0 400 400 " width="500 " height="500 ">
+                    <!-- Fond circulaire -->
+                    <circle cx="200 " cy="200 " r="180 " fill="#f5f7fa " stroke="#e1e8ed " stroke-width="2 "/>
+                    
+                    <!-- Symbole P de parking -->
+                    <path d="M160 120 L160 280 L190 280 L190 220 L230 220 C255 220 275 200 275 170 C275 140 255 120 230 120 Z " fill="#3498db " stroke="#2980b9 " stroke-width="2 "/>
+                    <path d="M190 150 L190 190 L230 190 C240 190 245 180 245 170 C245 160 240 150 230 150 Z " fill="#f5f7fa "/>
+                    
+                    <!-- Indicateur de position -->
+                    <circle cx="200 " cy="200 " r="15 " fill="#e74c3c "/>
+                    <circle cx="200 " cy="200 " r="7 " fill="#ffffff "/>
+                    
+                    <!-- Ondes de recherche (pulsations) -->
+                    <circle cx="200 " cy="200 " r="40" fill="none " stroke="#e74c3c " stroke-width="3 " opacity="0.8 ">
+                        <animate attributeName="r" from="25 " to="80 " dur="1.5s " begin="0s " repeatCount="indefinite "/>
+                        <animate attributeName="opacity " from="0.8 " to="0 " dur="1.5s " begin="0s " repeatCount="indefinite "/>
+                    </circle>
+                    <circle cx="200 " cy="200 " r="40" fill="none " stroke="#e74c3c " stroke-width="2 " opacity="0.6 ">
+                        <animate attributeName="r" from="25 " to="80 " dur="1.5s " begin="0.5s " repeatCount="indefinite "/>
+                        <animate attributeName="opacity " from="0.6 " to="0 " dur="1.5s " begin="0.5s " repeatCount="indefinite "/>
+                    </circle>
+                    <circle cx="200 " cy="200 " r="40" fill="none " stroke="#e74c3c " stroke-width="1 " opacity="0.4 ">
+                        <animate attributeName="r" from="25 " to="80 " dur="1.5s " begin="1s " repeatCount="indefinite "/>
+                        <animate attributeName="opacity " from="0.4 " to="0 " dur="1.5s " begin="1s " repeatCount="indefinite "/>
+                    </circle>
+                    
+                    <!-- Routes stylisées -->
+                    <path d="M50 200 L150 200" stroke="#3498db" stroke-width="6" stroke-linecap="round"/>
+                    <path d="M250 200 L350 200" stroke="#3498db" stroke-width="6" stroke-linecap="round"/>
+                    <path d="M200 50 L200 150" stroke="#3498db" stroke-width="6" stroke-linecap="round"/>
+                    <path d="M200 250 L200 350" stroke="#3498db" stroke-width="6" stroke-linecap="round"/>
+                </svg>
+                <p>Chargement de la carte Map...</p>
+            </div>
+            <div *ngIf="geoError " class="geo-error-indicator ">
+                <svg xmlns="http://www.w3.org/2000/svg " viewBox="0 0 400 400 " width="500 " height="500 ">
+                    <!-- Fond circulaire -->
+                    <circle cx="200" cy="200" r="180" fill="#f5f7fa" stroke="#e1e8ed" stroke-width="2"/>
+                    
+                    <!-- Symbole de carte stylisé -->
+                    <rect x="100 " y="120 " width="200 " height="160 " rx="15 " fill="#ecf0f1 " stroke="#bdc3c7 " stroke-width="3 "/>
+                    
+                    <!-- Éléments de carte stylisés -->
+                    <path d="M125 145 C180 145, 220 180, 275 180" stroke="#bdc3c7" stroke-width="3 " fill="none "/>
+                    <path d="M125 200 C160 200, 180 220, 240 220" stroke="#bdc3c7" stroke-width="3 " fill="none "/>
+                    <path d="M200 145 L200 250 " stroke="#bdc3c7" stroke-width="3" fill="none "/>
+                    <circle cx="160" cy="180" r="8" fill="#bdc3c7"/>
+                    <circle cx="230" cy="200" r="8" fill="#bdc3c7"/>
+                    
+                    <!-- Symbole P de parking intégré à la carte -->
+                    <circle cx="200 " cy="180 " r="25 " fill="#3498db " stroke="#2980b9 " stroke-width="2 "/>
+                    <text x="200 " y="190 " text-anchor="middle " font-family="Arial " font-size="30 " font-weight="bold " fill="white ">P</text>
+                    
+                    <!-- Nuage de couverture (moins menaçant qu'une croix) -->
+                    <path d="M220 90 C235 75, 260 80, 270 95 C285 85, 310 90, 315 110 C330 115, 340 130, 330 145 C340 160, 330 180, 310 185 C305 200, 285 205, 270 195 C255 210, 230 205, 220 190 C200 195, 185 180, 190 165 C175 155, 180 130, 195 125 C190
+                110, 205 90, 220 90 Z " fill="#95afc0 " opacity="0.7 "/>
+                    
+                    <!-- Petits signaux de connexion (faibles) -->
+                    <path d="M160 300 L160 320 M175 290 L175 320 M190 280 L190 320 M205 270 L205 320" stroke="#bdc3c7" stroke-width="4" stroke-linecap="round"/>
+                    <path d="M220 300 L220 320" stroke="#3498db" stroke-width="4" stroke-linecap="round"/>
+                    <path d="M235 290 L235 320" stroke="#3498db" stroke-width="4" stroke-linecap="round" opacity="0.5"/>
+                    <path d="M250 280 L250 320" stroke="#3498db" stroke-width="4" stroke-linecap="round" opacity="0.3"/>
+                </svg>
+                <p>Oups! Erreur de géolocalisation.</p>
+            </div>
+            <div *ngIf="mapOptions " class="map " leaflet [leafletOptions]="mapOptions " [leafletLayers]="markers " (leafletMapReady)="onMapReady($event) ">
+            </div>
+        </div>
+
+        <!-- Parking Section -->
+        <div class="main-content ">
+            <div class="parkings-list ">
+                <h2>Parkings à proximité</h2>
+                <div class="parking-card" *ngFor="let parking of displayedParkings">
+                    <h3>{{ parking.nom_du_parking }}</h3>
+                    <div class="parking-info">
+                        <span>{{ parking.distanceKm }} km</span>
+                    </div>
+                    <div class="button-group">
+                        <button class="route-button" (click)="addRouteToParking(parking)">Voir l'itinéraire</button>
+                        <button class="reserve-button" (click)="reserveParking(parking)">Réserver maintenant</button>
+                    </div>
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination ">
+                    <button (click)="previousPage() " [disabled]="currentPage===1 ">Précédent</button>
+                    <div>
+                        <button *ngFor="let page of pageNumbers " (click)="goToPage(page) " [class.active]="currentPage===page ">
+                            {{ page }}
+                        </button>
+                        <span *ngIf="(currentPage> 2 && totalPages > 3)">..</span>
+                    </div>
+                    <button (click)="nextPage()" [disabled]="currentPage === totalPages">Suivant</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

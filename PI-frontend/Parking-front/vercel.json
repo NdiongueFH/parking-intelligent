@@ -1,0 +1,6 @@
+{
+    "rewrites": [
+      { "source": "/(.*)", "destination": "/dist/Parking-front/index.html" }
+    ]
+  }
+  

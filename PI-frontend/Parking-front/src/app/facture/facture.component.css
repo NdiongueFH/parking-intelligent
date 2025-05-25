@@ -1,0 +1,221 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+.invoice-container {
+    max-width: 600px;
+    margin: 20px auto;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+}
+
+.logo-circle {
+    width: 30px;
+    height: 30px;
+    background-color: #1e3a8a;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+h1 {
+    font-size: 20px;
+    margin: 0;
+}
+
+.date {
+    text-align: right;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+.reservation-info {
+    background-color: #e0f7fa;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 5px;
+    margin: 10px;
+}
+
+.parking-info h2 {
+    margin-bottom: 10px;
+    font-size: 18px;
+}
+
+.code-box {
+    display: flex;
+    align-items: center;
+    margin-top: 5px;
+}
+
+.qr-code {
+    width: 20px;
+    height: 20px;
+    background-image: linear-gradient(to right, #000 33%, transparent 33%), linear-gradient(to right, #000 33%, transparent 33%), linear-gradient(to bottom, #000 33%, transparent 33%), linear-gradient(to bottom, #000 33%, transparent 33%);
+    background-position: left top, right top, left top, left bottom;
+    background-repeat: no-repeat;
+    background-size: 10px 10px;
+    margin-right: 10px;
+}
+
+.code-number {
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.status-box {
+    text-align: center;
+}
+
+.status {
+    background-color: white;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-weight: bold;
+    color: #ff9800;
+    margin-top: 5px;
+}
+
+.client-info,
+.payment-info {
+    padding: 15px 20px;
+    border-top: 1px solid #e0e0e0;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.section-header h2 {
+    font-size: 16px;
+}
+
+.client-details {
+    display: flex;
+    justify-content: space-between;
+}
+
+.vehicle-info {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.car-icon {
+    width: 40px;
+    height: 20px;
+    border: 2px solid #333;
+    border-radius: 5px;
+    position: relative;
+    margin-bottom: 5px;
+}
+
+.car-icon:before,
+.car-icon:after {
+    content: '';
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background-color: #333;
+    border-radius: 50%;
+    bottom: -4px;
+}
+
+.car-icon:before {
+    left: 5px;
+}
+
+.car-icon:after {
+    right: 5px;
+}
+
+.license-plate {
+    font-weight: bold;
+    border: 1px solid #ccc;
+    padding: 5px 10px;
+    border-radius: 3px;
+    margin-bottom: 5px;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.total-row {
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+    border-top: 1px solid #e0e0e0;
+    padding-top: 10px;
+    margin-top: 5px;
+}
+
+.important-notes {
+    padding: 15px 20px;
+    border-top: 1px solid #e0e0e0;
+    position: relative;
+}
+
+.important-notes h3 {
+    color: #f44336;
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+.important-notes ul {
+    list-style-type: disc;
+    padding-left: 20px;
+}
+
+.important-notes li {
+    margin-bottom: 5px;
+}
+
+.stamp {
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+    width: 100px;
+    height: 100px;
+    border: 2px solid #f44336;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: rotate(-20deg);
+    color: #f44336;
+    font-weight: bold;
+    font-size: 12px;
+    text-align: center;
+}
