@@ -166,6 +166,11 @@ exports.addReservation = async(req, res) => {
               pass: process.env.EMAIL_PASS,
             },
           });
+
+          const email = user.email;
+          const prenom = user.prenom; // ou user.nom selon ton modèle
+          const codeReservation = codeNumerique; // déjà généré plus haut
+
         
           const mailOptions = {
             from: '"Parking Intelligent" <hawa.ndiongue@gmail.com>',
