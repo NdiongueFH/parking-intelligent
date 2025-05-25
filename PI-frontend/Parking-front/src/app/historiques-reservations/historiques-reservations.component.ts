@@ -109,7 +109,7 @@ userData: UserData = {
   solde: 0
 };
 
-private userApiUrl = 'https://parking-intelligent.onrender.com/api/v1/users';
+private userApiUrl = 'http://localhost:3000/api/v1/users';
 
 
   isModalActive: boolean = false; // Initialiser à false pour que le modal soit fermé par défaut
@@ -221,7 +221,7 @@ private userApiUrl = 'https://parking-intelligent.onrender.com/api/v1/users';
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
   
-    this.http.post('https://parking-intelligent.onrender.com/api/v1/auth/logout', {}, { headers }).subscribe(
+    this.http.post('http://localhost:3000/api/v1/auth/logout', {}, { headers }).subscribe(
       () => {
         // Supprimer le token du localStorage
         localStorage.removeItem('token');
@@ -245,7 +245,7 @@ private userApiUrl = 'https://parking-intelligent.onrender.com/api/v1/users';
         'Authorization': `Bearer ${token}`
     });
 
-    this.http.get<{ data: { reservations: ApiReservation[] } }>('https://parking-intelligent.onrender.com/api/v1/reservations', { headers })
+    this.http.get<{ data: { reservations: ApiReservation[] } }>('http://localhost:3000/api/v1/reservations', { headers })
         .subscribe(
             (response) => {
                 this.reservations = response.data.reservations;
@@ -295,7 +295,7 @@ updateReservation(): void {
       'Authorization': `Bearer ${token}`
   });
 
-  this.http.put(`https://parking-intelligent.onrender.com/api/v1/reservations/${this.editReservation._id}`, updatedData, { headers })
+  this.http.put(`http://localhost:3000/api/v1/reservations/${this.editReservation._id}`, updatedData, { headers })
       .subscribe(
           (response) => {
               console.log('Réservation mise à jour:', response);
@@ -325,7 +325,7 @@ cancelReservation(reservation: ApiReservation): void {
       'Authorization': `Bearer ${token}` // Ajouter le token aux en-têtes
   });
 
-  this.http.patch(`https://parking-intelligent.onrender.com/api/v1/reservations/${reservation._id}/cancel`, {}, { headers })
+  this.http.patch(`http://localhost:3000/api/v1/reservations/${reservation._id}/cancel`, {}, { headers })
       .subscribe(
           (response) => {
               console.log('Réservation annulée:', response);

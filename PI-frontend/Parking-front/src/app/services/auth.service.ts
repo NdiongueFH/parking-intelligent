@@ -7,7 +7,7 @@ import { Observable, tap } from 'rxjs';
 })
 export class AuthService {
 
-  private apiUrl = 'https://parking-intelligent.onrender.com/api/v1/auth';
+  private apiUrl = 'http://localhost:3000/api/v1/auth';
 
   constructor(private http: HttpClient) {}
 

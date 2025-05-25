@@ -50,7 +50,7 @@ showSettingsModal: boolean = false;
 
 
 
-private userApiUrl = 'https://parking-intelligent.onrender.com/api/v1/users';
+private userApiUrl = 'http://localhost:3000/api/v1/users';
 
 
   // État de la visibilité du solde
@@ -217,7 +217,7 @@ nextPage(): void {
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
-    this.http.post('https://parking-intelligent.onrender.com/api/v1/auth/logout', {}, { headers }).subscribe(
+    this.http.post('http://localhost:3000/api/v1/auth/logout', {}, { headers }).subscribe(
       () => {
         localStorage.removeItem('token');
         localStorage.removeItem('userId'); // Assurez-vous de supprimer l'ID de l'utilisateur lors de la déconnexion
@@ -238,7 +238,7 @@ nextPage(): void {
         return;
     }
 
-    this.http.get('https://parking-intelligent.onrender.com/api/v1/auth/me', {
+    this.http.get('http://localhost:3000/api/v1/auth/me', {
         headers: { 'Authorization': `Bearer ${token}` }
     }).subscribe(
         (response: any) => {
@@ -270,7 +270,7 @@ fetchUserTransactions(): void {
 
   const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
-  this.http.get<any>('https://parking-intelligent.onrender.com/api/v1/transfers/mes-transactions', { headers }).subscribe(
+  this.http.get<any>('http://localhost:3000/api/v1/transfers/mes-transactions', { headers }).subscribe(
     (response) => {
       if (response.status === 'success') {
         this.transactions = response.data.transfers;

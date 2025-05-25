@@ -47,7 +47,7 @@ export class ParkingReservationComponent implements OnInit {
 
 
     constructor(private fb: FormBuilder, private http: HttpClient) {
-        this.socket = io('https://parking-intelligent.onrender.com'); // l’URL de ton backend
+        this.socket = io('http://localhost:3000'); // l’URL de ton backend
 
         this.reservationForm = this.fb.group({
             vehicleType: ['voiture', Validators.required],
@@ -77,7 +77,7 @@ export class ParkingReservationComponent implements OnInit {
             'Authorization': `Bearer ${token}`
         });
 
-        this.http.get(`https://parking-intelligent.onrender.com/api/v1/tarifs/${this.parkingId}`, { headers })
+        this.http.get(`http://localhost:3000/api/v1/tarifs/${this.parkingId}`, { headers })
             .subscribe({
                 next: (response: any) => {
                     const tarifs = response.data.tarifs;
@@ -120,7 +120,7 @@ export class ParkingReservationComponent implements OnInit {
                 paiement: 'en ligne'
             };
     
-            this.http.post(`https://parking-intelligent.onrender.com/api/v1/reservations`, formData, { headers })
+            this.http.post(`http://localhost:3000/api/v1/reservations`, formData, { headers })
                 .subscribe({
                     next: (response: any) => {
                         this.errorMessage = null; // Réinitialiser le message d'erreur

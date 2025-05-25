@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class UserService {
-  private apiUrl = 'https://parking-intelligent.onrender.com/api/v1/users'; // Remplacez par l'URL de votre API
+  private apiUrl = 'http://localhost:3000/api/v1/users'; // Remplacez par l'URL de votre API
 
   constructor(private http: HttpClient) {}
 

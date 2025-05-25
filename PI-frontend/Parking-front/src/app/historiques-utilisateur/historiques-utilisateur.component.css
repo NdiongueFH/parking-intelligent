@@ -1381,6 +1381,12 @@ button:hover {
     margin-right: 10px;
 }
 
+.disabled-button {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
 
 /* Animation */
 

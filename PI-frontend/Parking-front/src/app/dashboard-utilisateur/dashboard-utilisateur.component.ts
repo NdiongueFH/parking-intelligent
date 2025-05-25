@@ -72,8 +72,8 @@ userData: UserData = {
   solde: 0
 };
 
-  private apiUrl = 'https://parking-intelligent.onrender.com/api/v1/parkings';
-  private userApiUrl = 'https://parking-intelligent.onrender.com/api/v1/users';
+  private apiUrl = 'http://localhost:3000/api/v1/parkings';
+  private userApiUrl = 'http://localhost:3000/api/v1/users';
 
 
   constructor(private router: Router, private http: HttpClient) {}
@@ -155,7 +155,7 @@ userData: UserData = {
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
-    this.http.post('https://parking-intelligent.onrender.com/api/v1/auth/logout', {}, { headers }).subscribe(
+    this.http.post('http://localhost:3000/api/v1/auth/logout', {}, { headers }).subscribe(
       () => {
         localStorage.removeItem('token');
         this.router.navigate(['/login']);

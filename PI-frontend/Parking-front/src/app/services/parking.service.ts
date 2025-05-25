@@ -16,7 +16,7 @@ export interface Parking {
   providedIn: 'root'
 })
 export class ParkingService {
-  private apiUrl = 'https://parking-intelligent.onrender.com/api/v1/parkings';
+  private apiUrl = 'http://localhost:3000/api/v1/parkings';
 
   constructor(private http: HttpClient) { }
 

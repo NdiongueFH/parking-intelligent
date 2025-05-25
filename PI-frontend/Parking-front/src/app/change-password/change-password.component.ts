@@ -105,7 +105,7 @@ export class MotDePasseComponent implements OnInit {
         'Authorization': `Bearer ${this.token}`
       });
       
-      this.http.get<UserData>('https://parking-intelligent.onrender.com/api/v1/users/me', { headers })
+      this.http.get<UserData>('http://localhost:3000/api/v1/users/me', { headers })
         .subscribe({
           next: (data) => {
             this.userData = data;
@@ -178,7 +178,7 @@ export class MotDePasseComponent implements OnInit {
         'Content-Type': 'application/json'
       });
       
-      this.http.patch('https://parking-intelligent.onrender.com/api/v1/auth/updatePassword', passwordData, { headers })
+      this.http.patch('http://localhost:3000/api/v1/auth/updatePassword', passwordData, { headers })
         .subscribe({
           next: (response: any) => {
             this.isLoading = false;

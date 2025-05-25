@@ -42,7 +42,7 @@ export class ResetPasswordComponent implements OnInit {
 
     this.loading = true;
 
-    this.http.post<any>('https://parking-intelligent.onrender.com/api/v1/users/reset-password', {
+    this.http.post<any>('http://localhost:3000/api/v1/users/reset-password', {
       token: this.token,
       newPassword: this.newPassword
     }).subscribe({

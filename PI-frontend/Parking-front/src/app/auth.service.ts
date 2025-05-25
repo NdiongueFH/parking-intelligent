@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class AuthService {
 
-  private apiUrl = 'https://parking-intelligent.onrender.com/api/v1/auth'; // URL de votre API
+  private apiUrl = 'http://localhost:3000/api/v1/auth'; // URL de votre API
 
   constructor(private http: HttpClient) {}
 

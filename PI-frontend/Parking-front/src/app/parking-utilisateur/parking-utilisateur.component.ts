@@ -67,13 +67,13 @@ userData: UserData = {
   solde: 0
 };
 
-private userApiUrl = 'https://parking-intelligent.onrender.com/api/v1/users';
+private userApiUrl = 'http://localhost:3000/api/v1/users';
 
 private socket: Socket; // Instance de Socket.io
 
 constructor(private router: Router, private http: HttpClient, private route: ActivatedRoute, private cdr: ChangeDetectorRef) {
   // Crée une instance Socket.io
-  this.socket = io('https://parking-intelligent.onrender.com'); // Remplacer par l'URL de ton serveur backend
+  this.socket = io('http://localhost:3000'); // Remplacer par l'URL de ton serveur backend
 }
 
 ngOnInit(): void {
@@ -203,7 +203,7 @@ loadUserData(): void {
       const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
   
       // Récupérer les détails du parking, y compris le nom et l'adresse
-      this.http.get<any>(`https://parking-intelligent.onrender.com/api/v1/parkings/${this.parkingId}`, { headers }).subscribe(
+      this.http.get<any>(`http://localhost:3000/api/v1/parkings/${this.parkingId}`, { headers }).subscribe(
         (data) => {
           console.log('Détails du parking récupérés:', data); // Log des détails du parking
           this.parkingName = data.nom_du_parking; // Mettez à jour le nom du parking
@@ -222,7 +222,7 @@ loadUserData(): void {
       const token = localStorage.getItem('token');
       const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
   
-      this.http.get<any[]>(`https://parking-intelligent.onrender.com/api/v1/place-parking/parking/${this.parkingId}`, { headers }).subscribe(
+      this.http.get<any[]>(`http://localhost:3000/api/v1/place-parking/parking/${this.parkingId}`, { headers }).subscribe(
         (data) => {
           this.parkingPlaces = data; // Stocker les données récupérées
           this.updateParkingStats(); // Mettre à jour les statistiques
@@ -273,7 +273,7 @@ loadUserData(): void {
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
-    this.http.get<any>(`https://parking-intelligent.onrender.com/api/v1/tarifs/${this.parkingId}`, { headers }).subscribe(
+    this.http.get<any>(`http://localhost:3000/api/v1/tarifs/${this.parkingId}`, { headers }).subscribe(
         (response: any) => {
             if (response.data && response.data.tarifs.length > 0) {
                 const pricePerHour = response.data.tarifs[0].tarifDurations.heure; // Récupérer le tarif par heure
@@ -318,7 +318,7 @@ openRatesModal(): void {
   const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
   // Récupérer les tarifs
-  this.http.get<any>(`https://parking-intelligent.onrender.com/api/v1/tarifs/${this.parkingId}`, { headers }).subscribe(
+  this.http.get<any>(`http://localhost:3000/api/v1/tarifs/${this.parkingId}`, { headers }).subscribe(
       (response: any) => {
           if (response.data && response.data.tarifs) {
               this.tarifs = response.data.tarifs;
@@ -347,7 +347,7 @@ loadFines(): void {
   const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
   // Récupérer les amendes
-  this.http.get<any>(`https://parking-intelligent.onrender.com/api/v1/amendes/parking/${this.parkingId}`, { headers }).subscribe(
+  this.http.get<any>(`http://localhost:3000/api/v1/amendes/parking/${this.parkingId}`, { headers }).subscribe(
       (response: any) => {
           if (response.data && response.data.amendes) {
               this.amendes = response.data.amendes;
@@ -375,7 +375,7 @@ closeRatesModal(): void {
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
-    this.http.post('https://parking-intelligent.onrender.com/api/v1/auth/logout', {}, { headers }).subscribe(
+    this.http.post('http://localhost:3000/api/v1/auth/logout', {}, { headers }).subscribe(
       () => {
         localStorage.removeItem('token');
         localStorage.removeItem('userId'); // Assurez-vous de supprimer l'ID de l'utilisateur lors de la déconnexion

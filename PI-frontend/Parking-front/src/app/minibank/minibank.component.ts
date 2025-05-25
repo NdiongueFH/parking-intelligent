@@ -59,7 +59,7 @@ withdrawErrorMessage: string | null = null;
 
 
 
-private userApiUrl = 'https://parking-intelligent.onrender.com/api/v1/users';
+private userApiUrl = 'http://localhost:3000/api/v1/users';
 
 
   // État de la visibilité du solde
@@ -222,7 +222,7 @@ nextPage(): void {
 
 fetchTransactions(): void {
   const token = localStorage.getItem('token');
-  this.http.get('https://parking-intelligent.onrender.com/api/v1/transfers', {
+  this.http.get('http://localhost:3000/api/v1/transfers', {
     headers: { 'Authorization': `Bearer ${token}` }
   }).subscribe(
     (response: any) => {
@@ -276,7 +276,7 @@ fetchTransactions(): void {
     const depositData = this.depositForm.value;
     const token = localStorage.getItem('token');
   
-    this.http.post('https://parking-intelligent.onrender.com/api/v1/users/deposit', depositData, {
+    this.http.post('http://localhost:3000/api/v1/users/deposit', depositData, {
       headers: { 'Authorization': `Bearer ${token}` }
     }).subscribe(
       response => {
@@ -304,7 +304,7 @@ submitWithdraw(): void {
   const withdrawData = this.withdrawForm.value;
   const token = localStorage.getItem('token');
 
-  this.http.post('https://parking-intelligent.onrender.com/api/v1/users/withdraw', withdrawData, {
+  this.http.post('http://localhost:3000/api/v1/users/withdraw', withdrawData, {
     headers: { 'Authorization': `Bearer ${token}` }
   }).subscribe(
     response => {
@@ -342,7 +342,7 @@ submitWithdraw(): void {
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
-    this.http.post('https://parking-intelligent.onrender.com/api/v1/auth/logout', {}, { headers }).subscribe(
+    this.http.post('http://localhost:3000/api/v1/auth/logout', {}, { headers }).subscribe(
       () => {
         localStorage.removeItem('token');
         localStorage.removeItem('userId'); // Assurez-vous de supprimer l'ID de l'utilisateur lors de la déconnexion
@@ -357,7 +357,7 @@ submitWithdraw(): void {
 
   fetchDailyTotals(): void {
     const token = localStorage.getItem('token');
-    this.http.get('https://parking-intelligent.onrender.com/api/v1/transfers/totaux-quotidiens', {
+    this.http.get('http://localhost:3000/api/v1/transfers/totaux-quotidiens', {
       headers: { 'Authorization': `Bearer ${token}` }
     }).subscribe(
       (response: any) => {
@@ -418,7 +418,7 @@ submitWithdraw(): void {
         return;
     }
 
-    this.http.get('https://parking-intelligent.onrender.com/api/v1/auth/me', {
+    this.http.get('http://localhost:3000/api/v1/auth/me', {
         headers: { 'Authorization': `Bearer ${token}` }
     }).subscribe(
         (response: any) => {

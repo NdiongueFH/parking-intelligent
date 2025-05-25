@@ -52,7 +52,7 @@ export class InscriptionComponent implements OnInit {
     this.loading = true;
     this.error = '';
 
-    this.http.post('https://parking-intelligent.onrender.com/api/v1/auth/signup', this.inscriptionForm.value)
+    this.http.post('http://localhost:3000/api/v1/auth/signup', this.inscriptionForm.value)
       .subscribe({
         next: (response: any) => {
           this.loading = false;
