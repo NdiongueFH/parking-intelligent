@@ -169,6 +169,7 @@ exports.addReservation = async(req, res) => {
 
           const email = user.email;
           const prenom = user.prenom; // ou user.nom selon ton modèle
+          const codeReservation = codeNumerique; // déjà généré plus haut
 
         
           const mailOptions = {
@@ -178,11 +179,12 @@ exports.addReservation = async(req, res) => {
             html: `
               <div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 30px;">
                 <div style="max-width: 600px; margin: auto; background: white; border-radius: 10px; padding: 30px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
-                  <h2 style="text-align: center; color: #27ae60;">Réservation Confirmée</h2>
+                  <h2 style="text-align: center; color: #27ae60;">✅ Réservation Confirmée</h2>
                   <p style="font-size: 16px; color: #333;">Bonjour <strong>${prenom}</strong>,</p>
                   <p style="font-size: 16px; color: #333;">Votre réservation a bien été enregistrée.</p>
-                  <p style="font-size: 16px; color: #333;">Utilisez ce code pour pouvoir acceder au parking. Il ne sera valable que pour la date et l'heure de reservation ! .</p>
-                  <p><strong>🔐 Code d'accès :</strong> <span style="font-size: 18px; font-weight: bold; color: #e74c3c;">${codeNumerique}</span></p>
+                  <p style="font-size: 16px; color: #333;">Utilisez ce code pour pouvoir acceder au parking. Il ne sera valable que pour la date et l'heure de reservation ! </p>
+                  <p><strong>🧾 Numéro de reçu :</strong> ${reservation.numeroRecu}</p>
+                  <p><strong>🔐 Code d'accès :</strong> <span style="font-size: 18px; font-weight: bold; color: #e74c3c;">${reservation.codeNumerique}</span></p>
                   <p><strong>📅 Heure d'arrivée :</strong> ${new Date(heureArrivee).toLocaleString()}</p>
                   <p><strong>📅 Heure de départ :</strong> ${new Date(heureDepart).toLocaleString()}</p>
                   <p style="margin-top: 20px; font-size: 14px; color: #999;">Merci pour votre confiance !</p>
@@ -259,7 +261,6 @@ exports.addReservation = async(req, res) => {
         });
     }
 };
-
 
 
 // Modifier une réservation

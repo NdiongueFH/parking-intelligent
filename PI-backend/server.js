@@ -55,17 +55,13 @@ app.use(cors({
 // Middleware pour gérer les données JSON dans les requêtes
 app.use(express.json());
 
- // Connexion à MongoDB via Mongoose
-mongoose.connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-})
-.then(() => console.log('✅ Connexion à MongoDB Atlas réussie'))
-.catch((err) => {
-    console.error('❌ Erreur de connexion à MongoDB Atlas :', err);
-    process.exit(1);
-});
-
+// Connexion à MongoDB via Mongoose
+mongoose.connect('mongodb://localhost:27017/Smart-Parking')
+    .then(() => console.log('Connexion à MongoDB réussie'))
+    .catch((err) => {
+        console.error('Erreur de connexion à MongoDB', err);
+        process.exit(1);
+    });
 
 // Récupérer la clé secrète pour JWT depuis le fichier .env
 const jwtSecret = process.env.JWT_SECRET;
