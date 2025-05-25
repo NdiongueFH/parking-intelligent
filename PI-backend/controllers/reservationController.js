@@ -3,6 +3,7 @@ const Parking = require('../models/parking');
 const PlaceParking = require('../models/placeParking');
 const TarifStationnement = require('../models/tarifStationnementModel');
 const User = require('../models/userModel'); // Assurez-vous d'importer le modèle User
+const nodemailer = require('nodemailer');
 
 // Ajouter une réservation
 exports.addReservation = async(req, res) => {
@@ -157,6 +158,15 @@ exports.addReservation = async(req, res) => {
         // Mettre à jour la place de parking à "reservee"
         place.statut = 'reservee';
         await place.save();
+
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.error("Erreur lors de l'envoi de l'email :", error);
+            } else {
+                console.log("Email envoyé :", info.response);
+            }
+        });
+        
 
         // Émettre l’événement WebSocket pour mise à jour en temps réel
         const io = req.app.get('io');
@@ -521,6 +531,49 @@ const invalidateExpiredCodes = async() => {
         await reservation.save();
     }
 };
+
+const sendReservationEmail = async (email, prenom, codeReservation, numeroRecu, montant, heureArrivee, heureDepart) => {
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+  
+    const mailOptions = {
+      from: '"Parking Intelligent" <hawa.ndiongue@gmail.com>',
+      to: email,
+      subject: '✅ Confirmation de votre réservation',
+      html: `
+        <div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 30px;">
+          <div style="max-width: 600px; margin: auto; background: white; border-radius: 10px; padding: 30px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+            <h2 style="text-align: center; color: #27ae60;">✅ Réservation Confirmée</h2>
+            <p style="font-size: 16px; color: #333;">Bonjour <strong>${prenom}</strong>,</p>
+            <p style="font-size: 16px; color: #333;">Votre réservation a bien été enregistrée.</p>
+            <p><strong>🧾 Numéro de reçu :</strong> ${numeroRecu}</p>
+            <p><strong>🔐 Code d'accès :</strong> <span style="font-size: 18px; font-weight: bold; color: #e74c3c;">${codeReservation}</span></p>
+            <p><strong>📅 Heure d'arrivée :</strong> ${new Date(heureArrivee).toLocaleString()}</p>
+            <p><strong>📅 Heure de départ :</strong> ${new Date(heureDepart).toLocaleString()}</p>
+            <p><strong>💰 Montant payé :</strong> ${montant.toFixed(2)} FCFA</p>
+            <p style="margin-top: 20px; font-size: 14px; color: #999;">Merci pour votre confiance !</p>
+            <hr style="margin-top: 40px; border: none; border-top: 1px solid #eee;">
+            <p style="font-size: 12px; color: #aaa; text-align: center;">
+              &copy; 2025 Parking Intelligent - Tous droits réservés
+            </p>
+          </div>
+        </div>
+      `
+    };
+  
+    try {
+      let info = await transporter.sendMail(mailOptions);
+      console.log('Email de réservation envoyé:', info.messageId);
+    } catch (error) {
+      console.error('Erreur envoi email réservation:', error);
+    }
+  };
+  
 
 // Appeler cette fonction à intervalles réguliers
 setInterval(invalidateExpiredCodes, 60000); // Par exemple, toutes les minutes
