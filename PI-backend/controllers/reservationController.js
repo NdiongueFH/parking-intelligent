@@ -169,7 +169,6 @@ exports.addReservation = async(req, res) => {
 
           const email = user.email;
           const prenom = user.prenom; // ou user.nom selon ton modèle
-          const codeReservation = codeNumerique; // déjà généré plus haut
 
         
           const mailOptions = {
