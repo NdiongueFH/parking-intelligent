@@ -44,3 +44,47 @@ exports.getUserTransfers = async (req, res) => {
     }
 };
 
+
+exports.getTodayTotals = async (req, res) => {
+    try {
+      const userId = req.user._id;
+  
+      // Début et fin de la journée actuelle
+      const startOfDay = new Date();
+      startOfDay.setHours(0, 0, 0, 0);
+  
+      const endOfDay = new Date();
+      endOfDay.setHours(23, 59, 59, 999);
+  
+      const todayTransfers = await Transfer.find({
+        utilisateur: userId,
+        date: { $gte: startOfDay, $lte: endOfDay }
+      });
+  
+      // Calcul des totaux
+      let totalDepot = 0;
+      let totalRetrait = 0;
+  
+      todayTransfers.forEach(t => {
+        if (t.type === 'depot') totalDepot += t.montant;
+        if (t.type === 'retrait') totalRetrait += t.montant;
+      });
+  
+      return res.status(200).json({
+        status: 'success',
+        data: {
+          totalDepot,
+          totalRetrait
+        }
+      });
+  
+    } catch (err) {
+      console.error('Erreur lors du calcul des totaux journaliers :', err);
+      return res.status(500).json({
+        status: 'fail',
+        message: 'Erreur serveur.',
+        error: err.message
+      });
+    }
+  };
+

@@ -16,4 +16,8 @@ router.get('/', userController.restrictTo('administrateur'), transferController.
 // ✅ Nouvelle route : transactions de l'utilisateur connecté
 router.get('/mes-transactions', transferController.getUserTransfers);
 
+// Route pour obtenir le total des dépôts et retraits de la journée pour l'utilisateur connecté
+router.get('/totaux-quotidiens', transferController.getTodayTotals);
+
+
 module.exports = router;
