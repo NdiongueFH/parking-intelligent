@@ -762,8 +762,9 @@ exports.forgotPassword = async (req, res) => {
     }
   };
   
-const sendResetEmail = async (email, token) => {
-    // Configure le transporteur SMTP (ici exemple avec Gmail)
+  const sendResetEmail = async (email, token) => {
+    const nodemailer = require('nodemailer');
+  
     let transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
@@ -774,25 +775,38 @@ const sendResetEmail = async (email, token) => {
   
     const resetUrl = `http://localhost:4200/reset-password?token=${token}`;
   
-    // Contenu de l’email
     let mailOptions = {
-      from: '"Support Parking Intelligent" <hawa.ndiongue@gmail.com>', // expéditeur
+      from: '"Parking Intelligent" <hawa.ndiongue@gmail.com>',
       to: email,
-      subject: 'Réinitialisation de votre mot de passe',
-      html: `<p>Bonjour Cher utilisateur,</p>
-             <p>Vous avez demandé à réinitialiser votre mot de passe.</p>
-             <p>Cliquez sur ce <a href="${resetUrl}">ici</a> pour créer un nouveau mot de passe. Ce lien est valide pour une duree de 1 heure.</p>
-             <p>Si vous n’avez pas fait cette demande, ignorez ce message.</p>`
+      subject: '🔐 Réinitialisation de votre mot de passe',
+      html: `
+        <div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 30px;">
+          <div style="max-width: 600px; margin: auto; background: white; border-radius: 10px; padding: 30px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+            <h2 style="text-align: center; color: #2c3e50;">🔐 Réinitialisation de mot de passe</h2>
+            <p style="font-size: 16px; color: #333;">Bonjour <strong>cher utilisateur</strong>,</p>
+            <p style="font-size: 16px; color: #333;">Vous avez demandé la réinitialisation de votre mot de passe.</p>
+            <p style="font-size: 16px; color: #333;">Cliquez sur le bouton ci-dessous pour créer un nouveau mot de passe. Ce lien est valable pendant <strong>1 heure</strong>.</p>
+            <div style="text-align: center; margin: 30px 0;">
+              <a href="${resetUrl}" style="padding: 12px 25px; background-color: #3498db; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">Réinitialiser mon mot de passe</a>
+            </div>
+            <p style="font-size: 14px; color: #999;">Si vous n'avez pas fait cette demande, vous pouvez ignorer ce message.</p>
+            <hr style="margin-top: 40px; border: none; border-top: 1px solid #eee;">
+            <p style="font-size: 12px; color: #aaa; text-align: center;">
+              &copy; 2025 Parking Intelligent - Tous droits réservés
+            </p>
+          </div>
+        </div>
+      `
     };
   
     try {
-        let info = await transporter.sendMail(mailOptions);
-        console.log('Email envoyé:', info.messageId);
-      } catch (error) {
-        console.error('Erreur envoi email:', error);
-      }
-      
+      let info = await transporter.sendMail(mailOptions);
+      console.log('Email envoyé:', info.messageId);
+    } catch (error) {
+      console.error('Erreur envoi email:', error);
+    }
   };
+  
   
 
   
