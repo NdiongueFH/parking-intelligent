@@ -787,7 +787,7 @@ exports.forgotPassword = async (req, res) => {
             <p style="font-size: 16px; color: #333;">Vous avez demandé la réinitialisation de votre mot de passe.</p>
             <p style="font-size: 16px; color: #333;">Cliquez sur le bouton ci-dessous pour créer un nouveau mot de passe. Ce lien est valable pendant <strong>1 heure</strong>.</p>
             <div style="text-align: center; margin: 30px 0;">
-              <a href="${resetUrl}" style="padding: 12px 25px; background-color: #3498db; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">Réinitialiser mon mot de passe</a>
+              <a href="${resetUrl}" style="padding: 12px 25px; background-color: #3498db; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">Réinitialiser</a>
             </div>
             <p style="font-size: 14px; color: #999;">Si vous n'avez pas fait cette demande, vous pouvez ignorer ce message.</p>
             <hr style="margin-top: 40px; border: none; border-top: 1px solid #eee;">
