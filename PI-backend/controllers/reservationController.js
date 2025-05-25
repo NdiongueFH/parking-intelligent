@@ -182,7 +182,7 @@ exports.addReservation = async(req, res) => {
                   <p style="font-size: 16px; color: #333;">Bonjour <strong>${prenom}</strong>,</p>
                   <p style="font-size: 16px; color: #333;">Votre réservation a bien été enregistrée.</p>
                   <p style="font-size: 16px; color: #333;">Utilisez ce code pour pouvoir acceder au parking. Il ne sera valable que pour la date et l'heure de reservation ! .</p>
-                  <p><strong>🔐 Code d'accès :</strong> <span style="font-size: 18px; font-weight: bold; color: #e74c3c;">${codeReservation}</span></p>
+                  <p><strong>🔐 Code d'accès :</strong> <span style="font-size: 18px; font-weight: bold; color: #e74c3c;">${codeNumerique}</span></p>
                   <p><strong>📅 Heure d'arrivée :</strong> ${new Date(heureArrivee).toLocaleString()}</p>
                   <p><strong>📅 Heure de départ :</strong> ${new Date(heureDepart).toLocaleString()}</p>
                   <p style="margin-top: 20px; font-size: 14px; color: #999;">Merci pour votre confiance !</p>
