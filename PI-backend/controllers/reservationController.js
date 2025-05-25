@@ -179,14 +179,13 @@ exports.addReservation = async(req, res) => {
             html: `
               <div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 30px;">
                 <div style="max-width: 600px; margin: auto; background: white; border-radius: 10px; padding: 30px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
-                  <h2 style="text-align: center; color: #27ae60;">✅ Réservation Confirmée</h2>
+                  <h2 style="text-align: center; color: #27ae60;">Réservation Confirmée</h2>
                   <p style="font-size: 16px; color: #333;">Bonjour <strong>${prenom}</strong>,</p>
                   <p style="font-size: 16px; color: #333;">Votre réservation a bien été enregistrée.</p>
-                  <p><strong>🧾 Numéro de reçu :</strong> ${numeroRecu}</p>
+                  <p style="font-size: 16px; color: #333;">Utilisez ce code pour pouvoir acceder au parking. Il ne sera valable que pour la date et l'heure de reservation ! .</p>
                   <p><strong>🔐 Code d'accès :</strong> <span style="font-size: 18px; font-weight: bold; color: #e74c3c;">${codeReservation}</span></p>
                   <p><strong>📅 Heure d'arrivée :</strong> ${new Date(heureArrivee).toLocaleString()}</p>
                   <p><strong>📅 Heure de départ :</strong> ${new Date(heureDepart).toLocaleString()}</p>
-                  <p><strong>💰 Montant payé :</strong> ${montant.toFixed(2)} FCFA</p>
                   <p style="margin-top: 20px; font-size: 14px; color: #999;">Merci pour votre confiance !</p>
                   <hr style="margin-top: 40px; border: none; border-top: 1px solid #eee;">
                   <p style="font-size: 12px; color: #aaa; text-align: center;">
