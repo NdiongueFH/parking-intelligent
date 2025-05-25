@@ -404,6 +404,7 @@ exports.getReservationsByUser = async(req, res) => {
     try {
         const { userId } = req.params;
         const reservations = await Reservation.find({ userId })
+            .sort({ createdAt: -1 }) // <- tri décroissant
             .populate('parkingId', 'nom_du_parking adresse') // Peupler les informations du parking
             .populate('userId', 'nom prenom telephone') // Peupler les informations de l'utilisateur
             .populate('placeId', 'nomPlace statut'); // Peupler les informations de la place, si nécessaire
@@ -433,6 +434,7 @@ exports.getReservationsByUser = async(req, res) => {
 exports.getAllReservations = async(req, res) => {
     try {
         const reservations = await Reservation.find()
+            .sort({ createdAt: -1 }) // <- tri décroissant 
             .populate('parkingId', 'nom_du_parking adresse')
             .populate('userId', 'nom prenom telephone')
             .populate('placeId', 'nomPlace statut');
