@@ -48,9 +48,18 @@ visibleTransactions: any[] = []; // Propriété pour stocker les transactions vi
 // Nouvelles propriétés pour le modal des paramètres
 showSettingsModal: boolean = false;
 
+dailyTotalDepot: number = 0;
+dailyTotalRetrait: number = 0;
+dailyChart: any;
+
+depositErrorMessage: string | null = null;
+withdrawErrorMessage: string | null = null;
 
 
-private userApiUrl = 'http://localhost:3000/api/v1/users';
+
+
+
+private userApiUrl = 'https://parking-intelligent.onrender.com/api/v1/users';
 
 
   // État de la visibilité du solde
@@ -88,7 +97,7 @@ private userApiUrl = 'http://localhost:3000/api/v1/users';
     this.fetchTransactions(); // Appeler la méthode pour récupérer les transactions
     this.fetchUserData(); // Appeler la méthode pour récupérer les données de l'utilisateur
     this.loadUserData(); // Charger les données de l'utilisateur
-
+    
 
   }
 
@@ -213,7 +222,7 @@ nextPage(): void {
 
 fetchTransactions(): void {
   const token = localStorage.getItem('token');
-  this.http.get('http://localhost:3000/api/v1/transfers', {
+  this.http.get('https://parking-intelligent.onrender.com/api/v1/transfers', {
     headers: { 'Authorization': `Bearer ${token}` }
   }).subscribe(
     (response: any) => {
@@ -262,45 +271,60 @@ fetchTransactions(): void {
     this.withdrawForm.reset();
   }
 
-// Soumettre le formulaire de dépôt
-submitDeposit(): void {
-  const depositData = this.depositForm.value;
-  const token = localStorage.getItem('token'); // Récupération du token
-
-  this.http.post('http://localhost:3000/api/v1/users/deposit', depositData, {
-      headers: { 'Authorization': `Bearer ${token}` } // Utilisation du token
-  }).subscribe(
+  submitDeposit(): void {
+    this.depositErrorMessage = null; // Réinitialiser l’erreur
+    const depositData = this.depositForm.value;
+    const token = localStorage.getItem('token');
+  
+    this.http.post('https://parking-intelligent.onrender.com/api/v1/users/deposit', depositData, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    }).subscribe(
       response => {
-          console.log('Dépôt réussi:', response);
-          this.closeDepositModal();
-          this.showSuccessMessage('Dépôt effectué avec succès !'); // Afficher le message de succès
-          this.fetchTransactions(); // Mettre à jour les transactions
+        console.log('Dépôt réussi:', response);
+        this.closeDepositModal();
+        this.showSuccessMessage('Dépôt effectué avec succès !');
+        this.fetchTransactions();
       },
       error => {
-          console.error('Erreur lors du dépôt:', error);
+        console.error('Erreur lors du dépôt:', error);
+        this.depositErrorMessage = error.error?.message || "Une erreur inconnue s’est produite lors du dépôt.";
+  
+        // Effacer après 3 secondes
+        setTimeout(() => {
+          this.depositErrorMessage = null;
+        }, 3000);
       }
-  );
-}
+    );
+  }
+  
 
 // Soumettre le formulaire de retrait
 submitWithdraw(): void {
+  this.withdrawErrorMessage = null;
   const withdrawData = this.withdrawForm.value;
-  const token = localStorage.getItem('token'); // Récupération du token
+  const token = localStorage.getItem('token');
 
-  this.http.post('http://localhost:3000/api/v1/users/withdraw', withdrawData, {
-      headers: { 'Authorization': `Bearer ${token}` } // Utilisation du token
+  this.http.post('https://parking-intelligent.onrender.com/api/v1/users/withdraw', withdrawData, {
+    headers: { 'Authorization': `Bearer ${token}` }
   }).subscribe(
-      response => {
-          console.log('Retrait réussi:', response);
-          this.closeWithdrawModal();
-          this.showSuccessMessage('Retrait effectué avec succès !'); // Afficher le message de succès
-          this.fetchTransactions(); // Mettre à jour les transactions
-      },
-      error => {
-          console.error('Erreur lors du retrait:', error);
-      }
+    response => {
+      console.log('Retrait réussi:', response);
+      this.closeWithdrawModal();
+      this.showSuccessMessage('Retrait effectué avec succès !');
+      this.fetchTransactions();
+    },
+    error => {
+      console.error('Erreur lors du retrait:', error);
+      this.withdrawErrorMessage = error.error?.message || "Une erreur inconnue s’est produite lors du retrait.";
+
+      // Effacer après 3 secondes
+      setTimeout(() => {
+        this.withdrawErrorMessage = null;
+      }, 3000);
+    }
   );
 }
+
 
 
 
@@ -318,7 +342,7 @@ submitWithdraw(): void {
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
-    this.http.post('http://localhost:3000/api/v1/auth/logout', {}, { headers }).subscribe(
+    this.http.post('https://parking-intelligent.onrender.com/api/v1/auth/logout', {}, { headers }).subscribe(
       () => {
         localStorage.removeItem('token');
         localStorage.removeItem('userId'); // Assurez-vous de supprimer l'ID de l'utilisateur lors de la déconnexion
@@ -331,6 +355,61 @@ submitWithdraw(): void {
     );
   }
 
+  fetchDailyTotals(): void {
+    const token = localStorage.getItem('token');
+    this.http.get('https://parking-intelligent.onrender.com/api/v1/transfers/totaux-quotidiens', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    }).subscribe(
+      (response: any) => {
+        if (response.status === 'success' && response.data) {
+          this.dailyTotalDepot = response.data.totalDepot;
+          this.dailyTotalRetrait = response.data.totalRetrait;
+          this.renderDailyChart(); // Après récupération des données, on affiche le graphique
+        } else {
+          console.error('Réponse inattendue:', response);
+        }
+      },
+      error => {
+        console.error('Erreur lors de la récupération des totaux quotidiens:', error);
+      }
+    );
+  }
+
+  renderDailyChart(): void {
+    const ctx = (document.getElementById('dailyChart') as HTMLCanvasElement)?.getContext('2d');
+  
+    if (this.dailyChart) {
+      this.dailyChart.destroy(); // détruire l'ancien graphique s'il existe
+    }
+  
+    if (ctx) {
+      this.dailyChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Dépôts', 'Retraits'],
+          datasets: [{
+            label: 'Totaux journaliers',
+            data: [this.dailyTotalDepot, this.dailyTotalRetrait],
+            backgroundColor: ['#4caf50', '#f44336']
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                precision: 0
+              }
+            }
+          }
+        }
+      });
+    }
+  }
+  
+  
+
   
   fetchUserData(): void {
     const token = localStorage.getItem('token');
@@ -339,7 +418,7 @@ submitWithdraw(): void {
         return;
     }
 
-    this.http.get('http://localhost:3000/api/v1/auth/me', {
+    this.http.get('https://parking-intelligent.onrender.com/api/v1/auth/me', {
         headers: { 'Authorization': `Bearer ${token}` }
     }).subscribe(
         (response: any) => {

@@ -38,7 +38,7 @@ export class ForgotPasswordComponent {
 
     try {
       const response: any = await this.http
-        .post('http://localhost:3000/api/v1/users/forgot-password', this.forgotForm.value)
+        .post('https://parking-intelligent.onrender.com/api/v1/users/forgot-password', this.forgotForm.value)
         .toPromise();
 
       this.message = response.message;

@@ -13,7 +13,7 @@ export interface Parking {
   adresse: string;
   latitude: number;
   longitude: number;
-  capaciteTotale: number;
+  capaciteTotale: number | null;
   placesLibres?: number;
   placesReservees?: number;
 }
@@ -83,7 +83,7 @@ export class ListeParkingComponent implements OnInit {
     adresse: '',
     latitude: 0,
     longitude: 0,
-    capaciteTotale: 0
+    capaciteTotale: null
   };
 
   // Nouvelles propriétés pour le modal des paramètres
@@ -96,7 +96,7 @@ userData: UserData = {
   solde: 0
 };
 
-private userApiUrl = 'http://localhost:3000/api/v1/users';
+private userApiUrl = 'https://parking-intelligent.onrender.com/api/v1/users';
 
 
   newAmende = {
@@ -123,7 +123,7 @@ selectedAmende: any; // Assurez-vous que cela est initialisé lorsque vous séle
   selectedTab: string = 'details';
   messageType: string = '';
 
-  private apiUrl = 'http://localhost:3000/api/v1/parkings';
+  private apiUrl = 'https://parking-intelligent.onrender.com/api/v1/parkings';
 
   mapOptions: MapOptions = {
     layers: [
@@ -209,7 +209,7 @@ selectedAmende: any; // Assurez-vous que cela est initialisé lorsque vous séle
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
-    this.http.post('http://localhost:3000/api/v1/auth/logout', {}, { headers }).subscribe(
+    this.http.post('https://parking-intelligent.onrender.com/api/v1/auth/logout', {}, { headers }).subscribe(
       () => {
         localStorage.removeItem('token');
         this.router.navigate(['/login']);
@@ -405,7 +405,7 @@ selectedAmende: any; // Assurez-vous que cela est initialisé lorsque vous séle
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
-    this.http.post<Place>('http://localhost:3000/api/v1/place-parking', this.newPlace, { headers }).subscribe(
+    this.http.post<Place>('https://parking-intelligent.onrender.com/api/v1/place-parking', this.newPlace, { headers }).subscribe(
         (response) => {
             console.log('Place ajoutée avec succès:', response);
             this.loadParkings(); // Recharger les parkings
@@ -550,7 +550,7 @@ selectParking(parking: Parking) {
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
-    this.http.post('http://localhost:3000/api/v1/tarifs', tarifData, { headers }).subscribe(
+    this.http.post('https://parking-intelligent.onrender.com/api/v1/tarifs', tarifData, { headers }).subscribe(
         (response) => {
             console.log('Tarifs enregistrés avec succès:', response);
             this.isEditing = false; // Fermer le mode édition
@@ -594,7 +594,7 @@ saveAmende() {
   const token = localStorage.getItem('token');
   const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
-  this.http.post('http://localhost:3000/api/v1/amendes', amendeData, { headers }).subscribe(
+  this.http.post('https://parking-intelligent.onrender.com/api/v1/amendes', amendeData, { headers }).subscribe(
       (response) => {
           console.log('Amende créée avec succès:', response);
           this.showSuccessMessage = true;

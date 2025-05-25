@@ -140,12 +140,17 @@
                             <img src="imagelogoParking.png" alt="Image" style="max-width: 100%; height: auto; border-radius: 8px;">
                             <!-- Remplacez par l'URL de votre image -->
                         </div>
+
+                        <div *ngIf="depositErrorMessage" class="error-message">
+                            {{ depositErrorMessage }}
+                          </div>
+                          
                         <form [formGroup]="depositForm" (ngSubmit)="submitDeposit()">
                             <label for="telephone">Téléphone :</label>
                             <input id="telephone" formControlName="telephone" placeholder="Entrer le numero de telephone" required>
 
                             <label for="montant">Montant (FCFA) :</label>
-                            <input id="montant" formControlName="montant" placeholder="Entrer le montant" required type="number">
+                            <input id="montant" formControlName="montant" placeholder="Entrer le montant" required type="number" min="1">
 
                             <button type="submit">Confirmer</button>
                         </form>
@@ -161,13 +166,23 @@
                             <img src="imagelogoParking.png" alt="Image" style="max-width: 100%; height: auto; border-radius: 8px;">
                             <!-- Remplacez par l'URL de votre image -->
                         </div>
+
+                        <div *ngIf="withdrawErrorMessage" class="error-message">
+                            {{ withdrawErrorMessage }}
+                          </div>
+                          
                         <form [formGroup]="withdrawForm" (ngSubmit)="submitWithdraw()">
                             <label for="telephone">Téléphone :</label>
                             <input id="telephone" formControlName="telephone" placeholder="Entrer le numero de telephone" required>
 
                             <label for="montant">Montant (FCFA) :</label>
-                            <input id="montant" formControlName="montant" placeholder="Entrer le montant" required type="number">
-
+                            <input id="montant"
+                            formControlName="montant"
+                            placeholder="Entrer le montant"
+                            required
+                            type="number"
+                            min="1">
+                     
                             <button type="submit">Confirmer</button>
                         </form>
                     </div>

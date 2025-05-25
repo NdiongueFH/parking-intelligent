@@ -135,13 +135,21 @@
                     <div class="actions">
                         <div class="button-container">
                             <div class="button-container">
-                                <button (click)="openEditModal(reservation)">
-                                    <img src="modif.png" alt="Modifier">
+                                <button
+                                  (click)="openEditModal(reservation)"
+                                  [disabled]="reservation.etat === 'Terminée' || reservation.etat === 'Annulée'"
+                                  [ngClass]="{'disabled-button': reservation.etat === 'Terminée' || reservation.etat === 'Annulée'}">
+                                  <img src="modif.png" alt="Modifier">
                                 </button>
-                                <button (click)="openCancelModal(reservation)">
-                                    <img src="sup.png" alt="Annuler">
+                              
+                                <button
+                                  (click)="openCancelModal(reservation)"
+                                  [disabled]="reservation.etat === 'Terminée' || reservation.etat === 'Annulée'"
+                                  [ngClass]="{'disabled-button': reservation.etat === 'Terminée' || reservation.etat === 'Annulée'}">
+                                  <img src="sup.png" alt="Annuler">
                                 </button>
-                            </div>
+                              </div>
+                              
                         </div>
 
                         <button class="invoice" (click)="openInvoiceModal(reservation)">Voir la facture</button>

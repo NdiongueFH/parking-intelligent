@@ -567,23 +567,38 @@ input {
     font-size: 16px;
 }
 
-.map-selector-btn {
+@keyframes clignoter {
+    0% {
+      box-shadow: 0 0 0px 2px #f8f8f8;
+    }
+    50% {
+      box-shadow: 0 0 10px 4px #fff9ac;
+    }
+    100% {
+      box-shadow: 0 0 0px 2px #faf8f8;
+    }
+  }
+  
+  .map-selector-btn {
+    background-color: #f8f9fa;
+    color: rgb(3, 3, 3);
+    font-weight: bold;
+    font-size: 16px;
+    padding: 10px 15px;
+    border: 2px solid #0c0c0c; /* Bord rouge */
+    border-radius: 5px;
+    cursor: pointer;
     display: flex;
     align-items: center;
-    justify-content: center;
     gap: 10px;
-    width: 100%;
-    padding: 12px;
-    background-color: white;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.map-selector-btn:hover {
-    background-color: var(--gray-light);
-}
+    animation: clignoter 1.5s infinite;
+    transition: background-color 0.3s ease;
+  }
+  
+  .map-selector-btn:hover {
+    background-color: #0056b3;
+  }
+  
 
 .form-actions {
     display: flex;
