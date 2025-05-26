@@ -241,7 +241,7 @@ togglePasswordVisibility(type: string): void {
   }
   
   goBack(): void {
-    this.router.navigate(['/dashboard-admin']);
+    this.router.navigate(['/motDePasse']);
   }
   
   logout(): void {

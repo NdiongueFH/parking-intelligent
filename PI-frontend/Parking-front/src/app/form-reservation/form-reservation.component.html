@@ -72,7 +72,7 @@
                     <div class="form-group payment-option" [ngClass]="{'payment-initiated': isPaymentInitiated}">
                         <label class="custom-radio">
                             <input type="radio" formControlName="paymentMethod" value="online" checked>
-                            Paiement en ligne uniquement
+                            Le montant vous sera retirer sur votre solde actuel avec des frais de 2%
                         </label>
                         <div *ngIf="reservationForm.get('paymentMethod')?.invalid && reservationForm.get('paymentMethod')?.touched" class="error-message">
                             Une méthode de paiement est requise.

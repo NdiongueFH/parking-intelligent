@@ -254,7 +254,8 @@ button[type="submit"]:hover {
 /* form-reservation.component.css */
 
 .payment-initiated {
-    color: rgb(147, 252, 147);
+    background-color: #b4fa58;
+    color: rgb(1, 92, 1);
     /* Changez la couleur du texte à vert */
     font-weight: bold;
     /* Optionnel : mettre en gras */
