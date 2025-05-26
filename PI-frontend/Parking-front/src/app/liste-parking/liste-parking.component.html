@@ -331,7 +331,7 @@
     <div class="map-modal" *ngIf="showMapModal" (click)="closeMapModal()">
         <div class="map-modal-content" (click)="$event.stopPropagation()">
             <h2>Sélectionnez un emplacement sur la carte</h2>
-            <div class="map" leaflet [leafletOptions]="mapOptions" (leafletMapReady)="onMapReady($event)"></div>
+            <!-- <div class="map" leaflet [leafletOptions]="mapOptions" (leafletMapReady)="onMapReady($event)"></div> -->
             <div class="modal-actions">
                 <button class="btn-save" (click)="saveSelectedLocation()">Sauvegarder l'emplacement</button>
                 <button class="btn-cancel" (click)="closeMapModal()">Annuler</button>

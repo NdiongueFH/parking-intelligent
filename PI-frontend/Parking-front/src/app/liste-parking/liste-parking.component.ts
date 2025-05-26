@@ -36,7 +36,7 @@ interface UserData {
 
 @Component({
     selector: 'app-liste-parking',
-    imports: [CommonModule, RouterModule, HttpClientModule, FormsModule],
+    imports: [CommonModule, RouterModule, HttpClientModule, FormsModule, LeafletModule],
     templateUrl: './liste-parking.component.html',
     styleUrls: ['./liste-parking.component.css']
 })
