@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
+import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import * as L from 'leaflet';
 import { latLng, tileLayer, marker, icon, Map } from 'leaflet';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
@@ -27,7 +28,7 @@ interface UserData {
 
 @Component({
     selector: 'app-admin-dashboard',
-    imports: [CommonModule, RouterModule,  HttpClientModule, FormsModule, ReactiveFormsModule],
+    imports: [CommonModule, RouterModule, LeafletModule, HttpClientModule, FormsModule, ReactiveFormsModule],
     templateUrl: './dashboard-admin.component.html',
     styleUrls: ['./dashboard-admin.component.css']
 })

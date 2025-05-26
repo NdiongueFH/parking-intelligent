@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { HttpClientModule, HttpClient, HttpHeaders } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import * as L from 'leaflet';
 import { latLng, tileLayer, Map, MapOptions } from 'leaflet';
 
@@ -36,7 +37,7 @@ interface UserData {
 
 @Component({
     selector: 'app-liste-parking',
-    imports: [CommonModule, RouterModule, HttpClientModule, FormsModule],
+    imports: [CommonModule, RouterModule, HttpClientModule, FormsModule, LeafletModule],
     templateUrl: './liste-parking.component.html',
     styleUrls: ['./liste-parking.component.css']
 })
