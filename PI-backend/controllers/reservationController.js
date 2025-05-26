@@ -68,38 +68,52 @@ exports.addReservation = async(req, res) => {
         // Calculer le montant
         const dureeEnMillisecondes = heureDepart - heureArrivee;
         const dureeEnMinutes = Math.floor(dureeEnMillisecondes / (1000 * 60));
-        const dureeEnJours = Math.floor(dureeEnMinutes / 1440); // Conversion en jours
 
         let montant = 0;
+        let resteMinutes = dureeEnMinutes;
 
-        // Gestion des durées de 30 jours ou plus
-        if (dureeEnMinutes >= 43200) { // 30 jours
-            montant = tarif.tarifDurations.mois;
-            const joursSup = dureeEnJours - 30; // Jours après le premier mois
-            if (joursSup > 0) {
-                montant += (tarif.tarifDurations.jour / 1440) * (joursSup * 1440);
-            }
+        // Mois (30 jours)
+        if (resteMinutes >= 43200 && tarif.tarifDurations.mois) {
+            const mois = Math.floor(resteMinutes / 43200);
+            montant += mois * tarif.tarifDurations.mois;
+            resteMinutes -= mois * 43200;
         }
-        // Gestion des durées de 7 jours ou plus
-        else if (dureeEnMinutes >= 10080) { // 7 jours
-            montant = tarif.tarifDurations.semaine;
-            const joursSup = dureeEnJours - 7; // Jours après la première semaine
-            if (joursSup > 0) {
-                montant += (tarif.tarifDurations.jour / 1440) * (joursSup * 1440);
-            }
+
+        // Semaines (7 jours)
+        if (resteMinutes >= 10080 && tarif.tarifDurations.semaine) {
+            const semaines = Math.floor(resteMinutes / 10080);
+            montant += semaines * tarif.tarifDurations.semaine;
+            resteMinutes -= semaines * 10080;
         }
-        // Gestion des durées de 24 heures ou plus
-        else if (dureeEnMinutes >= 1440) { // 24 heures
-            montant = tarif.tarifDurations.jour; // Montant pour une journée
+
+        // Jours
+        if (resteMinutes >= 1440 && tarif.tarifDurations.jour) {
+            const jours = Math.floor(resteMinutes / 1440);
+            montant += jours * tarif.tarifDurations.jour;
+            resteMinutes -= jours * 1440;
         }
-        // Gestion des durées d'1 heure ou plus
-        else if (dureeEnMinutes >= 60) { // 1 heure
-            montant = tarif.tarifDurations.heure * (dureeEnMinutes / 60); // Règle de trois pour le tarif horaire
+
+        // Heures
+        if (resteMinutes >= 60 && tarif.tarifDurations.heure) {
+            const heures = Math.floor(resteMinutes / 60);
+            montant += heures * tarif.tarifDurations.heure;
+            resteMinutes -= heures * 60;
         }
-        // Gestion des durées de moins d'1 heure
-        else { // Moins d'une heure
-            montant = (tarif.tarifDurations.heure / 60) * dureeEnMinutes; // Règle de trois pour le tarif horaire
+
+        // Minutes restantes
+        if (resteMinutes > 0 && tarif.tarifDurations.heure) {
+            montant += (tarif.tarifDurations.heure / 60) * resteMinutes;
         }
+
+        // ✅ Arrondir le montant total à l'entier supérieur
+        montant = Math.ceil(montant);
+
+        // ✅ Calcul des frais de transaction en entier
+        const fraisTransaction = Math.ceil(montant * 0.02);
+
+        // ✅ Total à payer
+        const montantTotal = montant + fraisTransaction;
+
 
         const user = await User.findById(req.body.userId);
         if (!user) {
@@ -116,9 +130,10 @@ exports.addReservation = async(req, res) => {
             });
         }
 
-        const fraisTransaction = montant * 0.02;
-        const montantTotal = montant + fraisTransaction;
+       // Forcer le montant à être un entier
+        montant = Math.ceil(montant); // ou Math.round(montant) selon ta logique métier
 
+        
         // Calculer le temps restant en minutes
         const tempsRestant = Math.floor(dureeEnMillisecondes / (1000 * 60));
 
@@ -288,58 +303,64 @@ exports.updateReservation = async(req, res) => {
         if (updateData.heureArrivee || updateData.heureDepart) {
             const heureArrivee = new Date(updateData.heureArrivee || existingReservation.heureArrivee);
             const heureDepart = new Date(updateData.heureDepart || existingReservation.heureDepart);
-
-            if (isNaN(heureArrivee.getTime()) || isNaN(heureDepart.getTime())) {
-                return res.status(400).json({
-                    status: 'fail',
-                    message: 'Les heures d\'arrivée ou de départ sont invalides',
-                });
-            }
-
-            const place = await PlaceParking.findById(existingReservation.placeId);
-            if (place.statut !== 'reservee') {
-                return res.status(400).json({
-                    status: 'fail',
-                    message: 'La réservation ne peut être modifiée que si la place est réservée.',
-                });
-            }
-
-            const dureeEnMillisecondes = heureDepart - heureArrivee;
-            const dureeEnMinutes = Math.floor(dureeEnMillisecondes / (1000 * 60));
-
+        
             if (heureArrivee >= heureDepart) {
                 return res.status(400).json({
                     status: 'fail',
                     message: 'L\'heure d\'arrivée doit être strictement inférieure à l\'heure de départ',
                 });
             }
-
+        
+            const dureeEnMillisecondes = heureDepart - heureArrivee;
+            const dureeEnMinutes = Math.floor(dureeEnMillisecondes / (1000 * 60));
+        
+            // Tarif récupéré
             const tarif = await TarifStationnement.findById(existingReservation.tarifId);
-            console.log("Tarif récupéré:", tarif);
-            console.log("Durée en minutes:", dureeEnMinutes);
             let montant = 0;
-
-            // Calculer le montant basé sur la durée
-            if (dureeEnMinutes >= 43200) { // 30 jours
-                montant = tarif.tarifDurations.mois;
-            } else if (dureeEnMinutes >= 10080) { // 7 jours
-                montant = tarif.tarifDurations.semaine;
-            } else if (dureeEnMinutes >= 1440) { // 24 heures
-                montant = tarif.tarifDurations.jour; // Montant pour une journée
-            } else if (dureeEnMinutes >= 60) { // 1 heure
-                montant = tarif.tarifDurations.heure * (dureeEnMinutes / 60); // Règle de trois pour le tarif horaire
-            } else { // Moins d'une heure
-                montant = (tarif.tarifDurations.heure / 60) * dureeEnMinutes; // Règle de trois pour le tarif horaire
+            let resteMinutes = dureeEnMinutes;
+        
+            if (resteMinutes >= 43200 && tarif.tarifDurations.mois) {
+                const mois = Math.floor(resteMinutes / 43200);
+                montant += mois * tarif.tarifDurations.mois;
+                resteMinutes -= mois * 43200;
             }
-
-            // Calculer les frais de transaction
-            const fraisTransaction = montant * 0.02; // Par exemple, 2% du montant
+        
+            if (resteMinutes >= 10080 && tarif.tarifDurations.semaine) {
+                const semaines = Math.floor(resteMinutes / 10080);
+                montant += semaines * tarif.tarifDurations.semaine;
+                resteMinutes -= semaines * 10080;
+            }
+        
+            if (resteMinutes >= 1440 && tarif.tarifDurations.jour) {
+                const jours = Math.floor(resteMinutes / 1440);
+                montant += jours * tarif.tarifDurations.jour;
+                resteMinutes -= jours * 1440;
+            }
+        
+            if (resteMinutes >= 60 && tarif.tarifDurations.heure) {
+                const heures = Math.floor(resteMinutes / 60);
+                montant += heures * tarif.tarifDurations.heure;
+                resteMinutes -= heures * 60;
+            }
+        
+            if (resteMinutes > 0 && tarif.tarifDurations.heure) {
+                montant += (tarif.tarifDurations.heure / 60) * resteMinutes;
+            }
+        
+            montant = Math.ceil(montant);
+            const fraisTransaction = Math.ceil(montant * 0.02);
             const montantTotal = montant + fraisTransaction;
-
-            // Mettre à jour les données de réservation
-            updateData.duree = dureeEnMinutes;
-            updateData.montant = montantTotal; // Inclure le montant total avec frais
+        
+            const dureeFormatted = `${String(Math.floor(dureeEnMinutes / 60)).padStart(2, '0')}:${String(dureeEnMinutes % 60).padStart(2, '0')}:00`;
+        
+            // Mise à jour
+            existingReservation.heureArrivee = heureArrivee;
+            existingReservation.heureDepart = heureDepart;
+            existingReservation.duree = dureeFormatted;
+            existingReservation.heureRestante = dureeEnMinutes;
+            existingReservation.montant = montantTotal;
         }
+        
 
         // Mise à jour des informations si fournies
         if (updateData.numeroImmatriculation) {
