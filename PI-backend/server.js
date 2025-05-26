@@ -33,7 +33,7 @@ const server = http.createServer(app); // Créer une instance de serveur HTTP av
 // Créer une instance de Socket.io
 const io = socketIo(server, {
     cors: {
-        origin: "http://localhost:4200", // Autoriser votre application Angular
+        origin: "https://parking-intelligent.vercel.app", // Autoriser votre application Angular
         methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
         allowedHeaders: ["Content-Type"],
         credentials: true,
@@ -46,7 +46,7 @@ app.set('io', io);
 // Utiliser CORS pour permettre les requêtes depuis différents domaines
 // Middleware CORS
 app.use(cors({
-    origin: "http://localhost:4200", // Autoriser votre application Angular
+    origin: "https://parking-intelligent.vercel.app", // Autoriser votre application Angular
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     credentials: true,
 }));

@@ -773,7 +773,7 @@ exports.forgotPassword = async (req, res) => {
       },
     });
   
-    const resetUrl = `http://localhost:4200/reset-password?token=${token}`;
+    const resetUrl = `https://parking-intelligent.vercel.app/reset-password?token=${token}`;
   
     let mailOptions = {
       from: '"Parking Intelligent" <hawa.ndiongue@gmail.com>',
