@@ -32,7 +32,7 @@ export class LoginComponent {
     });
 
     // Initialiser Socket.IO
-    this.socket = io('http://localhost:3000');
+    this.socket = io('https://parking-intelligent.onrender.com');
 
     // Écouter l'événement 'rfidScanned' pour connexion automatique
     this.socket.on('rfidScanned', (uid: string) => {
@@ -99,7 +99,7 @@ export class LoginComponent {
     this.loading = true;
     this.error = '';
 
-    this.http.post('http://localhost:3000/api/v1/auth/login-rfid', { carteRfid }).subscribe({
+    this.http.post('https://parking-intelligent.onrender.com/api/v1/auth/login-rfid', { carteRfid }).subscribe({
       next: (response: any) => {
         this.loading = false;
 

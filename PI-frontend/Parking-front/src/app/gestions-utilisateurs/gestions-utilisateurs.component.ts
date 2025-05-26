@@ -52,7 +52,7 @@ userData: UserData = {
   solde: 0
 };
 
-private userApiUrl = 'http://localhost:3000/api/v1/users';
+private userApiUrl = 'https://parking-intelligent.onrender.com/api/v1/users';
 
 
 
@@ -75,7 +75,7 @@ private userApiUrl = 'http://localhost:3000/api/v1/users';
     this.loadUserData(); // Charger les données de l'utilisateur
 
      // Initialiser Socket.IO
-     this.socket = io('http://localhost:3000'); // Connexion au serveur
+     this.socket = io('https://parking-intelligent.onrender.com'); // Connexion au serveur
 
      // Écouter l'événement 'rfidScanned'
      this.socket.on('rfidScanned', (uid: string) => {
@@ -149,7 +149,7 @@ private userApiUrl = 'http://localhost:3000/api/v1/users';
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
   
-    this.http.post('http://localhost:3000/api/v1/auth/logout', {}, { headers }).subscribe(
+    this.http.post('https://parking-intelligent.onrender.com/api/v1/auth/logout', {}, { headers }).subscribe(
       () => {
         // Supprimer le token du localStorage
         localStorage.removeItem('token');
@@ -171,7 +171,7 @@ private userApiUrl = 'http://localhost:3000/api/v1/users';
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
-    this.http.get<any>(`http://localhost:3000/api/v1/users`, { params, headers }).subscribe(
+    this.http.get<any>(`https://parking-intelligent.onrender.com/api/v1/users`, { params, headers }).subscribe(
       (data) => {
         console.log('Données récupérées:', data);
         this.utilisateurs = data.data.users; // Assurez-vous que c'est correct
@@ -306,7 +306,7 @@ private userApiUrl = 'http://localhost:3000/api/v1/users';
         }
 
         // Envoi de la requête POST à l'API d'inscription
-        this.http.post<any>('http://localhost:3000/api/v1/auth/signup', userData)
+        this.http.post<any>('https://parking-intelligent.onrender.com/api/v1/auth/signup', userData)
             .subscribe(
                 (response) => {
                     this.successMessage = 'Utilisateur ajouté avec succès'; // Message de succès
@@ -351,7 +351,7 @@ private userApiUrl = 'http://localhost:3000/api/v1/users';
       const token = localStorage.getItem('token');
       const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
   
-      this.http.patch<any>(`http://localhost:3000/api/v1/users/update/${this.userToEdit._id}`, userData, { headers }).subscribe(
+      this.http.patch<any>(`https://parking-intelligent.onrender.com/api/v1/users/update/${this.userToEdit._id}`, userData, { headers }).subscribe(
         (response) => {
           this.successMessage = 'Utilisateur modifié avec succès';
           this.loadUsers();
@@ -403,7 +403,7 @@ private userApiUrl = 'http://localhost:3000/api/v1/users';
       const token = localStorage.getItem('token');
       const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
-      this.http.delete(`http://localhost:3000/api/v1/users/${this.userToDelete}`, { headers }).subscribe(
+      this.http.delete(`https://parking-intelligent.onrender.com/api/v1/users/${this.userToDelete}`, { headers }).subscribe(
           () => {
               console.log('Utilisateur supprimé avec succès');
               this.successMessage = 'Utilisateur supprimé avec succès'; // Définir le message de succès

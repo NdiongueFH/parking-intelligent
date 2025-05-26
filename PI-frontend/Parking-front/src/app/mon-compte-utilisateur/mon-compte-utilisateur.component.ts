@@ -104,7 +104,7 @@ switchTab(tabName: string): void {
 
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
 
-    this.http.get('http://localhost:3000/api/v1/auth/me', { headers }).subscribe(
+    this.http.get('https://parking-intelligent.onrender.com/api/v1/auth/me', { headers }).subscribe(
       (response: any) => {
         const user = response.data.user;
         this.userData = user;
@@ -132,7 +132,7 @@ switchTab(tabName: string): void {
 
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
 
-    this.http.patch('http://localhost:3000/api/v1/auth/me', updatedData, { headers }).subscribe(
+    this.http.patch('https://parking-intelligent.onrender.com/api/v1/auth/me', updatedData, { headers }).subscribe(
       (response: any) => {
           this.success = true;
           this.error = null;
@@ -181,7 +181,7 @@ switchTab(tabName: string): void {
       'Content-Type': 'application/json'
     });
 
-    this.http.patch('http://localhost:3000/api/v1/auth/updatePassword', passwordData, { headers }).subscribe(
+    this.http.patch('https://parking-intelligent.onrender.com/api/v1/auth/updatePassword', passwordData, { headers }).subscribe(
       {
         next: (response: any) => {
           this.isLoading = false;

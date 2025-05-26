@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
+import * as L from 'leaflet';
 import { latLng, tileLayer, marker, icon, Map } from 'leaflet';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { HttpClientModule } from '@angular/common/http';
@@ -26,7 +27,7 @@ interface UserData {
 
 @Component({
     selector: 'app-admin-dashboard',
-    imports: [CommonModule, RouterModule, LeafletModule, HttpClientModule, FormsModule, ReactiveFormsModule],
+    imports: [CommonModule, RouterModule,  HttpClientModule, FormsModule, ReactiveFormsModule],
     templateUrl: './dashboard-admin.component.html',
     styleUrls: ['./dashboard-admin.component.css']
 })
@@ -78,15 +79,15 @@ userData: UserData = {
   solde: 0
 };
 
-  private apiUrl = 'http://localhost:3000/api/v1/parkings';
-  private userApiUrl = 'http://localhost:3000/api/v1/users';
+  private apiUrl = 'https://parking-intelligent.onrender.com/api/v1/parkings';
+  private userApiUrl = 'https://parking-intelligent.onrender.com/api/v1/users';
   private socket: Socket; // Instance de Socket.io
 
 
 
   constructor(private router: Router, private http: HttpClient) {
     // Crée une instance Socket.io
-    this.socket = io('http://localhost:3000');
+    this.socket = io('https://parking-intelligent.onrender.com');
   }
 
   ngOnInit(): void {
@@ -266,7 +267,7 @@ acknowledgeFireAlert(): void {
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
-    this.http.post('http://localhost:3000/api/v1/auth/logout', {}, { headers }).subscribe(
+    this.http.post('https://parking-intelligent.onrender.com/api/v1/auth/logout', {}, { headers }).subscribe(
       () => {
         localStorage.removeItem('token');
         this.router.navigate(['/login']);
